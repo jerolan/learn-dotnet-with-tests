@@ -1,206 +1,88 @@
-# Hello, .NET World
+## Hello World: Your First DotNet Test
 
-Welcome to your first foray into .NET development! In this chapter, we'll start with the fundamentals: writing a simple program that prints "Hello, World" to the console. Along the way, you'll learn about variables, constants, control flow statements, and, most importantly, how to write your first test using MSTest.
+Welcome to the exciting journey of learning DotNet with Test-Driven Development (TDD). In this chapter, we'll start with the simplest possible scenario - writing a "Hello World" program. However, true to the TDD approach, we'll begin by writing a test for our program before we actually implement the functionality. This will introduce you to the rhythm of TDD: Red, Green, Refactor.
 
-## Declaring Variables and Constants
+### Understanding the Test Structure with MSTest
 
-In .NET, variables and constants hold data that your program can manipulate. Variables are mutable, while constants are immutable once defined.
+MSTest is a testing framework that allows us to write and execute tests in the DotNet environment. A basic test in MSTest includes three key parts:
 
-### Variables
+- **Test Class**: A container for your test methods. This class must be decorated with the `[TestClass]` attribute.
+- **Test Method**: Represents a single test. It must be decorated with the `[TestMethod]` attribute.
+- **Assertions**: Statements that check if the code behaves as expected. An assertion failing means your test fails.
 
-To declare a variable, you specify the type, followed by the name of the variable, and optionally initialize it with a value.
+### Setting Up the "Hello World" Test
 
-```csharp
-string greeting = "Hello";
-int number = 5;
-```
+Let's create a test that expects our application to return "Hello, World!".
 
-### Constants
+1. **Navigate to Your Test Project**: Make sure you're in the directory of your `MyFirstDotNetApp.Tests` project.
 
-Constants are declared similarly to variables, but with the `const` keyword. Once assigned, their value cannot change.
-
-```csharp
-const double Pi = 3.14159;
-```
-
-## Control Flow: If/Else Statements and Switch
-
-Control flow statements allow you to branch your code execution based on conditions.
-
-### If/Else Statements
-
-If/Else statements execute different code blocks based on a condition.
+2. **Writing the Test**: Rename the `UnitTest1.cs` file to `HelloWorldTests.cs` and replace its content with the following code:
 
 ```csharp
-if (number > 0) {
-    Console.WriteLine("The number is positive.");
-} else {
-    Console.WriteLine("The number is non-positive.");
-}
-```
+using MyFirstDotNetApp;
 
-### Switch
+namespace MyFirstDotNetApp.Tests
+{
+    [TestClass]
+    public class HelloWorldTests
+    {
+        [TestMethod]
+        public void SayHello_ReturnsHelloWorld()
+        {
+            // Arrange
+            var app = new HelloWorld();
 
-The switch statement simplifies multiple `if` checks for the same variable, allowing for cleaner code.
+            // Act
+            string result = app.SayHello();
 
-```csharp
-switch (greeting) {
-    case "Hello":
-        Console.WriteLine("English");
-        break;
-    case "Hola":
-        Console.WriteLine("Spanish");
-        break;
-    default:
-        Console.WriteLine("Unknown language");
-        break;
-}
-```
-
-## Writing Your First Program
-
-Let's write a simple program that prints "Hello, World" to the console.
-
-1. **Create a Project directory**: Using your explorer or terminal, create a new directory for your .NET project. For example, you can create a directory named "HelloWorld".
-
-2. **Create a Solution File**: Open a terminal or command prompt and run:
-
-   ```
-   dotnet new sln -n HelloWorld
-   ```
-
-   This command creates a new solution file named "HelloWorld".
-
-3. **Create a New Project**: Open a terminal or command prompt and run:
-
-   ```
-   dotnet new console -n HelloWorld
-   ```
-
-   This command creates a new console application named "HelloWorld".
-
-4. **Add the New Project in the Solution**: To add the new project to the solution, run:
-
-   ```
-   dotnet sln add HelloWorld/HelloWorld.csproj
-   ```
-
-   This command adds the "HelloWorld" project to the "HelloWorld" solution.
-
-5. **Edit Program.cs**: Open the `Program.cs` file in your project and replace its contents with the following:
-
-   ```csharp
-   using System;
-
-   namespace HelloWorld {
-       class Program {
-           static void Main(string[] args) {
-               Console.WriteLine(CreateGreeting("World"));
-           }
-
-           public static string CreateGreeting(string name) {
-               return $"Hello, {name}";
-           }
-       }
-   }
-   ```
-
-6. **Add the MSTest and Test SDK**: To add MSTest support, run:
-
-   ```
-   dotnet new mstest -n HelloWorldTests
-   ```
-
-   These commands add the necessary MSTest framework and adapter to your project and create a test project named "HelloWorldTests".
-
-7. **Reference the Project in the Test Project**: To reference the main project in the test project, run:
-
-   ```
-   dotnet add HelloWorldTests/HelloWorldTests.csproj reference HelloWorld/HelloWorld.csproj
-   ```
-
-8. **Add the Test Project in the Solution**: To add the test project to the solution, run:
-
-   ```
-   dotnet sln add HelloWorldTests/HelloWorldTests.csproj
-   ```
-
-9. **Running Your Tests**: To ensure everything is set up correctly, navigate to your test project directory and run:
-
-   ```
-   dotnet test
-   ```
-
-   This command builds the test project and runs any tests it finds. Initially, there might not be any tests to run, but you're now set up to start TDD with .NET and MSTest!
-
-10. **Create a New Console Application**: If you haven't already, create a new console application named "HelloWorld".
-
-    ```bash
-    dotnet new console -n HelloWorld
-    ```
-
-11. **Edit Program.cs**: Open the `Program.cs` file in your project and replace its contents with the following:
-
-    ```csharp
-    using System;
-
-    namespace HelloWorld {
-        class Program {
-            static void Main(string[] args) {
-                Console.WriteLine(CreateGreeting("World"));
-            }
-
-            public static string CreateGreeting(string name) {
-                return $"Hello, {name}";
-            }
+            // Assert
+            Assert.AreEqual("Hello, World!", result);
         }
     }
-    ```
+}
+```
 
-12. **Run Your Program**: Navigate to your project directory in the terminal and run:
+In this test, we're creating an instance of a class named `HelloWorld` that we expect to have a method `SayHello` returning the string "Hello, World!".
 
-    ```bash
-    dotnet run
-    ```
+### Implementing the "Hello World" Functionality
 
-    You should see "Hello, World" printed to the console.
+If you try to run the test now, it will fail because we haven't implemented the `HelloWorld` class and its `SayHello` method yet. Let's do that next.
 
-## Writing Your First Test
+We need to implement the `HelloWorld` class and its `SayHello` method in our main project (`MyFirstDotNetApp`).
 
-Now, let's write a test for our `CreateGreeting` method using MSTest.
+1. **Create the HelloWorld Class**: Navigate to your main project directory and add a new file named `HelloWorld.cs`. Then, define the `HelloWorld` class with the `SayHello` method:
 
-1. **Create a Test Project**: If you haven't set up your test project, refer back to the setup chapter to add MSTest to your solution.
+```csharp
+namespace MyFirstDotNetApp
+{
+    public class HelloWorld
+    {
+        public string SayHello()
+        {
+            return "Hello, World!";
+        }
+    }
+}
+```
 
-2. **Add a Test Class**: In your test project, create a new file named `HelloWorldTests.cs` and add the following code:
+This class simply contains one method that returns the string "Hello, World!".
 
-   ```csharp
-   using Microsoft.VisualStudio.TestTools.UnitTesting;
-   using HelloWorld;
+### Running Your First Test
 
-   [TestClass]
-   public class HelloWorldTests {
-       [TestMethod]
-       public void TestCreateGreeting() {
-           var result = Program.CreateGreeting("World");
-           Assert.AreEqual("Hello, World", result);
-       }
-   }
+With the test and the method implemented, it's time to run the test and see the results.
+
+1. **Run the Test**: Open your terminal or command prompt, navigate to the `MyFirstDotNetApp.Tests` directory, and execute the command:
    ```
-
-3. **Run the Test**: Navigate to your test project directory in the terminal and run:
-
-   ```bash
    dotnet test
    ```
+2. **Observe the Outcome**: If everything is set up correctly, your test should pass, indicating that your `SayHello` method behaves as expected.
 
-   The test should pass, indicating that your `CreateGreeting` method works as expected.
+   ```
+   Passed!  - Failed:     0, Passed:     1, Skipped:     0, Total:     1, Duration: 8 ms - /Users/jeromeolverasanchez/workspace/learn-dotnet-with-tests/MyFirstDotNetApp/MyFirstDotNetApp.Tests/bin/Debug/net6.0/MyFirstDotNetApp.Tests.dll (net6.0)
+   ```
 
-## Conclusion
+### Conclusion
 
-Congratulations! You've just written your first .NET program and test. By learning to declare variables and constants, use control flow statements, and write simple test cases, you're laying the groundwork for more complex .NET applications. Remember, TDD encourages you to think about your code's design upfront by writing tests first, leading to more reliable and maintainable software.
+Congratulations! You've just written your first test in DotNet using MSTest and followed it up with a simple implementation to make the test pass. This is the essence of TDD - starting with a failing test (Red), implementing the minimal code necessary to make the test pass (Green), and then refactoring if necessary while keeping the tests green.
 
-In the next chapters, we'll dive deeper into .NET development, exploring more complex types, data structures, and testing techniques. Stay tuned!
-
----
-
-This chapter serves as an introduction to .NET programming fundamentals and TDD with MSTest, providing a practical approach to learning by doing.
+This cycle ensures that you're always focused on delivering what's required and that every piece of code has a corresponding test. As we move forward, you'll continue to build on this foundation, gradually increasing the complexity of the problems and solutions while deepening your understanding of both DotNet and TDD.

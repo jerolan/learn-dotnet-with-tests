@@ -1,18 +1,18 @@
-using HelloWorld;
+using MyFirstDotNetApp;
 
-namespace HelloWorldTests
+namespace MyFirstDotNetApp.Tests
 {
     [TestClass]
-    public class GreeterTests
+    public class HelloWorldTests
     {
         [TestMethod]
         public void SayHello_ReturnsHelloWorld()
         {
             // Arrange
-            var greeter = new Greeter();
+            var app = new HelloWorld();
 
             // Act
-            var result = greeter.SayHello();
+            string result = app.SayHello();
 
             // Assert
             Assert.AreEqual("Hello, World!", result);

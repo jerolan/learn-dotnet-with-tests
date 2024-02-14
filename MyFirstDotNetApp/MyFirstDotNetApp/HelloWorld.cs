@@ -1,6 +1,6 @@
-namespace HelloWorld
+namespace MyFirstDotNetApp
 {
-    public class Greeter
+    public class HelloWorld
     {
         public string SayHello()
         {
