@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyFirstDotNetApp", "MyFirstDotNetApp\MyFirstDotNetApp.csproj", "{65FB71EB-6290-4C0B-A3F9-79A02D097B15}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyFirstDotNetApp.Tests", "MyFirstDotNetApp.Tests\MyFirstDotNetApp.Tests.csproj", "{FD1E3863-AF86-4650-A19B-38159FE2450C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{65FB71EB-6290-4C0B-A3F9-79A02D097B15}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{65FB71EB-6290-4C0B-A3F9-79A02D097B15}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{65FB71EB-6290-4C0B-A3F9-79A02D097B15}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{65FB71EB-6290-4C0B-A3F9-79A02D097B15}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FD1E3863-AF86-4650-A19B-38159FE2450C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FD1E3863-AF86-4650-A19B-38159FE2450C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FD1E3863-AF86-4650-A19B-38159FE2450C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FD1E3863-AF86-4650-A19B-38159FE2450C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
