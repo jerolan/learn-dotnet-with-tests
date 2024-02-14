@@ -67,13 +67,19 @@ Now that your environment is set up, let's create a new .NET project and add MST
 
    These commands add the necessary MSTest framework and adapter to your project and create a test project named "HelloWorldTests".
 
-6. **Add the Test Project in the Solution**: To add the test project to the solution, run:
+6. **Reference the Project in the Test Project**: To reference the main project in the test project, run:
+
+   ```
+   dotnet add HelloWorldTests/HelloWorldTests.csproj reference HelloWorld/HelloWorld.csproj
+   ```
+
+7. **Add the Test Project in the Solution**: To add the test project to the solution, run:
 
    ```
    dotnet sln add HelloWorldTests/HelloWorldTests.csproj
    ```
 
-7. **Running Your Tests**: To ensure everything is set up correctly, navigate to your test project directory and run:
+8. **Running Your Tests**: To ensure everything is set up correctly, navigate to your test project directory and run:
 
    ```
    dotnet test
