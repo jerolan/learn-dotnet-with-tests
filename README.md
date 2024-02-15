@@ -32,22 +32,22 @@ This cycle encourages developers to write only the code necessary to pass tests,
 4. [Decimals](decimals.md) - Learn how to use decimal types for precise financial and scientific calculations.
 5. [Declarations, Const and Var](declarations.md) - Explore different variable declaration methods, including the use of const for constants and var for type inference
 6. [Control Flow](control-flow.md) - Learn control flow statements such as if, switch, and loops (for, while, etc.) to direct the execution flow of your programs.
+7. [Exceptions](exceptions.md) - Learn exception handling for graceful error management in your applications.
 
 ### Object-Oriented Programming
 
-7. [Classes and Objects](classes.md) - Learn the basics of defining classes and creating instances (objects) to model real-world entities and behaviors.
-8. [Structs and Records](records.md) - Understand the use of structs for lightweight object-like structures and records for immutable data models.
-9. [`with` Keyword](with.md) - Discover how to use the with keyword to create modified copies of records for immutable data handling.
-10. [Properties and Methods](methods.md) - Dive into defining and using properties and methods to encapsulate data and behavior within classes.
-11. [Inheritance and Interfaces](inheritance.md) - Explore how to use inheritance for code reuse and interfaces for designing flexible systems.
-12. [composition over Inheritance](composition.md) - Learn why and how to favor composition over inheritance for better design flexibility.
+8. [Classes and Objects](classes.md) - Learn the basics of defining classes and creating instances (objects) to model real-world entities and behaviors.
+9. [Structs and Records](records.md) - Understand the use of structs for lightweight object-like structures and records for immutable data models.
+10. [`with` Keyword](with.md) - Discover how to use the with keyword to create modified copies of records for immutable data handling.
+11. [Properties and Methods](methods.md) - Dive into defining and using properties and methods to encapsulate data and behavior within classes.
+12. [Inheritance and Interfaces](inheritance.md) - Explore how to use inheritance for code reuse and interfaces for designing flexible systems.
+13. [composition over Inheritance](composition.md) - Learn why and how to favor composition over inheritance for better design flexibility.
 
 ### Advanced Topics
 
-13. [Collections](collections.md) - Get to know the various collection types available in .NET for storing groups of related objects.
-14. [Generics](generics.md) - Understand how to use generics to create type-safe data structures and methods.
-15. [`ref` Keyword](refs.md) - Learn how to use the ref keyword for passing arguments by reference.
-16. [Exceptions](exceptions.md) - Learn exception handling for graceful error management in your applications.
+14. [Collections](collections.md) - Get to know the various collection types available in .NET for storing groups of related objects.
+15. [Generics](generics.md) - Understand how to use generics to create type-safe data structures and methods.
+16. [`ref` Keyword](refs.md) - Learn how to use the ref keyword for passing arguments by reference.
 17. [Linq](linq.md) - Explore LINQ (Language Integrated Query) for querying collections and data sources in a declarative manner.
 18. [Tasks](tasks.md) - Understand how to work with tasks for performing asynchronous operations.
 19. [Async/Await](async.md) - Dive into the async/await pattern for writing clean, efficient asynchronous code.
