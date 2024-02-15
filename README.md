@@ -1,6 +1,8 @@
-# Learn .NET with Tests: An Introduction
+# Learn .NET with Tests
 
 Welcome to "Learn .NET with Tests," your journey into the world of test-driven development (TDD) within the .NET ecosystem. This guide is designed to help you master the fundamentals of TDD, a development approach that emphasizes writing tests before writing the code itself. By following this guide, you will learn not just how to write tests, but also how to think about software design and development in a way that improves code quality, reduces bugs, and enhances your productivity as a developer.
+
+This guide it's absolutely inspired by the amazing [Learn Go with Tests](https://quii.gitbook.io/learn-go-with-tests/) by Chris James. I love the way he explains the concepts and the way he guides the reader through the process of learning TDD.
 
 ## What Is Test-Driven Development?
 
@@ -19,22 +21,39 @@ This cycle encourages developers to write only the code necessary to pass tests,
 - **Improve Code Quality**: Tests written before the code ensure that your application works as intended and continues to work as you add features or refactor.
 - **Enhance Your Design Skills**: TDD encourages you to think about the design of your application upfront, leading to more modular and flexible code.
 - **Become More Efficient**: While it might seem slower at first, TDD can save time by catching bugs early and reducing the need for debugging.
-- **Boost Your Career**: Understanding TDD and how to apply it in .NET projects makes you a more valuable developer in the job market.
 
 ## What Will You Learn?
 
-In "Learn .NET with Tests," we'll cover:
+### C# fundamentals
 
-- **Setting Up Your Environment**: How to set up a .NET project for TDD, including choosing the right tools and frameworks.
-- **Writing Your First Test**: Dive into TDD with a simple example to understand the red-green-refactor cycle.
-- **Core Testing Concepts**: Learn about assertions, test doubles, and organizing your tests.
-- **Testing Different Types of Applications**: From console applications to web APIs, learn how to apply TDD in various .NET application types.
-- **Advanced Topics**: Explore more advanced topics such as integration testing, test coverage, and working with legacy code.
+1. [Install Dotnet](install.md) - Set up your environment to write and run C# code, including installing the .NET SDK and choosing an IDE or editor.
+2. [Hello, world](hello-world.md) - Dive into C# with your first program, exploring the basic structure of a C# application and the use of Console.WriteLine.
+3. [Types and Variables](types.md) - Understand C#'s built-in types such as integers, floats, strings, and how to declare and use variables.
+4. [Decimals](decimals.md) - Learn how to use decimal types for precise financial and scientific calculations.
+5. [Declarations, Const and Var](declarations.md) - Explore different variable declaration methods, including the use of const for constants and var for type inference
+6. [Control Flow](control-flow.md) - Learn control flow statements such as if, switch, and loops (for, while, etc.) to direct the execution flow of your programs.
 
-## Who Is This For?
+### Object-Oriented Programming
 
-This guide is for anyone interested in .NET development, regardless of experience level. Whether you're a complete beginner to programming, a developer familiar with .NET but new to TDD, or an experienced developer looking to refine your testing skills, "Learn .NET with Tests" has something for you.
+7. [Classes and Objects](classes.md) - Learn the basics of defining classes and creating instances (objects) to model real-world entities and behaviors.
+8. [Structs and Records](records.md) - Understand the use of structs for lightweight object-like structures and records for immutable data models.
+9. [`with` Keyword](with.md) - Discover how to use the with keyword to create modified copies of records for immutable data handling.
+10. [Properties and Methods](methods.md) - Dive into defining and using properties and methods to encapsulate data and behavior within classes.
+11. [Inheritance and Interfaces](inheritance.md) - Explore how to use inheritance for code reuse and interfaces for designing flexible systems.
+12. [composition over Inheritance](composition.md) - Learn why and how to favor composition over inheritance for better design flexibility.
 
-## Let's Get Started
+### Advanced Topics
 
-Embarking on this journey will not only improve your testing skills but also enhance your overall development process. By integrating TDD into your workflow, you'll write better code, catch bugs earlier, and build more maintainable applications. Let's dive into the world of .NET with tests and transform the way you develop software.
+13. [Collections](collections.md) - Get to know the various collection types available in .NET for storing groups of related objects.
+14. [Generics](generics.md) - Understand how to use generics to create type-safe data structures and methods.
+15. [`ref` Keyword](refs.md) - Learn how to use the ref keyword for passing arguments by reference.
+16. [Exceptions](exceptions.md) - Learn exception handling for graceful error management in your applications.
+17. [Linq](linq.md) - Explore LINQ (Language Integrated Query) for querying collections and data sources in a declarative manner.
+18. [Tasks](tasks.md) - Understand how to work with tasks for performing asynchronous operations.
+19. [Async/Await](async.md) - Dive into the async/await pattern for writing clean, efficient asynchronous code.
+20. [IQueryable](queriable.md) - Learn about IQueryable for efficient querying against data sources like databases.
+21. [IEnumerable](enumerable.md) - Explore IEnumerable and its role in iterating over collections.
+22. [Files and I/O ](io.md) - Get to grips with reading from and writing to files and performing other I/O operations.
+23. [`using` Keyword](using.md) - Discover how to manage resources automatically with the using statement.
+24. [Mocking](mocking.md) - Learn about mocking in unit testing to simulate behavior of real objects in tests.
+25. [Dependency Injection](dependency-injection.md) - Understand dependency injection for creating loosely coupled, maintainable applications.
