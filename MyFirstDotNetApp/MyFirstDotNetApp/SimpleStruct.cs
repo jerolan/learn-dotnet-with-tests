@@ -1,3 +1,5 @@
+namespace MyFirstDotNetApp;
+
 public struct SimpleStruct
 {
     public int Number { get; set; }

@@ -1,38 +1,37 @@
 using System.Collections.Generic;
 
-namespace MyFirstDotNetApp.Tests
+namespace MyFirstDotNetApp.Tests;
+
+[TestClass]
+public class GenericsTests
 {
-    [TestClass]
-    public class GenericsTests
+    [TestMethod]
+    public void GenericRepository_AddAndGetItem_ItemIsCorrectlyManaged()
     {
-        [TestMethod]
-        public void GenericRepository_AddAndGetItem_ItemIsCorrectlyManaged()
-        {
-            // Arrange
-            var repository = new GenericRepository<string>();
-            var item = "Hello, Generics";
+        // Arrange
+        var repository = new GenericRepository<string>();
+        var item = "Hello, Generics";
 
-            // Act
-            repository.Add(item);
-            var retrievedItem = repository.GetById(0);
+        // Act
+        repository.Add(item);
+        var retrievedItem = repository.GetById(0);
 
-            // Assert
-            Assert.AreEqual(item, retrievedItem);
-        }
+        // Assert
+        Assert.AreEqual(item, retrievedItem);
+    }
 
-        [TestMethod]
-        public void Swap_SwapsIntValues_ValuesAreSwapped()
-        {
-            // Arrange
-            int a = 1,
-                b = 2;
+    [TestMethod]
+    public void Swap_SwapsIntValues_ValuesAreSwapped()
+    {
+        // Arrange
+        int a = 1,
+            b = 2;
 
-            // Act
-            Utility.Swap(ref a, ref b);
+        // Act
+        Utility.Swap(ref a, ref b);
 
-            // Assert
-            Assert.AreEqual(2, a);
-            Assert.AreEqual(1, b);
-        }
+        // Assert
+        Assert.AreEqual(2, a);
+        Assert.AreEqual(1, b);
     }
 }

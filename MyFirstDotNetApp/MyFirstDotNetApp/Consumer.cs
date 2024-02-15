@@ -1,3 +1,5 @@
+namespace MyFirstDotNetApp;
+
 public class Consumer
 {
     private readonly IGreetingService _greetingService;
@@ -7,5 +9,8 @@ public class Consumer
         _greetingService = greetingService;
     }
 
-    public string SayHello(string name) => _greetingService.Greet(name);
+    public string SayHello(string name)
+    {
+        return _greetingService.Greet(name);
+    }
 }

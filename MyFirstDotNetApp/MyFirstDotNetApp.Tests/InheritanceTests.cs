@@ -1,19 +1,18 @@
-namespace MyFirstDotNetApp.Tests
+namespace MyFirstDotNetApp.Tests;
+
+[TestClass]
+public class InheritanceTests
 {
-    [TestClass]
-    public class InheritanceTests
+    [TestMethod]
+    public void AnimalSpeak_Polymorphism_CallsCorrectMethod()
     {
-        [TestMethod]
-        public void AnimalSpeak_Polymorphism_CallsCorrectMethod()
-        {
-            // Arrange
-            Animal animal = new Dog(); // Dog inherits from Animal
+        // Arrange
+        Animal animal = new Dog(); // Dog inherits from Animal
 
-            // Act
-            var sound = animal.Speak();
+        // Act
+        var sound = animal.Speak();
 
-            // Assert
-            Assert.AreEqual("Bark", sound);
-        }
+        // Assert
+        Assert.AreEqual("Bark", sound);
     }
 }

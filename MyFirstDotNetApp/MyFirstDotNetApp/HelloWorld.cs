@@ -1,10 +1,9 @@
-namespace MyFirstDotNetApp
+namespace MyFirstDotNetApp;
+
+public class HelloWorld
 {
-    public class HelloWorld
+    public string SayHello()
     {
-        public string SayHello()
-        {
-            return "Hello, World!";
-        }
+        return "Hello, World!";
     }
 }

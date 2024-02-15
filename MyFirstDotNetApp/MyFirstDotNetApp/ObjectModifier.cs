@@ -1,3 +1,5 @@
+namespace MyFirstDotNetApp;
+
 public class ObjectModifier
 {
     public static void ChangeReference(ref SimpleObject obj, SimpleObject newObj)

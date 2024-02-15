@@ -1,19 +1,18 @@
-namespace MyFirstDotNetApp.Tests
+namespace MyFirstDotNetApp.Tests;
+
+[TestClass]
+public class InterfaceTests
 {
-    [TestClass]
-    public class InterfaceTests
+    [TestMethod]
+    public void SendMessage_UsingIMessageSender_SendsCorrectMessage()
     {
-        [TestMethod]
-        public void SendMessage_UsingIMessageSender_SendsCorrectMessage()
-        {
-            // Arrange
-            IMessageSender sender = new EmailSender(); // EmailSender implements IMessageSender
+        // Arrange
+        IMessageSender sender = new EmailSender(); // EmailSender implements IMessageSender
 
-            // Act
-            var result = sender.SendMessage("Hello, World!");
+        // Act
+        var result = sender.SendMessage("Hello, World!");
 
-            // Assert
-            Assert.IsTrue(result.Contains("Email sent"));
-        }
+        // Assert
+        Assert.IsTrue(result.Contains("Email sent"));
     }
 }

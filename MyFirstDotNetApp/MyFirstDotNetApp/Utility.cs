@@ -1,3 +1,5 @@
+namespace MyFirstDotNetApp;
+
 public static class Utility
 {
     public static void Swap<T>(ref T lhs, ref T rhs)

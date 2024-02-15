@@ -1,25 +1,24 @@
-namespace MyFirstDotNetApp.Tests
+using MyFirstDotNetApp.RobotTasks;
+
+namespace MyFirstDotNetApp.Tests;
+
+using System.Collections.Generic;
+
+[TestClass]
+public class CompositionTests
 {
-    using System.Collections.Generic;
-    using System.Linq;
-    using MyFirstDotNetApp;
-
-    [TestClass]
-    public class CompositionTests
+    [TestMethod]
+    public void RobotPerformsTasks_ThroughComposition_HasExpectedBehavior()
     {
-        [TestMethod]
-        public void RobotPerformsTasks_ThroughComposition_HasExpectedBehavior()
-        {
-            // Arrange
-            var robot = new Robot(new List<IRobotTask> { new SpeakTask(), new MoveTask() });
+        // Arrange
+        var robot = new Robot(new List<IRobotTask> { new SpeakTask(), new MoveTask() });
 
-            // Act
-            var speakResult = robot.PerformTask("Speak");
-            var moveResult = robot.PerformTask("Move");
+        // Act
+        var speakResult = robot.PerformTask("Speak");
+        var moveResult = robot.PerformTask("Move");
 
-            // Assert
-            Assert.AreEqual("Speaking", speakResult);
-            Assert.AreEqual("Moving", moveResult);
-        }
+        // Assert
+        Assert.AreEqual("Speaking", speakResult);
+        Assert.AreEqual("Moving", moveResult);
     }
 }

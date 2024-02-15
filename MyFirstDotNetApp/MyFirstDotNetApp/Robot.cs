@@ -1,3 +1,5 @@
+namespace MyFirstDotNetApp;
+
 public class Robot
 {
     private readonly Dictionary<string, IRobotTask> _tasks;
@@ -9,10 +11,7 @@ public class Robot
 
     public string PerformTask(string taskName)
     {
-        if (_tasks.TryGetValue(taskName, out var task))
-        {
-            return task.PerformTask();
-        }
+        if (_tasks.TryGetValue(taskName, out var task)) return task.PerformTask();
         return "Task not found";
     }
 }

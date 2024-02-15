@@ -1,21 +1,18 @@
-using System.Threading.Tasks;
+namespace MyFirstDotNetApp.Tests;
 
-namespace MyFirstDotNetApp.Tests
+[TestClass]
+public class AsyncAwaitTests
 {
-    [TestClass]
-    public class AsyncAwaitTests
+    [TestMethod]
+    public async Task FetchDataAsync_ReturnsExpectedData()
     {
-        [TestMethod]
-        public async Task FetchDataAsync_ReturnsExpectedData()
-        {
-            // Arrange
-            var service = new DataService();
+        // Arrange
+        var service = new DataService();
 
-            // Act
-            var data = await service.FetchDataAsync();
+        // Act
+        var data = await service.FetchDataAsync();
 
-            // Assert
-            Assert.AreEqual("Expected Data", data);
-        }
+        // Assert
+        Assert.AreEqual("Expected Data", data);
     }
 }

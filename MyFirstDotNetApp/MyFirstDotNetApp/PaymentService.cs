@@ -1,3 +1,5 @@
+namespace MyFirstDotNetApp;
+
 public class PaymentService
 {
     private readonly IPaymentGateway _paymentGateway;

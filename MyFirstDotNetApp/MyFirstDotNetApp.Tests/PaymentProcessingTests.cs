@@ -1,31 +1,30 @@
 using Moq;
 
-namespace MyFirstDotNetApp.Tests
+namespace MyFirstDotNetApp.Tests;
+
+[TestClass]
+public class PaymentProcessingTests
 {
-    [TestClass]
-    public class PaymentProcessingTests
+    [TestMethod]
+    public void MakePayment_WithMockPaymentGateway_ProcessesPaymentSuccessfully()
     {
-        [TestMethod]
-        public void MakePayment_WithMockPaymentGateway_ProcessesPaymentSuccessfully()
-        {
-            // Arrange
-            var mockPaymentGateway = new Mock<IPaymentGateway>();
-            mockPaymentGateway
-                .Setup(gateway => gateway.ProcessPayment(It.IsAny<decimal>()))
-                .Returns(true);
+        // Arrange
+        var mockPaymentGateway = new Mock<IPaymentGateway>();
+        mockPaymentGateway
+            .Setup(gateway => gateway.ProcessPayment(It.IsAny<decimal>()))
+            .Returns(true);
 
-            var paymentService = new PaymentService(mockPaymentGateway.Object);
-            var paymentAmount = 100m;
+        var paymentService = new PaymentService(mockPaymentGateway.Object);
+        var paymentAmount = 100m;
 
-            // Act
-            var result = paymentService.MakePayment(paymentAmount);
+        // Act
+        var result = paymentService.MakePayment(paymentAmount);
 
-            // Assert
-            Assert.IsTrue(result);
-            mockPaymentGateway.Verify(
-                gateway => gateway.ProcessPayment(paymentAmount),
-                Times.Once()
-            );
-        }
+        // Assert
+        Assert.IsTrue(result);
+        mockPaymentGateway.Verify(
+            gateway => gateway.ProcessPayment(paymentAmount),
+            Times.Once()
+        );
     }
 }

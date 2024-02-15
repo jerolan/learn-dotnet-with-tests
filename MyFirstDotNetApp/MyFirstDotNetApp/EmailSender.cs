@@ -1,3 +1,5 @@
+namespace MyFirstDotNetApp;
+
 public class EmailSender : IMessageSender
 {
     public string SendMessage(string message)

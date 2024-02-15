@@ -1,34 +1,33 @@
-namespace MyFirstDotNetApp.Tests
+namespace MyFirstDotNetApp.Tests;
+
+[TestClass]
+public class RefTests
 {
-    [TestClass]
-    public class RefTests
+    [TestMethod]
+    public void ModifyValue_WithRef_UpdatesValue()
     {
-        [TestMethod]
-        public void ModifyValue_WithRef_UpdatesValue()
-        {
-            // Arrange
-            int originalValue = 10;
-            int expectedValue = 20;
+        // Arrange
+        var originalValue = 10;
+        var expectedValue = 20;
 
-            // Act
-            Modifier.DoubleValue(ref originalValue);
+        // Act
+        Modifier.DoubleValue(ref originalValue);
 
-            // Assert
-            Assert.AreEqual(expectedValue, originalValue);
-        }
+        // Assert
+        Assert.AreEqual(expectedValue, originalValue);
+    }
 
-        [TestMethod]
-        public void ModifyObjectReference_WithRef_ChangesObjectReference()
-        {
-            // Arrange
-            var originalObject = new SimpleObject { Value = "Original" };
-            var expectedNewObject = new SimpleObject { Value = "Modified" };
+    [TestMethod]
+    public void ModifyObjectReference_WithRef_ChangesObjectReference()
+    {
+        // Arrange
+        var originalObject = new SimpleObject { Value = "Original" };
+        var expectedNewObject = new SimpleObject { Value = "Modified" };
 
-            // Act
-            ObjectModifier.ChangeReference(ref originalObject, expectedNewObject);
+        // Act
+        ObjectModifier.ChangeReference(ref originalObject, expectedNewObject);
 
-            // Assert
-            Assert.AreSame(expectedNewObject, originalObject);
-        }
+        // Assert
+        Assert.AreSame(expectedNewObject, originalObject);
     }
 }
