@@ -38,7 +38,3 @@ This guide is for anyone interested in .NET development, regardless of experienc
 ## Let's Get Started
 
 Embarking on this journey will not only improve your testing skills but also enhance your overall development process. By integrating TDD into your workflow, you'll write better code, catch bugs earlier, and build more maintainable applications. Let's dive into the world of .NET with tests and transform the way you develop software.
-
----
-
-This introduction sets the stage for a comprehensive exploration of TDD in the .NET ecosystem, encouraging learners to adopt a testing mindset that will benefit their development process.
