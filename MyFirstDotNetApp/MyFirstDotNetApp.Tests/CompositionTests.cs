@@ -2,8 +2,6 @@ using MyFirstDotNetApp.RobotTasks;
 
 namespace MyFirstDotNetApp.Tests;
 
-using System.Collections.Generic;
-
 [TestClass]
 public class CompositionTests
 {

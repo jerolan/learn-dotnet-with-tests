@@ -27,24 +27,23 @@ Let's write some tests for integer arithmetic to understand how to work with `in
 #### Testing Integer Operations
 
 ```csharp
-namespace MyFirstDotNetApp.Tests
+namespace MyFirstDotNetApp.Tests;
+
+[TestClass]
+public class IntegerTests
 {
-    [TestClass]
-    public class IntegerTests
+    [TestMethod]
+    public void IntegerAddition_ReturnsCorrectResult()
     {
-        [TestMethod]
-        public void IntegerAddition_ReturnsCorrectResult()
-        {
-            // Arrange
-            int numberOne = 5;
-            int numberTwo = 3;
+        // Arrange
+        int numberOne = 5;
+        int numberTwo = 3;
 
-            // Act
-            int sum = numberOne + numberTwo;
+        // Act
+        int sum = numberOne + numberTwo;
 
-            // Assert
-            Assert.AreEqual(8, sum);
-        }
+        // Assert
+        Assert.AreEqual(8, sum);
     }
 }
 ```

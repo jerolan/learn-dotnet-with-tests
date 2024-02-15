@@ -18,45 +18,42 @@ Testing code that involves the `using` statement typically focuses on ensuring t
 #### Testing Resource Disposal with `using`
 
 ```csharp
-using System.IO;
+namespace MyFirstDotNetApp.Tests;
 
-namespace MyFirstDotNetApp.Tests
+[TestClass]
+public class UsingStatementTests
 {
-    [TestClass]
-    public class UsingStatementTests
+    private string _testFilePath = Path.Combine(Path.GetTempPath(), "usingTest.txt");
+
+    [TestMethod]
+    public void UsingStatement_DisposesFileStream_Correctly()
     {
-        private string _testFilePath = Path.Combine(Path.GetTempPath(), "usingTest.txt");
+        // Arrange
+        // Ensure file exists for testing
+        File.WriteAllText(_testFilePath, "Test");
 
-        [TestMethod]
-        public void UsingStatement_DisposesFileStream_Correctly()
+        // Act
+        using (var fileStream = File.Open(_testFilePath, FileMode.Open))
         {
-            // Arrange
-            // Ensure file exists for testing
-            File.WriteAllText(_testFilePath, "Test");
+            // Perform file operations
+        } // FileStream is disposed here
 
-            // Act
-            using (var fileStream = File.Open(_testFilePath, FileMode.Open))
+        // Assert
+        // Asserting disposal indirectly by checking if the file can be opened again immediately
+        bool isOpenedSuccessfully = false;
+        try
+        {
+            using (var testStream = File.Open(_testFilePath, FileMode.Open))
             {
-                // Perform file operations
-            } // FileStream is disposed here
-
-            // Assert
-            // Asserting disposal indirectly by checking if the file can be opened again immediately
-            bool isOpenedSuccessfully = false;
-            try
-            {
-                using (var testStream = File.Open(_testFilePath, FileMode.Open))
-                {
-                    isOpenedSuccessfully = true;
-                }
+                isOpenedSuccessfully = true;
             }
-            catch (IOException)
-            {
-                isOpenedSuccessfully = false;
-            }
-
-            Assert.IsTrue(isOpenedSuccessfully, "The file stream was not properly disposed, as the file cannot be opened again.");
         }
+        catch (IOException)
+        {
+            isOpenedSuccessfully = false;
+        }
+
+        Assert.IsTrue(isOpenedSuccessfully, "The file stream was not properly disposed, as the file cannot be opened again.");
     }
 }
 ```

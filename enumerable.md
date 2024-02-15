@@ -18,30 +18,26 @@ Testing functionality that involves `IEnumerable` often focuses on verifying the
 #### Testing Iteration Over a Collection
 
 ```csharp
-using System.Collections.Generic;
-using System.Linq;
+namespace MyFirstDotNetApp.Tests;
 
-namespace MyFirstDotNetApp.Tests
+[TestClass]
+public class IEnumerableTests
 {
-    [TestClass]
-    public class IEnumerableTests
+    [TestMethod]
+    public void IEnumerable_IterateCollection_ReturnsCorrectSequence()
     {
-        [TestMethod]
-        public void IEnumerable_IterateCollection_ReturnsCorrectSequence()
+        // Arrange
+        IEnumerable<int> numbers = new List<int> { 1, 2, 3, 4, 5 };
+
+        // Act
+        var sum = 0;
+        foreach (var number in numbers)
         {
-            // Arrange
-            IEnumerable<int> numbers = new List<int> { 1, 2, 3, 4, 5 };
-
-            // Act
-            var sum = 0;
-            foreach (var number in numbers)
-            {
-                sum += number;
-            }
-
-            // Assert
-            Assert.AreEqual(15, sum); // Sum of 1 through 5
+            sum += number;
         }
+
+        // Assert
+        Assert.AreEqual(15, sum); // Sum of 1 through 5
     }
 }
 ```

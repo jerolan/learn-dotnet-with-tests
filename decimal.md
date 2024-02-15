@@ -21,24 +21,23 @@ Let's write some tests to explore basic arithmetic operations using the `decimal
 #### Testing Decimal Addition
 
 ```csharp
-namespace MyFirstDotNetApp.Tests
+namespace MyFirstDotNetApp.Tests;
+
+[TestClass]
+public class DecimalTests
 {
-    [TestClass]
-    public class DecimalTests
+    [TestMethod]
+    public void DecimalAddition_ReturnsCorrectResult()
     {
-        [TestMethod]
-        public void DecimalAddition_ReturnsCorrectResult()
-        {
-            // Arrange
-            decimal numberOne = 5.5m;
-            decimal numberTwo = 2.5m;
+        // Arrange
+        decimal numberOne = 5.5m;
+        decimal numberTwo = 2.5m;
 
-            // Act
-            decimal sum = numberOne + numberTwo;
+        // Act
+        decimal sum = numberOne + numberTwo;
 
-            // Assert
-            Assert.AreEqual(8.0m, sum);
-        }
+        // Assert
+        Assert.AreEqual(8.0m, sum);
     }
 }
 ```

@@ -34,28 +34,27 @@ Consider a scenario where you have a `PaymentService` class that depends on an `
 ```csharp
 using Moq;
 
-namespace MyFirstDotNetApp.Tests
+namespace MyFirstDotNetApp.Tests;
+
+[TestClass]
+public class PaymentProcessingTests
 {
-    [TestClass]
-    public class PaymentProcessingTests
+    [TestMethod]
+    public void MakePayment_WithMockPaymentGateway_ProcessesPaymentSuccessfully()
     {
-        [TestMethod]
-        public void MakePayment_WithMockPaymentGateway_ProcessesPaymentSuccessfully()
-        {
-            // Arrange
-            var mockPaymentGateway = new Mock<IPaymentGateway>();
-            mockPaymentGateway.Setup(gateway => gateway.ProcessPayment(It.IsAny<decimal>())).Returns(true);
+        // Arrange
+        var mockPaymentGateway = new Mock<IPaymentGateway>();
+        mockPaymentGateway.Setup(gateway => gateway.ProcessPayment(It.IsAny<decimal>())).Returns(true);
 
-            var paymentService = new PaymentService(mockPaymentGateway.Object);
-            var paymentAmount = 100m;
+        var paymentService = new PaymentService(mockPaymentGateway.Object);
+        var paymentAmount = 100m;
 
-            // Act
-            var result = paymentService.MakePayment(paymentAmount);
+        // Act
+        var result = paymentService.MakePayment(paymentAmount);
 
-            // Assert
-            Assert.IsTrue(result);
-            mockPaymentGateway.Verify(gateway => gateway.ProcessPayment(paymentAmount), Times.Once());
-        }
+        // Assert
+        Assert.IsTrue(result);
+        mockPaymentGateway.Verify(gateway => gateway.ProcessPayment(paymentAmount), Times.Once());
     }
 }
 ```
@@ -65,6 +64,8 @@ namespace MyFirstDotNetApp.Tests
 Create the `IPaymentGateway` interface that the `PaymentService` class depends on.
 
 ```csharp
+namespace MyFirstDotNetApp;
+
 public interface IPaymentGateway
 {
     bool ProcessPayment(decimal amount);
@@ -74,6 +75,8 @@ public interface IPaymentGateway
 Then, implement the `PaymentService` class that uses the `IPaymentGateway` interface.
 
 ```csharp
+namespace MyFirstDotNetApp;
+
 public class PaymentService
 {
     private readonly IPaymentGateway _paymentGateway;

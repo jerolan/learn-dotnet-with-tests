@@ -24,33 +24,30 @@ To effectively handle exceptions, developers should be familiar with:
 #### Testing a Method That Throws an Exception
 
 ```csharp
-using System;
+namespace MyFirstDotNetApp.Tests;
 
-namespace MyFirstDotNetApp.Tests
+[TestClass]
+public class ExceptionHandlingTests
 {
-    [TestClass]
-    public class ExceptionHandlingTests
+    [TestMethod]
+    [ExpectedException(typeof(InvalidOperationException))]
+    public void Method_ThrowsInvalidOperationException()
     {
-        [TestMethod]
-        [ExpectedException(typeof(InvalidOperationException))]
-        public void Method_ThrowsInvalidOperationException()
-        {
-            // Arrange
-            var problematicMethod = new ProblematicClass();
+        // Arrange
+        var problematicMethod = new ProblematicClass();
 
-            // Act
-            problematicMethod.RunOperationThatFails();
+        // Act
+        problematicMethod.RunOperationThatFails();
 
-            // Assert is handled by the ExpectedException attribute
-        }
+        // Assert is handled by the ExpectedException attribute
     }
+}
 
-    public class ProblematicClass
+public class ProblematicClass
+{
+    public void RunOperationThatFails()
     {
-        public void RunOperationThatFails()
-        {
-            throw new InvalidOperationException("Operation Failed.");
-        }
+        throw new InvalidOperationException("Operation Failed.");
     }
 }
 ```

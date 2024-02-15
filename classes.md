@@ -19,23 +19,20 @@ To explore the concepts of classes and objects, we'll set up tests that illustra
 Let's start by defining a simple `Person` class in our main project, then write tests to interact with instances of this class.
 
 ```csharp
-using MyFirstDotNetApp;
+namespace MyFirstDotNetApp.Tests;
 
-namespace MyFirstDotNetApp.Tests
+[TestClass]
+public class PersonTests
 {
-    [TestClass]
-    public class PersonTests
+    [TestMethod]
+    public void CreatingPerson_SetsNameAndAgeProperties_Correctly()
     {
-        [TestMethod]
-        public void CreatingPerson_SetsNameAndAgeProperties_Correctly()
-        {
-            // Arrange & Act
-            var person = new Person { Name = "John Doe", Age = 30 };
+        // Arrange & Act
+        var person = new Person { Name = "John Doe", Age = 30 };
 
-            // Assert
-            Assert.AreEqual("John Doe", person.Name);
-            Assert.AreEqual(30, person.Age);
-        }
+        // Assert
+        Assert.AreEqual("John Doe", person.Name);
+        Assert.AreEqual(30, person.Age);
     }
 }
 ```
@@ -45,17 +42,16 @@ namespace MyFirstDotNetApp.Tests
 First, define a `Person` class in your main project (`MyFirstDotNetApp`). This class will have a couple of properties and a method.
 
 ```csharp
-namespace MyFirstDotNetApp
-{
-    public class Person
-    {
-        public string Name { get; set; }
-        public int Age { get; set; }
+namespace MyFirstDotNetApp;
 
-        public string IntroduceYourself()
-        {
-            return $"Hello, my name is {Name} and I am {Age} years old.";
-        }
+public class Person
+{
+    public string Name { get; set; }
+    public int Age { get; set; }
+
+    public string IntroduceYourself()
+    {
+        return $"Hello, my name is {Name} and I am {Age} years old.";
     }
 }
 ```

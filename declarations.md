@@ -29,20 +29,19 @@ Let's write some tests to demonstrate declaring and using variables and constant
 #### Testing Variable Declarations
 
 ```csharp
-namespace MyFirstDotNetApp.Tests
-{
-    [TestClass]
-    public class VariableTests
-    {
-        [TestMethod]
-        public void VariableHoldsExpectedValue()
-        {
-            // Arrange
-            int number = 5;
+namespace MyFirstDotNetApp.Tests;
 
-            // Act & Assert
-            Assert.AreEqual(5, number);
-        }
+[TestClass]
+public class VariableTests
+{
+    [TestMethod]
+    public void VariableHoldsExpectedValue()
+    {
+        // Arrange
+        int number = 5;
+
+        // Act & Assert
+        Assert.AreEqual(5, number);
     }
 }
 ```

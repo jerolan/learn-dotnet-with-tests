@@ -18,27 +18,23 @@ To get a grasp of LINQ's power and flexibility, we'll set up tests that demonstr
 #### Testing Filtering with LINQ
 
 ```csharp
-using System.Collections.Generic;
-using System.Linq;
+namespace MyFirstDotNetApp.Tests;
 
-namespace MyFirstDotNetApp.Tests
+[TestClass]
+public class LinqTests
 {
-    [TestClass]
-    public class LinqTests
+    [TestMethod]
+    public void FilterCollection_WithLINQ_ReturnsFilteredResults()
     {
-        [TestMethod]
-        public void FilterCollection_WithLINQ_ReturnsFilteredResults()
-        {
-            // Arrange
-            var numbers = new List<int> { 1, 2, 3, 4, 5 };
+        // Arrange
+        var numbers = new List<int> { 1, 2, 3, 4, 5 };
 
-            // Act
-            var evenNumbers = numbers.Where(n => n % 2 == 0).ToList();
+        // Act
+        var evenNumbers = numbers.Where(n => n % 2 == 0).ToList();
 
-            // Assert
-            Assert.AreEqual(2, evenNumbers.Count);
-            Assert.IsTrue(evenNumbers.Contains(2) && evenNumbers.Contains(4));
-        }
+        // Assert
+        Assert.AreEqual(2, evenNumbers.Count);
+        Assert.IsTrue(evenNumbers.Contains(2) && evenNumbers.Contains(4));
     }
 }
 ```

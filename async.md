@@ -20,25 +20,22 @@ Testing asynchronous code requires some adjustments to our usual testing strateg
 Let's test a simple asynchronous method that simulates a time-consuming operation, such as fetching data from an external source.
 
 ```csharp
-using System.Threading.Tasks;
+namespace MyFirstDotNetApp.Tests;
 
-namespace MyFirstDotNetApp.Tests
+[TestClass]
+public class AsyncAwaitTests
 {
-    [TestClass]
-    public class AsyncAwaitTests
+    [TestMethod]
+    public async Task FetchDataAsync_ReturnsExpectedData()
     {
-        [TestMethod]
-        public async Task FetchDataAsync_ReturnsExpectedData()
-        {
-            // Arrange
-            var service = new DataService();
+        // Arrange
+        var service = new DataService();
 
-            // Act
-            var data = await service.FetchDataAsync();
+        // Act
+        var data = await service.FetchDataAsync();
 
-            // Assert
-            Assert.AreEqual("Expected Data", data);
-        }
+        // Assert
+        Assert.AreEqual("Expected Data", data);
     }
 }
 ```
@@ -48,7 +45,7 @@ namespace MyFirstDotNetApp.Tests
 To pass the test, let's implement a `DataService` class with a `FetchDataAsync` method that returns a simulated data string.
 
 ```csharp
-using System.Threading.Tasks;
+namespace MyFirstDotNetApp;
 
 public class DataService
 {

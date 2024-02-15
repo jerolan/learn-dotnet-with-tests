@@ -25,31 +25,30 @@ Let's start by writing tests for conditional statements, using the `if` statemen
 #### Testing `if` Statements
 
 ```csharp
-namespace MyFirstDotNetApp.Tests
+namespace MyFirstDotNetApp.Tests;
+
+[TestClass]
+public class ControlFlowTests
 {
-    [TestClass]
-    public class ControlFlowTests
+    [TestMethod]
+    public void IfStatement_ExecutesTrueBranch_Correctly()
     {
-        [TestMethod]
-        public void IfStatement_ExecutesTrueBranch_Correctly()
+        // Arrange
+        bool condition = true;
+        string result = "";
+
+        // Act
+        if (condition)
         {
-            // Arrange
-            bool condition = true;
-            string result = "";
-
-            // Act
-            if (condition)
-            {
-                result = "True Branch";
-            }
-            else
-            {
-                result = "False Branch";
-            }
-
-            // Assert
-            Assert.AreEqual("True Branch", result);
+            result = "True Branch";
         }
+        else
+        {
+            result = "False Branch";
+        }
+
+        // Assert
+        Assert.AreEqual("True Branch", result);
     }
 }
 ```
@@ -115,19 +114,18 @@ First, we need to create a class that will contain our method. Let's call this c
 Inside the `ControlFlowExamples` class, we'll implement the `ReturnEarlyIfTrue` method, which takes a boolean parameter and returns a string based on the parameter's value. This method demonstrates the use of an `if` statement combined with a `return` statement to control the flow of execution.
 
 ```csharp
-namespace MyFirstDotNetApp
-{
-    public class ControlFlowExamples
-    {
-        public static string ReturnEarlyIfTrue(bool condition)
-        {
-            if (condition)
-            {
-                return "Returned Early";
-            }
+namespace MyFirstDotNetApp;
 
-            return "Returned at End";
+public class ControlFlowExamples
+{
+    public static string ReturnEarlyIfTrue(bool condition)
+    {
+        if (condition)
+        {
+            return "Returned Early";
         }
+
+        return "Returned at End";
     }
 }
 ```

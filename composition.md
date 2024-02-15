@@ -18,29 +18,26 @@ To explore composition, we'll set up tests that demonstrate how objects can be c
 #### Testing Functionality Through Composition
 
 ```csharp
-namespace MyFirstDotNetApp.Tests
+using MyFirstDotNetApp.RobotTasks;
+
+namespace MyFirstDotNetApp.Tests;
+
+[TestClass]
+public class CompositionTests
 {
-    using System.Collections.Generic;
-    using System.Linq;
-    using MyFirstDotNetApp;
-
-    [TestClass]
-    public class CompositionTests
+    [TestMethod]
+    public void RobotPerformsTasks_ThroughComposition_HasExpectedBehavior()
     {
-        [TestMethod]
-        public void RobotPerformsTasks_ThroughComposition_HasExpectedBehavior()
-        {
-            // Arrange
-            var robot = new Robot(new List<IRobotTask> { new SpeakTask(), new MoveTask() });
+        // Arrange
+        var robot = new Robot(new List<IRobotTask> { new SpeakTask(), new MoveTask() });
 
-            // Act
-            var speakResult = robot.PerformTask("Speak");
-            var moveResult = robot.PerformTask("Move");
+        // Act
+        var speakResult = robot.PerformTask("Speak");
+        var moveResult = robot.PerformTask("Move");
 
-            // Assert
-            Assert.AreEqual("Speaking", speakResult);
-            Assert.AreEqual("Moving", moveResult);
-        }
+        // Assert
+        Assert.AreEqual("Speaking", speakResult);
+        Assert.AreEqual("Moving", moveResult);
     }
 }
 ```
@@ -54,6 +51,8 @@ Given the test above, let's implement a `Robot` class that uses composition to p
 Interface for robot tasks:
 
 ```csharp
+namespace MyFirstDotNetApp;
+
 public interface IRobotTask
 {
     string TaskName { get; }
@@ -66,6 +65,8 @@ Task implementations:
 Create two classes, `SpeakTask` and `MoveTask`, that implement the `IRobotTask` interface. Wrap each file in a folder named `RobotTasks` to keep the project organized.
 
 ```csharp
+namespace MyFirstDotNetApp.RobotTasks;
+
 public class SpeakTask : IRobotTask
 {
     public string TaskName => "Speak";
@@ -82,6 +83,8 @@ public class MoveTask : IRobotTask
 #### Robot Class Using Composition
 
 ```csharp
+namespace MyFirstDotNetApp;
+
 public class Robot
 {
     private readonly Dictionary<string, IRobotTask> _tasks;

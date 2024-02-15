@@ -20,27 +20,24 @@ To grasp the usage and benefits of generics, we'll set up tests that demonstrate
 Let's say we have a generic repository class for managing entities in a database. We can write a test to ensure that we can add and retrieve items from the repository.
 
 ```csharp
-using System.Collections.Generic;
+namespace MyFirstDotNetApp.Tests;
 
-namespace MyFirstDotNetApp.Tests
+[TestClass]
+public class GenericsTests
 {
-    [TestClass]
-    public class GenericsTests
+    [TestMethod]
+    public void GenericRepository_AddAndGetItem_ItemIsCorrectlyManaged()
     {
-        [TestMethod]
-        public void GenericRepository_AddAndGetItem_ItemIsCorrectlyManaged()
-        {
-            // Arrange
-            var repository = new GenericRepository<string>();
-            var item = "Hello, Generics";
+        // Arrange
+        var repository = new GenericRepository<string>();
+        var item = "Hello, Generics";
 
-            // Act
-            repository.Add(item);
-            var retrievedItem = repository.GetById(0);
+        // Act
+        repository.Add(item);
+        var retrievedItem = repository.GetById(0);
 
-            // Assert
-            Assert.AreEqual(item, retrievedItem);
-        }
+        // Assert
+        Assert.AreEqual(item, retrievedItem);
     }
 }
 ```
@@ -74,6 +71,8 @@ public void Swap_SwapsIntValues_ValuesAreSwapped()
 Let's implement the `GenericRepository<T>` class used in our first test.
 
 ```csharp
+namespace MyFirstDotNetApp;
+
 public class GenericRepository<T>
 {
     private readonly List<T> _items = new List<T>();

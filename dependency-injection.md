@@ -35,27 +35,26 @@ Write a test that uses DI to inject the `GreetingService` into the `Consumer` cl
 ```csharp
 using Microsoft.Extensions.DependencyInjection;
 
-namespace MyFirstDotNetApp.Tests
+namespace MyFirstDotNetApp.Tests;
+
+[TestClass]
+public class DependencyInjectionTests
 {
-    [TestClass]
-    public class DependencyInjectionTests
+    [TestMethod]
+    public void Consumer_UsesInjectedGreetingService_ReturnsExpectedGreeting()
     {
-        [TestMethod]
-        public void Consumer_UsesInjectedGreetingService_ReturnsExpectedGreeting()
-        {
-            // Arrange
-            var services = new ServiceCollection();
-            services.AddTransient<IGreetingService, GreetingService>();
-            services.AddTransient<Consumer>();
-            var serviceProvider = services.BuildServiceProvider();
-            var consumer = serviceProvider.GetService<Consumer>();
+        // Arrange
+        var services = new ServiceCollection();
+        services.AddTransient<IGreetingService, GreetingService>();
+        services.AddTransient<Consumer>();
+        var serviceProvider = services.BuildServiceProvider();
+        var consumer = serviceProvider.GetService<Consumer>();
 
-            // Act
-            var result = consumer.SayHello("DotNet");
+        // Act
+        var result = consumer.SayHello("DotNet");
 
-            // Assert
-            Assert.AreEqual("Hello, DotNet!", result);
-        }
+        // Assert
+        Assert.AreEqual("Hello, DotNet!", result);
     }
 }
 ```
@@ -65,6 +64,8 @@ namespace MyFirstDotNetApp.Tests
 Define the service interface and its implementation:
 
 ```csharp
+namespace MyFirstDotNetApp;
+
 public interface IGreetingService
 {
     string Greet(string name);
@@ -79,6 +80,8 @@ public class GreetingService : IGreetingService
 Next, create a consumer class that depends on `IGreetingService`:
 
 ```csharp
+namespace MyFirstDotNetApp;
+
 public class Consumer
 {
     private readonly IGreetingService _greetingService;

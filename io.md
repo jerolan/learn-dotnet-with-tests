@@ -18,47 +18,43 @@ Testing file I/O operations involves creating, reading, and cleaning up files. I
 #### Testing Writing to a File
 
 ```csharp
-using System.IO;
-using System.Threading.Tasks;
+namespace MyFirstDotNetApp.Tests;
 
-namespace MyFirstDotNetApp.Tests
+[TestClass]
+public class FileIOTests
 {
-    [TestClass]
-    public class FileIOTests
+    private readonly string _testFilePath = Path.Combine(Path.GetTempPath(), "testfile.txt");
+
+    [TestInitialize]
+    public void Initialize()
     {
-        private readonly string _testFilePath = Path.Combine(Path.GetTempPath(), "testfile.txt");
-
-        [TestInitialize]
-        public void Initialize()
+        if (File.Exists(_testFilePath))
         {
-            if (File.Exists(_testFilePath))
-            {
-                File.Delete(_testFilePath);
-            }
+            File.Delete(_testFilePath);
         }
+    }
 
-        [TestCleanup]
-        public void Cleanup()
+    [TestCleanup]
+    public void Cleanup()
+    {
+        if (File.Exists(_testFilePath))
         {
-            if (File.Exists(_testFilePath))
-            {
-                File.Delete(_testFilePath);
-            }
+            File.Delete(_testFilePath);
         }
+    }
 
-        [TestMethod]
-        public async Task WriteToFile_FileContainsExpectedContent()
-        {
-            // Arrange
-            string expectedContent = "Hello, File IO";
+    [TestMethod]
+    public async Task WriteToFile_FileContainsExpectedContent()
+    {
+        // Arrange
+        string expectedContent = "Hello, File IO";
 
-            // Act
-            await File.WriteAllTextAsync(_testFilePath, expectedContent);
+        // Act
+        await File.WriteAllTextAsync(_testFilePath, expectedContent);
 
-            // Assert
-            string fileContent = await File.ReadAllTextAsync(_testFilePath);
-            Assert.AreEqual(expectedContent, fileContent);
-        }
+        // Assert
+        string fileContent = await File.ReadAllTextAsync(_testFilePath);
+        Assert.AreEqual(expectedContent, fileContent);
     }
 }
 ```

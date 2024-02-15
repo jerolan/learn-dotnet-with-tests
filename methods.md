@@ -23,25 +23,24 @@ To effectively learn about properties and methods, we'll write tests that illust
 #### Testing Property Getters and Setters
 
 ```csharp
-namespace MyFirstDotNetApp.Tests
+namespace MyFirstDotNetApp.Tests;
+
+[TestClass]
+public class ProductTests
 {
-    [TestClass]
-    public class ProductTests
+    [TestMethod]
+    public void ProductName_PropertyWorksAsExpected()
     {
-        [TestMethod]
-        public void ProductName_PropertyWorksAsExpected()
-        {
-            // Arrange
-            var product = new Product();
-            var expectedName = "Gadget";
+        // Arrange
+        var product = new Product();
+        var expectedName = "Gadget";
 
-            // Act
-            product.Name = expectedName; // Testing set
-            var actualName = product.Name; // Testing get
+        // Act
+        product.Name = expectedName; // Testing set
+        var actualName = product.Name; // Testing get
 
-            // Assert
-            Assert.AreEqual(expectedName, actualName);
-        }
+        // Assert
+        Assert.AreEqual(expectedName, actualName);
     }
 }
 ```
@@ -71,6 +70,8 @@ public void CalculateDiscount_PriceAboveThreshold_AppliesDiscount()
 Given the tests above, let's implement a simple `Product` class with properties for `Name` and `Price`, and a method to apply a discount.
 
 ```csharp
+namespace MyFirstDotNetApp;
+
 public class Product
 {
     public string Name { get; set; }

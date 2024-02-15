@@ -23,24 +23,23 @@ To explore structs and records, we'll write tests that demonstrate their usage a
 #### Testing Struct Behavior
 
 ```csharp
-namespace MyFirstDotNetApp.Tests
+namespace MyFirstDotNetApp.Tests;
+
+[TestClass]
+public class StructTests
 {
-    [TestClass]
-    public class StructTests
+    [TestMethod]
+    public void StructAssignment_CreatesCopy()
     {
-        [TestMethod]
-        public void StructAssignment_CreatesCopy()
-        {
-            // Arrange
-            var originalStruct = new SimpleStruct { Number = 1, Text = "Original" };
-            var copiedStruct = originalStruct; // This creates a copy
+        // Arrange
+        var originalStruct = new SimpleStruct { Number = 1, Text = "Original" };
+        var copiedStruct = originalStruct; // This creates a copy
 
-            // Act
-            copiedStruct.Number = 2; // Modifying the copy shouldn't affect the original
+        // Act
+        copiedStruct.Number = 2; // Modifying the copy shouldn't affect the original
 
-            // Assert
-            Assert.AreEqual(1, originalStruct.Number); // Original should remain unchanged
-        }
+        // Assert
+        Assert.AreEqual(1, originalStruct.Number); // Original should remain unchanged
     }
 }
 ```
@@ -62,21 +61,20 @@ public struct SimpleStruct
 #### Testing Record Equality
 
 ```csharp
-namespace MyFirstDotNetApp.Tests
-{
-    [TestClass]
-    public class RecordTests
-    {
-        [TestMethod]
-        public void RecordEquality_ByValue()
-        {
-            // Arrange
-            var record1 = new SimpleRecord("Name", 1);
-            var record2 = new SimpleRecord("Name", 1);
+namespace MyFirstDotNetApp.Tests;
 
-            // Act & Assert
-            Assert.AreEqual(record1, record2); // Records are equal if their values are equal
-        }
+[TestClass]
+public class RecordTests
+{
+    [TestMethod]
+    public void RecordEquality_ByValue()
+    {
+        // Arrange
+        var record1 = new SimpleRecord("Name", 1);
+        var record2 = new SimpleRecord("Name", 1);
+
+        // Act & Assert
+        Assert.AreEqual(record1, record2); // Records are equal if their values are equal
     }
 }
 ```

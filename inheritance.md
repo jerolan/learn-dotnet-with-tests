@@ -23,23 +23,22 @@ To explore inheritance and interfaces, we'll set up tests that demonstrate their
 #### Testing Polymorphic Behavior
 
 ```csharp
-namespace MyFirstDotNetApp.Tests
+namespace MyFirstDotNetApp.Tests;
+
+[TestClass]
+public class InheritanceTests
 {
-    [TestClass]
-    public class InheritanceTests
+    [TestMethod]
+    public void AnimalSpeak_Polymorphism_CallsCorrectMethod()
     {
-        [TestMethod]
-        public void AnimalSpeak_Polymorphism_CallsCorrectMethod()
-        {
-            // Arrange
-            Animal animal = new Dog(); // Dog inherits from Animal
+        // Arrange
+        Animal animal = new Dog(); // Dog inherits from Animal
 
-            // Act
-            var sound = animal.Speak();
+        // Act
+        var sound = animal.Speak();
 
-            // Assert
-            Assert.AreEqual("Bark", sound);
-        }
+        // Assert
+        Assert.AreEqual("Bark", sound);
     }
 }
 ```
@@ -72,6 +71,8 @@ Given the tests above, let's implement a simple inheritance hierarchy and an int
 Base class:
 
 ```csharp
+namespace MyFirstDotNetApp;
+
 public abstract class Animal
 {
     public abstract string Speak();
@@ -81,6 +82,8 @@ public abstract class Animal
 Derived class:
 
 ```csharp
+namespace MyFirstDotNetApp;
+
 public class Dog : Animal
 {
     public override string Speak()
@@ -95,6 +98,8 @@ public class Dog : Animal
 Interface definition:
 
 ```csharp
+namespace MyFirstDotNetApp;
+
 public interface IMessageSender
 {
     string SendMessage(string message);
@@ -104,6 +109,8 @@ public interface IMessageSender
 Implementing class:
 
 ```csharp
+namespace MyFirstDotNetApp;
+
 public class EmailSender : IMessageSender
 {
     public string SendMessage(string message)

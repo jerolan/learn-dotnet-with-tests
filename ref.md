@@ -18,25 +18,23 @@ To understand how `ref` works and to see its effects, we'll set up tests that de
 #### Testing Method Modifying Value with `ref`
 
 ```csharp
+namespace MyFirstDotNetApp.Tests;
 
-namespace MyFirstDotNetApp.Tests
+[TestClass]
+public class RefTests
 {
-    [TestClass]
-    public class RefTests
+    [TestMethod]
+    public void ModifyValue_WithRef_UpdatesValue()
     {
-        [TestMethod]
-        public void ModifyValue_WithRef_UpdatesValue()
-        {
-            // Arrange
-            int originalValue = 10;
-            int expectedValue = 20;
+        // Arrange
+        int originalValue = 10;
+        int expectedValue = 20;
 
-            // Act
-            Modifier.DoubleValue(ref originalValue);
+        // Act
+        Modifier.DoubleValue(ref originalValue);
 
-            // Assert
-            Assert.AreEqual(expectedValue, originalValue);
-        }
+        // Assert
+        Assert.AreEqual(expectedValue, originalValue);
     }
 }
 ```
@@ -48,6 +46,8 @@ To pass the test, we need to implement a method that doubles the value of the pa
 #### Method Implementation Using `ref`
 
 ```csharp
+namespace MyFirstDotNetApp;
+
 public class Modifier
 {
     public static void DoubleValue(ref int value)
@@ -82,6 +82,8 @@ public void ModifyObjectReference_WithRef_ChangesObjectReference()
 #### Implementing the Method for Reference Types
 
 ```csharp
+namespace MyFirstDotNetApp;
+
 public class ObjectModifier
 {
     public static void ChangeReference(ref SimpleObject obj, SimpleObject newObj)

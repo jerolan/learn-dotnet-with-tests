@@ -18,23 +18,20 @@ Testing asynchronous code involves understanding how to work with tasks in your 
 #### Testing a Simple Task for Completion
 
 ```csharp
-using System.Threading.Tasks;
+namespace MyFirstDotNetApp.Tests;
 
-namespace MyFirstDotNetApp.Tests
+[TestClass]
+public class TaskTests
 {
-    [TestClass]
-    public class TaskTests
+    [TestMethod]
+    public async Task Task_ExecutesToCompletion_CompletesSuccessfully()
     {
-        [TestMethod]
-        public async Task Task_ExecutesToCompletion_CompletesSuccessfully()
-        {
-            // Arrange
-            var task = Task.Run(() => { /* Simulate work */ });
+        // Arrange
+        var task = Task.Run(() => { /* Simulate work */ });
 
-            // Act & Assert
-            await task; // Awaiting completion of the task
-            Assert.IsTrue(task.IsCompleted); // Verify task is completed
-        }
+        // Act & Assert
+        await task; // Awaiting completion of the task
+        Assert.IsTrue(task.IsCompleted); // Verify task is completed
     }
 }
 ```

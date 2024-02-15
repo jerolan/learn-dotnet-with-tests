@@ -19,25 +19,22 @@ Let's create a test that expects our application to return "Hello, World!".
 2. **Writing the Test**: Rename the `UnitTest1.cs` file to `HelloWorldTests.cs` and replace its content with the following code:
 
 ```csharp
-using MyFirstDotNetApp;
+namespace MyFirstDotNetApp.Tests;
 
-namespace MyFirstDotNetApp.Tests
+[TestClass]
+public class HelloWorldTests
 {
-    [TestClass]
-    public class HelloWorldTests
+    [TestMethod]
+    public void SayHello_ReturnsHelloWorld()
     {
-        [TestMethod]
-        public void SayHello_ReturnsHelloWorld()
-        {
-            // Arrange
-            var app = new HelloWorld();
+        // Arrange
+        var app = new HelloWorld();
 
-            // Act
-            string result = app.SayHello();
+        // Act
+        string result = app.SayHello();
 
-            // Assert
-            Assert.AreEqual("Hello, World!", result);
-        }
+        // Assert
+        Assert.AreEqual("Hello, World!", result);
     }
 }
 ```
@@ -53,14 +50,13 @@ We need to implement the `HelloWorld` class and its `SayHello` method in our mai
 1. **Create the HelloWorld Class**: Navigate to your main project directory and add a new file named `HelloWorld.cs`. Then, define the `HelloWorld` class with the `SayHello` method:
 
 ```csharp
-namespace MyFirstDotNetApp
+namespace MyFirstDotNetApp;
+
+public class HelloWorld
 {
-    public class HelloWorld
+    public string SayHello()
     {
-        public string SayHello()
-        {
-            return "Hello, World!";
-        }
+        return "Hello, World!";
     }
 }
 ```

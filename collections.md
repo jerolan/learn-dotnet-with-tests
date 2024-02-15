@@ -18,15 +18,14 @@ To explore the usage and features of different collections, we'll set up tests t
 Create the base test class for collections:
 
 ```csharp
-namespace MyFirstDotNetApp.Tests
-{
-    using System.Collections.Generic;
+namespace MyFirstDotNetApp.Tests;
 
-    [TestClass]
-    public class CollectionsTests
-    {
-        // Tests for different collection types will be added here
-    }
+using System.Collections.Generic;
+
+[TestClass]
+public class CollectionsTests
+{
+    // Tests for different collection types will be added here
 }
 ```
 
