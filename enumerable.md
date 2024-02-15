@@ -18,7 +18,6 @@ Testing functionality that involves `IEnumerable` often focuses on verifying the
 #### Testing Iteration Over a Collection
 
 ```csharp
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 using System.Linq;
 

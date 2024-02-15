@@ -1,7 +1,6 @@
 namespace MyFirstDotNetApp.Tests
 {
     using System.Collections.Generic;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
 
     [TestClass]
     public class CollectionsTests

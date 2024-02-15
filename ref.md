@@ -18,7 +18,6 @@ To understand how `ref` works and to see its effects, we'll set up tests that de
 #### Testing Method Modifying Value with `ref`
 
 ```csharp
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace MyFirstDotNetApp.Tests
 {

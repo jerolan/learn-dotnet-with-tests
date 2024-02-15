@@ -20,7 +20,6 @@ Testing asynchronous code requires some adjustments to our usual testing strateg
 Let's test a simple asynchronous method that simulates a time-consuming operation, such as fetching data from an external source.
 
 ```csharp
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Threading.Tasks;
 
 namespace MyFirstDotNetApp.Tests

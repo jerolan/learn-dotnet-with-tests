@@ -21,7 +21,6 @@ Create the base test class for collections:
 namespace MyFirstDotNetApp.Tests
 {
     using System.Collections.Generic;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
 
     [TestClass]
     public class CollectionsTests

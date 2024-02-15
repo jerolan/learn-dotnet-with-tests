@@ -18,7 +18,6 @@ To get a grasp of LINQ's power and flexibility, we'll set up tests that demonstr
 #### Testing Filtering with LINQ
 
 ```csharp
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 using System.Linq;
 

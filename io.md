@@ -18,7 +18,6 @@ Testing file I/O operations involves creating, reading, and cleaning up files. I
 #### Testing Writing to a File
 
 ```csharp
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.IO;
 using System.Threading.Tasks;
 

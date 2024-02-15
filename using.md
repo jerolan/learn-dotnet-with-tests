@@ -18,7 +18,6 @@ Testing code that involves the `using` statement typically focuses on ensuring t
 #### Testing Resource Disposal with `using`
 
 ```csharp
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.IO;
 
 namespace MyFirstDotNetApp.Tests

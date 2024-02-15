@@ -34,7 +34,6 @@ Moq is a popular mocking library for .NET that allows you to create mock objects
 Let's simulate a scenario where we use `IQueryable` to query a data source. In a real-world application, this could involve querying a database with Entity Framework, but for our tests, we'll mock the behavior.
 
 ```csharp
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Linq;
 using Moq;
 using System.Collections.Generic;

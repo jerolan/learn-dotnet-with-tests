@@ -23,7 +23,6 @@ namespace MyFirstDotNetApp.Tests
     using System.Collections.Generic;
     using System.Linq;
     using MyFirstDotNetApp;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
 
     [TestClass]
     public class CompositionTests

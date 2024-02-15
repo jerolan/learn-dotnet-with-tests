@@ -20,7 +20,6 @@ To grasp the usage and benefits of generics, we'll set up tests that demonstrate
 Let's say we have a generic repository class for managing entities in a database. We can write a test to ensure that we can add and retrieve items from the repository.
 
 ```csharp
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 
 namespace MyFirstDotNetApp.Tests
