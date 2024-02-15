@@ -2,7 +2,7 @@
 
 Exception handling is a critical aspect of designing robust, resilient .NET applications. It allows developers to gracefully manage and respond to runtime errors, ensuring the application can recover from unexpected states or notify users appropriately. This chapter delves into the best practices for handling exceptions in DotNet, illustrating how to use try-catch blocks, finally clauses, and custom exception types. Through Test-Driven Development (TDD) with MSTest, we'll explore various scenarios to understand and validate exception handling mechanisms effectively.
 
-### Understanding Exceptions in DotNet
+### Understanding Exceptions
 
 Exceptions in DotNet provide a way to transfer control from one part of a program to another when an error occurs. The .NET framework contains a comprehensive hierarchy of exception classes, all deriving from the base class `System.Exception`.
 

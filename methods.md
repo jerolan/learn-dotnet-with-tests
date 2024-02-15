@@ -1,4 +1,4 @@
-## Properties and Methods in DotNet
+## Properties and Methods
 
 This chapter dives into the core components of classes and records in DotNet: properties and methods. Properties in DotNet are members that provide a flexible mechanism to read, write, or compute the values of private fields. Methods, on the other hand, are blocks of code that perform operations. Both are pivotal in defining the behavior and data encapsulation of your types. We will continue our exploration using Test-Driven Development (TDD) with MSTest to guide our understanding and application of these concepts.
 

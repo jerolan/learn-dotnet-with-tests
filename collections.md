@@ -1,8 +1,8 @@
-## Collections in DotNet
+## Collections
 
 Collections are fundamental to storing, managing, and manipulating groups of objects in DotNet. They offer various structures, each with its own advantages, to efficiently handle data sets. This chapter explores the core collection types provided by the .NET framework, such as Lists, Dictionaries, Queues, and Stacks, and how to use them effectively. We'll employ Test-Driven Development (TDD) with MSTest to understand these collections' behaviors and functionalities.
 
-### Understanding Collections in DotNet
+### Understanding Collections
 
 DotNet collections are part of the System.Collections and System.Collections.Generic namespaces, offering both non-generic and generic versions. Generic collections are type-safe, ensuring that only objects of a specified type are stored in the collection, providing better performance and reducing runtime errors.
 

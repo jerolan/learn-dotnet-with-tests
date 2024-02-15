@@ -1,4 +1,4 @@
-## Leveraging LINQ in DotNet
+## LINQ
 
 Language Integrated Query (LINQ) is a revolutionary feature in DotNet that brings the power of query expressions to .NET languages, making it easier to work with collections of data in a declarative way. LINQ queries can be applied to any source of data, including arrays, collections, XML, and even databases. In this chapter, we will explore the basics of LINQ, including its syntax and how to perform various types of queries. We'll use Test-Driven Development (TDD) with MSTest to understand and validate the behavior of LINQ queries.
 

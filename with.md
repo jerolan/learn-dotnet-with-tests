@@ -1,4 +1,4 @@
-## Leveraging the `with` Keyword for Records in DotNet
+## `with` Keyword for Records
 
 In DotNet, the `with` keyword is introduced alongside records to facilitate non-destructive mutation. This feature allows you to create a new record instance by copying an existing record while changing one or more properties in the process. This chapter will explore how to use the `with` keyword effectively, demonstrating its value in creating immutable data structures that are easy to work with. We'll continue our practice of Test-Driven Development (TDD) using MSTest to guide our exploration and understanding.
 

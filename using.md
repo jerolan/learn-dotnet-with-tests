@@ -1,4 +1,4 @@
-## Chapter 23: Utilizing the `using` Statement in DotNet
+## `using` Statement
 
 The `using` statement in DotNet is a key feature that significantly simplifies resource management, particularly for objects that implement the `IDisposable` interface. This chapter will delve into how the `using` statement ensures proper disposal of resources, such as file streams, database connections, and more, automatically invoking the `Dispose` method to free up resources. Through Test-Driven Development (TDD) with MSTest, we'll explore practical examples of using the `using` statement to manage resources efficiently and safely.
 

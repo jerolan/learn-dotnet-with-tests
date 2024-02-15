@@ -1,4 +1,4 @@
-## Working with Decimals
+## Decimals
 
 In this chapter, we dive into the `decimal` type in DotNet, which is crucial for situations requiring high precision, such as financial calculations. Unlike `float` and `double`, the `decimal` type has a greater precision and a smaller range, making it ideal for calculations where accuracy of decimal points is essential. We'll explore the `decimal` type through Test-Driven Development (TDD) using MSTest, writing tests first to understand its behavior and then implementing code to satisfy those tests.
 

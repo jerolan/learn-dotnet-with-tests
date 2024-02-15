@@ -1,4 +1,4 @@
-## Hello World: Your First DotNet Test
+## Hello World
 
 Welcome to the exciting journey of learning DotNet with Test-Driven Development (TDD). In this chapter, we'll start with the simplest possible scenario - writing a "Hello World" program. However, true to the TDD approach, we'll begin by writing a test for our program before we actually implement the functionality. This will introduce you to the rhythm of TDD: Red, Green, Refactor.
 

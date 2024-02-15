@@ -29,7 +29,7 @@ This cycle encourages developers to write only the code necessary to pass tests,
 1. [Install Dotnet](install.md) - Set up your environment to write and run C# code, including installing the .NET SDK and choosing an IDE or editor.
 2. [Hello, world](hello-world.md) - Dive into C# with your first program, exploring the basic structure of a C# application and the use of Console.WriteLine.
 3. [Types and Variables](types.md) - Understand C#'s built-in types such as integers, floats, strings, and how to declare and use variables.
-4. [Decimals](decimals.md) - Learn how to use decimal types for precise financial and scientific calculations.
+4. [Decimals](decimal.md) - Learn how to use decimal types for precise financial and scientific calculations.
 5. [Declarations, Const and Var](declarations.md) - Explore different variable declaration methods, including the use of const for constants and var for type inference
 6. [Control Flow](control-flow.md) - Learn control flow statements such as if, switch, and loops (for, while, etc.) to direct the execution flow of your programs.
 7. [Exceptions](exceptions.md) - Learn exception handling for graceful error management in your applications.
@@ -47,7 +47,7 @@ This cycle encourages developers to write only the code necessary to pass tests,
 
 14. [Collections](collections.md) - Get to know the various collection types available in .NET for storing groups of related objects.
 15. [Generics](generics.md) - Understand how to use generics to create type-safe data structures and methods.
-16. [`ref` Keyword](refs.md) - Learn how to use the ref keyword for passing arguments by reference.
+16. [`ref` Keyword](ref.md) - Learn how to use the ref keyword for passing arguments by reference.
 17. [Linq](linq.md) - Explore LINQ (Language Integrated Query) for querying collections and data sources in a declarative manner.
 18. [Tasks](tasks.md) - Understand how to work with tasks for performing asynchronous operations.
 19. [Async/Await](async.md) - Dive into the async/await pattern for writing clean, efficient asynchronous code.
@@ -55,5 +55,5 @@ This cycle encourages developers to write only the code necessary to pass tests,
 21. [IEnumerable](enumerable.md) - Explore IEnumerable and its role in iterating over collections.
 22. [Files and I/O ](io.md) - Get to grips with reading from and writing to files and performing other I/O operations.
 23. [`using` Keyword](using.md) - Discover how to manage resources automatically with the using statement.
-24. [Mocking](mocking.md) - Learn about mocking in unit testing to simulate behavior of real objects in tests.
+24. [Mocking](mock.md) - Learn about mocking in unit testing to simulate behavior of real objects in tests.
 25. [Dependency Injection](dependency-injection.md) - Understand dependency injection for creating loosely coupled, maintainable applications.

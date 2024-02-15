@@ -1,4 +1,4 @@
-## Working with IEnumerable in DotNet
+## IEnumerable
 
 The `IEnumerable` interface is a fundamental component of the .NET framework, providing a way to iterate over a collection of objects. It serves as the base for all collection types in .NET and is crucial for any operation that involves data collection manipulation, such as LINQ queries. This chapter will explore how to utilize `IEnumerable` effectively, focusing on its role in iteration and data manipulation. Through Test-Driven Development (TDD) with MSTest, we'll demonstrate practical examples of using `IEnumerable` to enhance our understanding and implementation skills.
 

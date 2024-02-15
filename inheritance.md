@@ -1,4 +1,4 @@
-## Inheritance and Interfaces in DotNet
+## Inheritance and Interfaces
 
 Inheritance and interfaces are two fundamental concepts in object-oriented programming (OOP) that DotNet supports. Inheritance allows classes to inherit properties and methods from a base class, promoting code reuse and polymorphism. Interfaces, on the other hand, define contracts that classes can implement, ensuring they provide specific properties or methods. This chapter will explore the basics of inheritance and implementing interfaces, along with writing tests to verify polymorphic behavior, using Test-Driven Development (TDD) with MSTest.
 

@@ -1,8 +1,8 @@
-## Understanding and Using `ref` Keywords in DotNet
+## Understanding and Using `ref` Keywords
 
 The `ref` keyword in DotNet is a powerful feature that allows methods to modify the values of passed arguments. Essentially, it enables arguments to be passed by reference rather than by value, meaning any changes made to the parameter inside the method are reflected in that variable when the method returns. This chapter will delve into the nuances of using the `ref` keyword, demonstrating its utility and scenarios where it's particularly beneficial. We'll employ Test-Driven Development (TDD) with MSTest to explore and validate the behavior of `ref` parameters.
 
-### The Role of `ref` in DotNet
+### The Role of `ref`
 
 Using `ref` allows a method to change the value of the argument used to call the method. This can be useful for returning multiple values from a method or for modifying the state of an object more directly.
 

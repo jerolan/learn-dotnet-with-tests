@@ -1,4 +1,4 @@
-## Composition Over Inheritance in DotNet
+## Composition Over Inheritance
 
 In this chapter, we delve into the principle of "composition over inheritance," a fundamental design guideline that favors composing objects to achieve code reusability and flexibility over the traditional inheritance hierarchy. While inheritance is a powerful tool in object-oriented programming (OOP), it can lead to rigid and fragile designs when overused. Composition, by assembling objects to achieve more complex functionalities, offers greater flexibility and encapsulation. We'll explore this concept through Test-Driven Development (TDD) with MSTest, illustrating how composition can be used effectively in DotNet.
 

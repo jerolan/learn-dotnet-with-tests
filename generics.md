@@ -1,4 +1,4 @@
-## Generics in DotNet
+## Generics
 
 Generics are a powerful feature in DotNet that allow you to define classes, interfaces, and methods with placeholders for the type of data they store or operate on. This feature enables type safety without the need to specify an explicit data type, allowing for code reusability and efficiency. In this chapter, we'll explore how to use generics in DotNet, focusing on generic classes, methods, and interfaces. We'll employ Test-Driven Development (TDD) with MSTest to guide our exploration and ensure our understanding of generics.
 

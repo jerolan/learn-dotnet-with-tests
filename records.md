@@ -1,4 +1,4 @@
-## Structs and Records in DotNet
+## Structs and Records
 
 In this chapter, we'll explore two important types in DotNet: structs and records. Both are value types that serve distinct purposes in application development. Structs are typically used for small data structures that contain primarily data that is not intended to be modified after creation. Records, introduced in C# 9.0, are perfect for immutable data models and provide built-in functionality for value equality. As with previous concepts, we'll employ Test-Driven Development (TDD) using MSTest to understand how to effectively use structs and records.
 

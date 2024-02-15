@@ -1,4 +1,4 @@
-## Chapter 19: Leveraging IQueryable in DotNet
+## IQueryable
 
 `IQueryable` is a powerful interface in the .NET framework that allows for efficient, deferred execution of queries against a data source. Unlike `IEnumerable`, which executes queries in the client's memory, `IQueryable` executes queries against the data source, making it a better choice for remote data sources like databases. This chapter will explore how to use `IQueryable` to create composable and efficient queries. We'll apply Test-Driven Development (TDD) with MSTest to understand and validate the behavior of `IQueryable` operations.
 

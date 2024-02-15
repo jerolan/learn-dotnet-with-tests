@@ -1,8 +1,8 @@
-## Chapter 22: Files and I/O Operations in DotNet
+## Files and I/O Operations
 
 Working with files and performing input/output (I/O) operations are common tasks in software development. DotNet provides a comprehensive set of classes for reading from and writing to files, allowing developers to handle files and streams efficiently. This chapter will cover the basics of file operations in DotNet, including reading, writing, and appending files. We will use Test-Driven Development (TDD) with MSTest to guide our approach in learning how to perform these essential I/O operations.
 
-### Understanding Files and I/O in DotNet
+### Understanding Files and I/O Operations
 
 DotNet's `System.IO` namespace contains classes for handling files, directories, and streams. Key classes include `File`, `FileInfo`, `Directory`, `DirectoryInfo`, `FileStream`, and `StreamReader`/`StreamWriter` for reading and writing text files.
 
