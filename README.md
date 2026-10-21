@@ -26,34 +26,34 @@ This cycle encourages developers to write only the code necessary to pass tests,
 
 ### C# fundamentals
 
-1. [Install Dotnet](install.md) - Set up your environment to write and run C# code, including installing the .NET SDK and choosing an IDE or editor.
-2. [Hello, world](hello-world.md) - Dive into C# with your first program, exploring the basic structure of a C# application and the use of Console.WriteLine.
-3. [Types and Variables](types.md) - Understand C#'s built-in types such as integers, floats, strings, and how to declare and use variables.
-4. [Decimals](decimal.md) - Learn how to use decimal types for precise financial and scientific calculations.
-5. [Declarations, Const and Var](declarations.md) - Explore different variable declaration methods, including the use of const for constants and var for type inference
-6. [Control Flow](control-flow.md) - Learn control flow statements such as if, switch, and loops (for, while, etc.) to direct the execution flow of your programs.
-7. [Exceptions](exceptions.md) - Learn exception handling for graceful error management in your applications.
+1. [Install Dotnet](fundamentals/install.md) - Set up your environment to write and run C# code, including installing the .NET SDK and choosing an IDE or editor.
+2. [Hello, world](fundamentals/hello-world.md) - Dive into C# with your first program, exploring the basic structure of a C# application and the use of Console.WriteLine.
+3. [Types and Variables](fundamentals/types.md) - Understand C#'s built-in types such as integers, floats, strings, and how to declare and use variables.
+4. [Decimals](fundamentals/decimal.md) - Learn how to use decimal types for precise financial and scientific calculations.
+5. [Declarations, Const and Var](fundamentals/declarations.md) - Explore different variable declaration methods, including the use of const for constants and var for type inference
+6. [Control Flow](fundamentals/control-flow.md) - Learn control flow statements such as if, switch, and loops (for, while, etc.) to direct the execution flow of your programs.
+7. [Exceptions](fundamentals/exceptions.md) - Learn exception handling for graceful error management in your applications.
 
 ### Object-Oriented Programming
 
-8. [Classes and Objects](classes.md) - Learn the basics of defining classes and creating instances (objects) to model real-world entities and behaviors.
-9. [Structs and Records](records.md) - Understand the use of structs for lightweight object-like structures and records for immutable data models.
-10. [`with` Keyword](with.md) - Discover how to use the with keyword to create modified copies of records for immutable data handling.
-11. [Properties and Methods](methods.md) - Dive into defining and using properties and methods to encapsulate data and behavior within classes.
-12. [Inheritance and Interfaces](inheritance.md) - Explore how to use inheritance for code reuse and interfaces for designing flexible systems.
-13. [composition over Inheritance](composition.md) - Learn why and how to favor composition over inheritance for better design flexibility.
+8. [Classes and Objects](fundamentals/classes.md) - Learn the basics of defining classes and creating instances (objects) to model real-world entities and behaviors.
+9. [Structs and Records](fundamentals/records.md) - Understand the use of structs for lightweight object-like structures and records for immutable data models.
+10. [`with` Keyword](fundamentals/with.md) - Discover how to use the with keyword to create modified copies of records for immutable data handling.
+11. [Properties and Methods](fundamentals/methods.md) - Dive into defining and using properties and methods to encapsulate data and behavior within classes.
+12. [Inheritance and Interfaces](fundamentals/inheritance.md) - Explore how to use inheritance for code reuse and interfaces for designing flexible systems.
+13. [composition over Inheritance](fundamentals/composition.md) - Learn why and how to favor composition over inheritance for better design flexibility.
 
 ### Advanced Topics
 
-14. [Collections](collections.md) - Get to know the various collection types available in .NET for storing groups of related objects.
-15. [Generics](generics.md) - Understand how to use generics to create type-safe data structures and methods.
-16. [`ref` Keyword](ref.md) - Learn how to use the ref keyword for passing arguments by reference.
-17. [Linq](linq.md) - Explore LINQ (Language Integrated Query) for querying collections and data sources in a declarative manner.
-18. [Tasks](tasks.md) - Understand how to work with tasks for performing asynchronous operations.
-19. [Async/Await](async.md) - Dive into the async/await pattern for writing clean, efficient asynchronous code.
-20. [IQueryable](queriable.md) - Learn about IQueryable for efficient querying against data sources like databases.
-21. [IEnumerable](enumerable.md) - Explore IEnumerable and its role in iterating over collections.
-22. [Files and I/O ](io.md) - Get to grips with reading from and writing to files and performing other I/O operations.
-23. [`using` Keyword](using.md) - Discover how to manage resources automatically with the using statement.
-24. [Mocking](mock.md) - Learn about mocking in unit testing to simulate behavior of real objects in tests.
-25. [Dependency Injection](dependency-injection.md) - Understand dependency injection for creating loosely coupled, maintainable applications.
+14. [Collections](fundamentals/collections.md) - Get to know the various collection types available in .NET for storing groups of related objects.
+15. [Generics](fundamentals/generics.md) - Understand how to use generics to create type-safe data structures and methods.
+16. [`ref` Keyword](fundamentals/ref.md) - Learn how to use the ref keyword for passing arguments by reference.
+17. [Linq](fundamentals/linq.md) - Explore LINQ (Language Integrated Query) for querying collections and data sources in a declarative manner.
+18. [Tasks](fundamentals/tasks.md) - Understand how to work with tasks for performing asynchronous operations.
+19. [Async/Await](fundamentals/async.md) - Dive into the async/await pattern for writing clean, efficient asynchronous code.
+20. [IQueryable](fundamentals/queriable.md) - Learn about IQueryable for efficient querying against data sources like databases.
+21. [IEnumerable](fundamentals/enumerable.md) - Explore IEnumerable and its role in iterating over collections.
+22. [Files and I/O ](fundamentals/io.md) - Get to grips with reading from and writing to files and performing other I/O operations.
+23. [`using` Keyword](fundamentals/using.md) - Discover how to manage resources automatically with the using statement.
+24. [Mocking](fundamentals/mock.md) - Learn about mocking in unit testing to simulate behavior of real objects in tests.
+25. [Dependency Injection](fundamentals/dependency-injection.md) - Understand dependency injection for creating loosely coupled, maintainable applications.
