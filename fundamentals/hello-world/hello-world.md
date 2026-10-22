@@ -42,21 +42,7 @@ Change the text inside the quotes, run the command again, and watch the output c
 
 How do you test this? `Console.WriteLine` is a side effect: it reaches outside the program to print on your terminal. The greeting is our domain, and we can test it without a console.
 
-Move the greeting into a class. Create `src/HelloWorld/Greeter.cs`:
-
-```csharp
-namespace HelloWorld;
-
-public class Greeter
-{
-    public string SayHello()
-    {
-        return "Hello, world";
-    }
-}
-```
-
-Now `Program.cs` becomes:
+Move the greeting into a `Greeter` class, leaving `Program.cs` responsible for printing its result:
 
 ```csharp
 using HelloWorld;
@@ -65,9 +51,9 @@ var greeter = new Greeter();
 Console.WriteLine(greeter.SayHello());
 ```
 
-Run it again. Same output. Nothing changed for the person using the program, but the interesting part is now a plain method call.
+Once the `Greeter` method exists, this keeps the same output for the person using the program while making the greeting a plain method call.
 
-## Projects, references and a solution
+### Projects, references and a solution
 
 .NET will not discover a test file sitting next to your code. Tests live in their own project, and that project has to reference the project it tests. This is the part where the tooling asks for a little ceremony before you can see a red test.
 
@@ -80,15 +66,17 @@ dotnet sln add src/HelloWorld/HelloWorld.csproj tests/HelloWorld.Tests/HelloWorl
 dotnet add tests/HelloWorld.Tests/HelloWorld.Tests.csproj reference src/HelloWorld/HelloWorld.csproj
 ```
 
-`dotnet new mstest` writes a project that already references the test SDK, MSTest and its adapter. The reference line is the one that matters: without it the test project cannot see `Greeter`, and the compiler will tell you the type does not exist even though the file is right there.
+`dotnet new mstest` writes a project that already references the test SDK, MSTest and its adapter. The project reference matters once `Greeter` exists: without it, the test project cannot see the class even though its file is there.
 
 Delete the generated `UnitTest1.cs`. It exists only to prove that the template ran.
 
 The repository ships the finished solution for this chapter. If you created your own project, keep the same names; otherwise open `fundamentals/hello-world` and run the commands from there.
 
-## Back to testing
+## Write the test first
 
 Create `tests/HelloWorld.Tests/GreeterTests.cs`:
+
+This test describes the greeting after we have separated it from the console. The implementation will come from the test failure.
 
 ```csharp
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -111,38 +99,66 @@ public sealed class GreeterTests
 }
 ```
 
+### Test conventions
+
+The test class has a `[TestClass]` attribute, and each test method has `[TestMethod]`. Assertions come from `Assert`; `Assert.AreEqual(expected, actual)` is the one you will use most. The method name is the description. MSTest prints it with the assertion message when a test fails.
+
+## Try to run the test
+
 Run the tests from the chapter folder:
 
 ```sh
 dotnet test
 ```
 
-It should pass. To check that the test is testing something, change `want` to `"Hello, world!"` and run it again. You should see a failure that shows both values:
+The test does not compile yet because `Greeter` does not exist:
 
 ```text
-  Failed TestHello [13 ms]
-  Error Message:
-   Assert.AreEqual failed. Expected:<Hello, world!>. Actual:<Hello, world>.
+error CS0246: The type or namespace name 'Greeter' could not be found
 ```
 
-Put the string back. You have now seen the two states that matter: green when the code matches the specification, red when it does not.
+## Write the minimal amount of code for the test to run and check the failing test output
 
-### Writing tests
+Create the class and return an empty string for now:
 
-A test in MSTest follows a few rules:
+```csharp
+namespace HelloWorld;
 
-- It lives in a test project.
-- The class has a `[TestClass]` attribute.
-- Each test method is `public void`, takes no parameters, and has a `[TestMethod]` attribute.
-- Assertions come from `Assert`. `Assert.AreEqual(expected, actual)` is the one you will use most.
+public class Greeter
+{
+    public string SayHello()
+    {
+        return string.Empty;
+    }
+}
+```
 
-The method name is the description. When a test fails, MSTest prints the method name and the assertion message, so `TestHello` is enough while the class has one test. Later chapters use longer names when a class has several.
+The test now compiles and fails with `Expected:<Hello, world>. Actual:<>`.
 
-## Hello, YOU
+## Write enough code to make it pass
 
-In the last example we wrote the test after the code so you could see how a test is put together. From here on we write the test first.
+Return the greeting:
 
-Our next requirement is to let the caller choose who we greet.
+```csharp
+public string SayHello()
+{
+    return "Hello, world";
+}
+```
+
+Run the tests. Green. Change `want` to `"Hello, world!"` and run again to see a red assertion with both values; restore the expected string afterward.
+
+## Refactor
+
+The greeting method is a direct return with no duplicated behavior to extract. Run the tests again; they stay green. Keep this implementation until a new requirement gives the method more work to do.
+
+## Repeat for new requirements
+
+### Greet a named person
+
+We will now write each new requirement's test first and grow the greeting method.
+
+The next requirement is to let the caller choose who we greet.
 
 Start with the test:
 
@@ -201,11 +217,11 @@ public string SayHello(string name)
 
 Run the tests. Green.
 
-## A note on source control
+### A note on source control
 
 If you are using source control, commit the code as it is. You have working software backed by a test. Do not push to main yet if you plan to refactor in the next section; the commit is a point you can come back to if the refactor goes wrong.
 
-## Constants
+### Extract a greeting prefix
 
 There is not much to refactor, but we can give the greeting prefix a name:
 
@@ -220,7 +236,7 @@ public string SayHello(string name)
 
 Run the tests after the change. A constant captures the meaning of the value and keeps the same string from being repeated in several places.
 
-## Hello, world... again
+### Greet the world for an empty name
 
 The next requirement: when the caller passes an empty string, greet the world instead of returning `Hello, `.
 

@@ -42,21 +42,7 @@ Cambia el texto entre comillas, vuelve a ejecutar el comando y mira cómo cambia
 
 ¿Cómo pruebas esto? `Console.WriteLine` es un efecto secundario: sale del programa para imprimir en tu terminal. El saludo es nuestro dominio, y podemos probarlo sin una consola.
 
-Mueve el saludo a una clase. Crea `src/HelloWorld/Greeter.cs`:
-
-```csharp
-namespace HelloWorld;
-
-public class Greeter
-{
-    public string SayHello()
-    {
-        return "Hello, world";
-    }
-}
-```
-
-Ahora `Program.cs` queda así:
+Mueve el saludo a una clase `Greeter` y deja que `Program.cs` se encargue de imprimir el resultado:
 
 ```csharp
 using HelloWorld;
@@ -65,9 +51,9 @@ var greeter = new Greeter();
 Console.WriteLine(greeter.SayHello());
 ```
 
-Ejecútalo otra vez. La misma salida. Para quien usa el programa no cambió nada, pero la parte interesante ahora es una llamada a un método normal.
+Cuando exista el método de `Greeter`, esto conservará la misma salida para quien usa el programa y dejará el saludo como una llamada normal a un método.
 
-## Proyectos, referencias y una solución
+### Proyectos, referencias y una solución
 
 .NET no va a descubrir un archivo de tests que esté junto a tu código. Los tests viven en su propio proyecto, y ese proyecto tiene que referenciar al proyecto que prueba. Esta es la parte donde las herramientas piden un poco de ceremonia antes de que puedas ver un test en rojo.
 
@@ -80,15 +66,17 @@ dotnet sln add src/HelloWorld/HelloWorld.csproj tests/HelloWorld.Tests/HelloWorl
 dotnet add tests/HelloWorld.Tests/HelloWorld.Tests.csproj reference src/HelloWorld/HelloWorld.csproj
 ```
 
-`dotnet new mstest` escribe un proyecto que ya referencia el SDK de tests, MSTest y su adaptador. La línea de la referencia es la importante: sin ella, el proyecto de tests no puede ver `Greeter`, y el compilador te dirá que el tipo no existe aunque el archivo esté ahí mismo.
+`dotnet new mstest` escribe un proyecto que ya referencia el SDK de tests, MSTest y su adaptador. La referencia entre proyectos importa cuando exista `Greeter`: sin ella, el proyecto de tests no puede ver la clase aunque el archivo esté ahí mismo.
 
 Borra el `UnitTest1.cs` generado. Solo existe para demostrar que la plantilla corrió.
 
 El repositorio incluye la solución terminada de este capítulo. Si creaste tu propio proyecto, usa los mismos nombres; si no, abre `fundamentals/hello-world` y ejecuta los comandos desde ahí.
 
-## De vuelta a los tests
+## Escribe primero el test
 
 Crea `tests/HelloWorld.Tests/GreeterTests.cs`:
+
+Este test describe el saludo después de separarlo de la consola. La implementación saldrá del fallo del test.
 
 ```csharp
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -111,36 +99,64 @@ public sealed class GreeterTests
 }
 ```
 
+### Convenciones de los tests
+
+La clase lleva `[TestClass]` y cada método de test lleva `[TestMethod]`. Las aserciones vienen de `Assert`; `Assert.AreEqual(expected, actual)` es la que más vas a usar. El nombre del método es la descripción. MSTest lo imprime junto con el mensaje de aserción cuando un test falla.
+
+## Intenta ejecutar el test
+
 Ejecuta los tests desde la carpeta del capítulo:
 
 ```sh
 dotnet test
 ```
 
-Debería pasar. Para comprobar que el test está probando algo, cambia `want` por `"Hello, world!"` y vuelve a ejecutar. Deberías ver un fallo que muestra los dos valores:
+El test todavía no compila porque `Greeter` no existe:
 
 ```text
-  Failed TestHello [13 ms]
-  Error Message:
-   Assert.AreEqual failed. Expected:<Hello, world!>. Actual:<Hello, world>.
+error CS0246: The type or namespace name 'Greeter' could not be found
 ```
 
-Devuelve la cadena a su lugar. Ya viste los dos estados que importan: verde cuando el código cumple la especificación, rojo cuando no.
+## Escribe el código mínimo para que el test compile y mira la salida
 
-### Cómo se escriben los tests
+Crea la clase y devuelve una cadena vacía por ahora:
 
-Un test en MSTest sigue unas pocas reglas:
+```csharp
+namespace HelloWorld;
 
-- Vive en un proyecto de tests.
-- La clase lleva el atributo `[TestClass]`.
-- Cada método de test es `public void`, no recibe parámetros y lleva el atributo `[TestMethod]`.
-- Las aserciones vienen de `Assert`. `Assert.AreEqual(expected, actual)` es la que más vas a usar.
+public class Greeter
+{
+    public string SayHello()
+    {
+        return string.Empty;
+    }
+}
+```
 
-El nombre del método es la descripción. Cuando un test falla, MSTest imprime el nombre del método y el mensaje de la aserción, así que `TestHello` alcanza mientras la clase tenga un solo test. En capítulos posteriores usarás nombres más largos cuando una clase tenga varios.
+El test compila y falla con `Expected:<Hello, world>. Actual:<>`.
 
-## Hola, TÚ
+## Escribe el código suficiente para que pase
 
-En el ejemplo anterior escribimos el test después del código para que vieras cómo se arma. De aquí en adelante escribimos el test primero.
+Devuelve el saludo:
+
+```csharp
+public string SayHello()
+{
+    return "Hello, world";
+}
+```
+
+Ejecuta los tests. Verde. Cambia `want` por `"Hello, world!"` y vuelve a ejecutar para ver una aserción roja con los dos valores; después restaura la cadena esperada.
+
+## Refactor
+
+El método de saludo devuelve directamente una cadena y no tiene comportamiento duplicado que extraer. Ejecuta los tests otra vez; siguen en verde. Conserva esta implementación hasta que un requisito nuevo le dé más trabajo al método.
+
+## Repite con requisitos nuevos
+
+### Saludar a una persona
+
+Ahora escribiremos primero el test de cada requisito nuevo y haremos crecer el método.
 
 El siguiente requisito es dejar que quien llama elija a quién saludamos.
 
@@ -201,11 +217,11 @@ public string SayHello(string name)
 
 Ejecuta los tests. Verde.
 
-## Una nota sobre el control de versiones
+### Una nota sobre el control de versiones
 
 Si usas control de versiones, haz commit del código tal como está. Tienes software funcionando respaldado por un test. No hagas push a main todavía si vas a refactorizar en la sección siguiente; el commit es un punto al que puedes volver si el refactor sale mal.
 
-## Constantes
+### Extraer el prefijo del saludo
 
 No hay mucho que refactorizar, pero podemos darle un nombre al prefijo del saludo:
 
@@ -220,7 +236,7 @@ public string SayHello(string name)
 
 Ejecuta los tests después del cambio. Una constante captura el significado del valor y evita repetir la misma cadena en varios lugares.
 
-## Hola, mundo... otra vez
+### Saludar al mundo si el nombre está vacío
 
 El siguiente requisito: cuando quien llama pasa una cadena vacía, saluda al mundo en vez de devolver `Hello, `.
 
