@@ -19,7 +19,7 @@ This part closes the roadmap. The Q&A chapters answer the questions that do not 
 - 🟠 [CI/CD beyond the test job](ci-cd/ci-cd.md) ([ES](ci-cd/ci-cd.es.md)) - Cache packages, keep TRX results and publish the API as an artifact gated on tests.
 - 🟠 [Monitoring and telemetry](monitoring-telemetry/monitoring-telemetry.md) ([ES](monitoring-telemetry/monitoring-telemetry.es.md)) - Record a tagged counter and capture it with a MeterListener.
 - 🟠 Cloud deployment. *Planned.*
-- 🟠 Streaming. *Planned.*
+- 🟠 [Streaming with IAsyncEnumerable](streaming/streaming.md) ([ES](streaming/streaming.es.md)) - Yield tasks as they arrive, cancel halfway and keep the items delivered before a failure.
 - 🟠 [NoSQL with MongoDB](nosql/nosql.md) ([ES](nosql/nosql.es.md)) - Store documents in MongoDB, start it with Testcontainers and fix a case-sensitive sort with a collation.
 - 🟠 [gRPC](grpc/grpc.md) ([ES](grpc/grpc.es.md)) - Define a proto contract, generate the service and client, and call it through TestServer.
 - 🟠 [GraphQL](graphql/graphql.md) ([ES](graphql/graphql.es.md)) - Publish a query and a mutation over one endpoint and test the documents over HTTP.
@@ -51,6 +51,6 @@ This part closes the roadmap. The Q&A chapters answer the questions that do not 
 | SignalR | [Real-time updates with SignalR](signalr/signalr.md) | covered |
 | Snapshot, E2E, performance | [Snapshot](snapshot-verify/snapshot-verify.md), [NBomber](performance-nbomber/performance-nbomber.md), Playwright appendix | snapshot and performance covered; E2E planned |
 | Containers, CI/CD, monitoring, cloud, DevOps | [Containers](containers/containers.md), [CI/CD](ci-cd/ci-cd.md), [Monitoring](monitoring-telemetry/monitoring-telemetry.md), cloud and DevOps appendices | containers, CI/CD and monitoring covered; cloud and DevOps planned |
-| Streaming, NoSQL, gRPC, GraphQL | [gRPC](grpc/grpc.md), [GraphQL](graphql/graphql.md), [NoSQL](nosql/nosql.md), plus a streaming appendix | gRPC, GraphQL and NoSQL covered; streaming planned |
+| Streaming, NoSQL, gRPC, GraphQL | [gRPC](grpc/grpc.md), [GraphQL](graphql/graphql.md), [NoSQL](nosql/nosql.md), [Streaming](streaming/streaming.md) | covered |
 | General development skills | README preface and testing Q&A | covered |
 
