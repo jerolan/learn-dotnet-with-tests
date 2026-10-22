@@ -6,6 +6,14 @@ La E/S es leer y escribir algo fuera del programa: un archivo, un flujo de red, 
 
 Vamos a construir un lector y escritor de CSV simple sobre `TextReader` y `TextWriter`. La solución terminada está en `fundamentals/io`; si la estás armando desde cero, usa la misma estructura que en los capítulos anteriores: una biblioteca de clases en `src/Io`, un proyecto de MSTest en `tests/Io.Tests`, una solución y una referencia entre proyectos.
 
+## Cómo funciona
+
+`TextReader` y `TextWriter` describen de dónde vienen los caracteres y adónde van sin atar el código a un archivo. `ReadLine()` lee hasta la siguiente línea o devuelve `null` al final; `WriteLine()` agrega una línea usando la secuencia de salto de línea del escritor.
+
+## Cómo probarlo
+
+Usa `StringReader` y `StringWriter` para probar el mismo lector y escritor en memoria. El test puede comprobar las filas parseadas y la salida sin crear archivos ni depender del salto de línea del sistema operativo.
+
 ## Escribe primero el test
 
 ```csharp
@@ -72,6 +80,10 @@ public static IReadOnlyList<string[]> Read(TextReader reader)
 Verde. `ReadLine()` devuelve la siguiente línea o `null` al final de la entrada. La condición del `while` asigna la línea y comprueba el final a la vez. Cada línea se divide por comas en una fila.
 
 El método recibe un `TextReader`, no una ruta de archivo. Esa es la costura: un archivo real, una cadena en memoria y un flujo de red proveen un `TextReader`.
+
+## Refactor
+
+El lector ya depende de la abstracción `TextReader`, así que se puede probar sin preparar el sistema de archivos. Ejecuta el test otra vez; no hay otra capa que extraer.
 
 ## Repite con requisitos nuevos
 
@@ -158,7 +170,7 @@ public void RoundTrip_PreservesRows()
 
 Pasa. El escritor y el lector coinciden en el formato, y el test verifica las dos mitades juntas.
 
-## Refactor
+### Límites del diseño y archivos reales
 
 El parser es simple a propósito. Divide por comas y no maneja campos entre comillas, comas embebidas ni saltos de línea dentro de un campo. Un CSV real necesita un parser que entienda comillas; el punto aquí es la costura del lector/escritor, no la corrección de CSV. Dilo en el código o usa una biblioteca cuando el formato importe.
 

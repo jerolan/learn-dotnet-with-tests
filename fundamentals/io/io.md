@@ -6,6 +6,14 @@ I/O is reading from and writing to something outside the program: a file, a netw
 
 We will build a small CSV reader and writer over `TextReader` and `TextWriter`. The finished solution is in `fundamentals/io`; if you are building it from scratch, use the same layout as the previous chapters: a class library in `src/Io`, an MSTest project in `tests/Io.Tests`, a solution and a project reference.
 
+## How it works
+
+`TextReader` and `TextWriter` describe where characters come from and where they go without tying the code to a file. `ReadLine()` reads until the next line or returns `null` at the end; `WriteLine()` appends a line using the writer's newline sequence.
+
+## How to test
+
+Use `StringReader` and `StringWriter` to exercise the same reader and writer in memory. The test can check parsed rows and output without creating files or depending on the operating system's newline convention.
+
 ## Write the test first
 
 ```csharp
@@ -72,6 +80,10 @@ public static IReadOnlyList<string[]> Read(TextReader reader)
 Green. `ReadLine()` returns the next line or `null` at the end of the input. The `while` condition both assigns the line and checks for the end. Each line is split on commas into a row.
 
 The method accepts a `TextReader`, not a file path. That is the seam: a real file, a memory string and a network stream all provide a `TextReader`.
+
+## Refactor
+
+The reader already depends on the `TextReader` abstraction, so it can be tested without file-system setup. Run the test again; there is no extra layer to extract.
 
 ## Repeat for new requirements
 
@@ -158,7 +170,7 @@ public void RoundTrip_PreservesRows()
 
 It passes. The writer and the reader agree on the format, and the test verifies both halves together.
 
-## Refactor
+### Design limits and real files
 
 The parser is deliberately simple. It splits on commas and does not handle quoted fields, embedded commas or embedded newlines. A real CSV file needs a parser that understands quoting; the point here is the reader/writer seam, not CSV correctness. Say so in the code or use a library when the format matters.
 
