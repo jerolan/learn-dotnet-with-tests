@@ -2,9 +2,23 @@
 
 [Encuentras todo el código de este capítulo aquí](https://github.com/jerolan/learn-dotnet-with-tests/tree/main/fundamentals/types)
 
-C# es un lenguaje de tipado estático: cada variable tiene un tipo, y el compilador lo conoce antes de que el programa se ejecute. Los enteros funcionan más o menos como esperas. Vamos a escribir una función `Add` para probarlo.
+Sumar dos enteros debe devolver su suma: `TypeExamples.Add(2, 2)` debe producir `4`.
 
-La solución terminada está en `fundamentals/types`. Si la estás construyendo desde cero, ármala igual que en Hello, World: una biblioteca de clases en `src/Types`, un proyecto de MSTest en `tests/Types.Tests`, una solución y una referencia del proyecto de tests a la biblioteca. Después crea `tests/Types.Tests/TypeExamplesTests.cs`.
+La llamada todavía no compila porque `TypeExamples` no existe:
+
+```csharp
+var sum = TypeExamples.Add(2, 2);
+```
+
+Al ejecutar `dotnet test`, aparece `error CS0103: The name 'TypeExamples' does not exist in the current context`. Empezaremos con enteros y luego usaremos más tipos para ver cómo C# valida los argumentos y elige un método. La solución terminada está en `fundamentals/types`. Si la estás construyendo desde cero, ármala igual que en Hello, World: una biblioteca de clases en `src/Types`, un proyecto de MSTest en `tests/Types.Tests`, una solución y una referencia del proyecto de tests a la biblioteca. Después crea `tests/Types.Tests/TypeExamplesTests.cs`.
+
+## Cómo funciona
+
+C# tiene tipado estático: el compilador conoce el tipo de cada variable antes de ejecutar el programa. `TypeExamples` será una clase estática, así que se puede llamar a su método `Add` sin crear un objeto. El método recibirá dos valores `int` y devolverá un `int`; `var` permite que el compilador infiera el tipo de una variable local a partir del valor que recibe.
+
+## Cómo probarlo
+
+`Add` no tiene efectos secundarios: las mismas dos entradas enteras siempre producen la misma suma. Un test unitario puede llamar al método directamente y comparar el valor devuelto. Las filas de datos de MSTest nos permitirán probar varios pares de entradas sin copiar la misma aserción.
 
 ## Escribe primero el test
 
@@ -26,8 +40,6 @@ public sealed class TypeExamplesTests
     }
 }
 ```
-
-`TypeExamples` va a ser una clase estática, así que podemos llamar a `Add` sin crear un objeto.
 
 ## Intenta ejecutar el test
 

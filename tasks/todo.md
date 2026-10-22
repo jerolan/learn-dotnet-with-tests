@@ -23,6 +23,9 @@
 - Part 1 `declarations`: English and Spanish pairs now contain the required
   sections in order. `mise exec dotnet@10.0.402 -- dotnet test
   fundamentals/declarations/Declarations.sln -m:1` passed 2 tests.
+- Part 1 `types`: English and Spanish pairs now contain the required sections
+  in order. `mise exec dotnet@10.0.402 -- dotnet test
+  fundamentals/types/Types.sln -m:1` passed 6 tests.
 
 ## Completed increment: Part 4 delivery references
 

@@ -2,9 +2,23 @@
 
 [You can find all the code for this chapter here](https://github.com/jerolan/learn-dotnet-with-tests/tree/main/fundamentals/types)
 
-C# is a statically typed language: every variable has a type, and the compiler knows it before the program runs. Integers work about as you would expect. Let's write an `Add` function to try things out.
+Adding two integers should return their sum: `TypeExamples.Add(2, 2)` should produce `4`.
 
-The finished solution is in `fundamentals/types`. If you are building it from scratch, set it up the same way as Hello, World: a class library in `src/Types`, an MSTest project in `tests/Types.Tests`, a solution, and a project reference from the tests to the library. Then create `tests/Types.Tests/TypeExamplesTests.cs`.
+The call cannot compile yet because `TypeExamples` does not exist:
+
+```csharp
+var sum = TypeExamples.Add(2, 2);
+```
+
+Running `dotnet test` reports `error CS0103: The name 'TypeExamples' does not exist in the current context`. We will start with integers, then use more types to see how C# checks arguments and chooses a method. The finished solution is in `fundamentals/types`. If you are building it from scratch, set it up the same way as Hello, World: a class library in `src/Types`, an MSTest project in `tests/Types.Tests`, a solution, and a project reference from the tests to the library. Then create `tests/Types.Tests/TypeExamplesTests.cs`.
+
+## How it works
+
+C# is statically typed: the compiler knows each variable's type before the program runs. `TypeExamples` will be a static class, so its `Add` method can be called without creating an object. The method will take two `int` values and return an `int`; `var` lets the compiler infer the type of a local from its assigned value.
+
+## How to test
+
+`Add` has no side effects: the same two integer inputs always produce the same sum. A unit test can call the method directly and compare the returned value. MSTest's data rows will let us check several input pairs without copying the same assertion.
 
 ## Write the test first
 
@@ -26,8 +40,6 @@ public sealed class TypeExamplesTests
     }
 }
 ```
-
-`TypeExamples` is going to be a static class, so we can call `Add` without creating an object.
 
 ## Try to run the test
 
