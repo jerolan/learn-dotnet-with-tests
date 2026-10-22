@@ -16,7 +16,7 @@ This part closes the roadmap. The Q&A chapters answer the questions that do not 
 - 🟠 [Test data with Bogus](test-data-bogus/test-data-bogus.md) ([ES](test-data-bogus/test-data-bogus.es.md)) - Generate valid orders from seeded rules and keep literal values for the edges.
 - 🟠 [Integration testing tools: Respawn, Testcontainers and Docker](integration-testing-tools/integration-testing-tools.md) ([ES](integration-testing-tools/integration-testing-tools.es.md)) - Start PostgreSQL in Docker and reset it between tests.
 - 🟠 [Containers for the TaskTracker API](containers/containers.md) ([ES](containers/containers.es.md)) - Build a multi-stage image, run it with SQLite on a volume and check OpenAPI from outside.
-- 🟠 CI/CD beyond the single test job. *Planned.*
+- 🟠 [CI/CD beyond the test job](ci-cd/ci-cd.md) ([ES](ci-cd/ci-cd.es.md)) - Cache packages, keep TRX results and publish the API as an artifact gated on tests.
 - 🟠 [Monitoring and telemetry](monitoring-telemetry/monitoring-telemetry.md) ([ES](monitoring-telemetry/monitoring-telemetry.es.md)) - Record a tagged counter and capture it with a MeterListener.
 - 🟠 Cloud deployment. *Planned.*
 - 🟠 Streaming. *Planned.*
@@ -50,7 +50,7 @@ This part closes the roadmap. The Q&A chapters answer the questions that do not 
 | .NET libraries | SDK libraries appendix | planned |
 | SignalR | SignalR appendix | planned |
 | Snapshot, E2E, performance | [Snapshot](snapshot-verify/snapshot-verify.md), [NBomber](performance-nbomber/performance-nbomber.md), Playwright appendix | snapshot and performance covered; E2E planned |
-| Containers, CI/CD, monitoring, cloud, DevOps | [Containers](containers/containers.md), [Monitoring](monitoring-telemetry/monitoring-telemetry.md), CI/CD, cloud and DevOps appendices | containers and monitoring covered; the rest planned |
+| Containers, CI/CD, monitoring, cloud, DevOps | [Containers](containers/containers.md), [CI/CD](ci-cd/ci-cd.md), [Monitoring](monitoring-telemetry/monitoring-telemetry.md), cloud and DevOps appendices | containers, CI/CD and monitoring covered; cloud and DevOps planned |
 | Streaming, NoSQL, gRPC, GraphQL | Protocol and storage appendices | planned |
 | General development skills | README preface and testing Q&A | covered |
 

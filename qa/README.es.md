@@ -16,7 +16,7 @@ Esta parte cierra el roadmap. Los capítulos de preguntas responden dudas que no
 - 🟠 [Datos de test con Bogus](test-data-bogus/test-data-bogus.es.md) ([EN](test-data-bogus/test-data-bogus.md)) - Genera pedidos válidos con reglas y semilla, y deja valores literales para los bordes.
 - 🟠 [Herramientas de integración: Respawn, Testcontainers y Docker](integration-testing-tools/integration-testing-tools.es.md) ([EN](integration-testing-tools/integration-testing-tools.md)) - Levanta PostgreSQL en Docker y resetea entre tests.
 - 🟠 [Contenedores para la API TaskTracker](containers/containers.es.md) ([EN](containers/containers.md)) - Construye una imagen multi-stage, ejecútala con SQLite sobre un volumen y comprueba OpenAPI desde fuera.
-- 🟠 CI/CD más allá del job único de tests. *Planeado.*
+- 🟠 [CI/CD más allá del job de tests](ci-cd/ci-cd.es.md) ([EN](ci-cd/ci-cd.md)) - Cachea paquetes, conserva resultados TRX y publica la API como artefacto condicionado a los tests.
 - 🟠 [Monitoreo y telemetría](monitoring-telemetry/monitoring-telemetry.es.md) ([EN](monitoring-telemetry/monitoring-telemetry.md)) - Registra un contador con tags y captúralo con un MeterListener.
 - 🟠 Despliegue en la nube. *Planeado.*
 - 🟠 Streaming. *Planeado.*
@@ -50,7 +50,7 @@ Esta parte cierra el roadmap. Los capítulos de preguntas responden dudas que no
 | Bibliotecas .NET | Apéndice de bibliotecas SDK | planeado |
 | SignalR | Apéndice de SignalR | planeado |
 | Snapshot, E2E, rendimiento | [Snapshot](snapshot-verify/snapshot-verify.es.md), [NBomber](performance-nbomber/performance-nbomber.es.md), apéndice de Playwright | snapshot y rendimiento cubiertos; E2E planeado |
-| Contenedores, CI/CD, monitoreo, nube, DevOps | [Contenedores](containers/containers.es.md), [Monitoreo](monitoring-telemetry/monitoring-telemetry.es.md), apéndices de CI/CD, nube y DevOps | contenedores y monitoreo cubiertos; el resto planeado |
+| Contenedores, CI/CD, monitoreo, nube, DevOps | [Contenedores](containers/containers.es.md), [CI/CD](ci-cd/ci-cd.es.md), [Monitoreo](monitoring-telemetry/monitoring-telemetry.es.md), apéndices de nube y DevOps | contenedores, CI/CD y monitoreo cubiertos; nube y DevOps planeados |
 | Streaming, NoSQL, gRPC, GraphQL | Apéndices de protocolos y almacenamiento | planeado |
 | Habilidades generales de desarrollo | Prefacio del README y preguntas de testing | cubierto |
 

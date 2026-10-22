@@ -4,6 +4,10 @@ on:
   push:
   pull_request:
 
+env:
+  DOTNET_NOLOGO: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -13,10 +17,49 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 6.0.x
+      - name: Cache NuGet packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: nuget-${{ runner.os }}-${{ hashFiles('**/*.csproj') }}
+          restore-keys: |
+            nuget-${{ runner.os }}-
       - name: Restore and test
         run: |
           set -euo pipefail
-          for sln in $(find . -name "*.sln" -print); do
+          mkdir -p artifacts/test-results
+          for sln in $(find . -name "*.sln" -print | sort); do
             echo "Testing $sln"
-            dotnet test "$sln" --nologo
+            name=$(echo "$sln" | tr '/' '_')
+            dotnet test "$sln" --nologo \
+              --logger "trx;LogFileName=$name.trx" \
+              --results-directory artifacts/test-results
           done
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: artifacts/test-results
+
+  publish:
+    needs: test
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 6.0.x
+      - name: Publish the API
+        run: |
+          dotnet publish build-an-app/v14-cqrs/src/TaskTracker.Api/TaskTracker.Api.csproj \
+            -c Release \
+            -o artifacts/api \
+            /p:UseAppHost=false
+      - name: Upload the API
+        uses: actions/upload-artifact@v4
+        with:
+          name: tasktracker-api
+          path: artifacts/api

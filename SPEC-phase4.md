@@ -38,7 +38,7 @@ Close the roadmap with LGWT-style Q&A chapters and the 🟠 appendices. Every ro
 | E2E (Playwright) | Appendix `e2e-playwright` | planned |
 | Performance (K6/NBomber) | Appendix `performance-nbomber` | covered |
 | Containers | Appendix `containers` | covered |
-| CI/CD | Appendix `ci-cd` | planned |
+| CI/CD | Appendix `ci-cd` | covered |
 | Monitoring/telemetry | Appendix `monitoring-telemetry` | covered |
 | Cloud | Appendix `cloud` | planned |
 | Streaming | Appendix `streaming` | planned |
