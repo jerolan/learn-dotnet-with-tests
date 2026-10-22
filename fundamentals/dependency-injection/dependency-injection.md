@@ -173,5 +173,5 @@ What we have covered:
 
 The chapter follows the dependency injection chapter of [Learn Go with Tests](https://quii.gitbook.io/learn-go-with-tests/dependency-injection): the domain logic receives its side effect through an interface, and the test supplies a stand-in. .NET adds constructor injection and, later, a container.
 
-Next: [Mocking](../mock.md).
+Next: [Mocking](../mock/mock.md).
 

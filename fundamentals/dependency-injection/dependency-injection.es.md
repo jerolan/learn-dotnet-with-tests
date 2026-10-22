@@ -173,5 +173,5 @@ Lo que cubrimos:
 
 El capítulo sigue el capítulo de dependency injection de [Learn Go with Tests](https://quii.gitbook.io/learn-go-with-tests/dependency-injection): la lógica de dominio recibe su efecto secundario a través de una interfaz, y el test entrega un sustituto. .NET agrega la inyección por constructor y, más adelante, un contenedor.
 
-Siguiente: [Mocking](../mock.md).
+Siguiente: [Mocking](../mock/mock.es.md).
 

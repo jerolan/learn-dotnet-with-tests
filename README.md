@@ -56,4 +56,4 @@ This cycle encourages developers to write only the code necessary to pass tests,
 22. [Files and I/O ](fundamentals/io.md) - Get to grips with reading from and writing to files and performing other I/O operations.
 23. [`using` Keyword](fundamentals/using.md) - Discover how to manage resources automatically with the using statement.
 24. [Dependency Injection](fundamentals/dependency-injection/dependency-injection.md) ([ES](fundamentals/dependency-injection/dependency-injection.es.md)) - Understand dependency injection for creating loosely coupled, maintainable applications.
-25. [Mocking](fundamentals/mock.md) - Learn about mocking in unit testing to simulate behavior of real objects in tests.
+25. [Mocking](fundamentals/mock/mock.md) ([ES](fundamentals/mock/mock.es.md)) - Learn about mocking in unit testing to simulate behavior of real objects in tests.
