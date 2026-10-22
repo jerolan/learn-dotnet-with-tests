@@ -174,7 +174,7 @@ public void Parse_InvalidAge_ThrowsInvalidAge(string text)
 
 ## Refactor
 
-El código de producción ya es pequeño: un parse, dos guards y un return. La constante le da nombre al límite superior, y los dos mensajes dicen qué regla falló.
+El código de producción ya es pequeño: un parseo, dos cláusulas de guarda y un return. La constante le da nombre al límite superior, y los dos mensajes dicen qué regla falló.
 
 `Assert.ThrowsException` es la herramienta del lado del test. En producción, quien espera entrada inválida usa `try`/`catch`:
 
@@ -200,7 +200,7 @@ Lo que cubrimos:
 
 - Un tipo de excepción de dominio que quien llama puede atrapar sin conocer la implementación del parser.
 - `int.TryParse` y una variable `out`.
-- Guards para un número inválido y un valor fuera de rango.
+- Cláusulas de guarda para un número inválido y un valor fuera de rango.
 - `Assert.ThrowsException` para el camino de error, y `try`/`catch` para quien llama en producción.
 - La regla práctica: excepciones para violaciones del contrato, patrón try cuando la entrada inválida es lo esperado.
 
