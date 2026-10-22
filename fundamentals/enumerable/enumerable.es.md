@@ -195,5 +195,5 @@ Lo que cubrimos:
 
 El capítulo sigue la disciplina de bucles del [capítulo Iteration de Learn Go with Tests](https://quii.gitbook.io/learn-go-with-tests/iteration): una secuencia se produce paso a paso y quien llama decide cuándo parar. La máquina de estados de `yield` es la forma de .NET para expresarlo.
 
-Siguiente: [IQueryable](../queriable.md).
+Siguiente: [LINQ](../linq/linq.es.md).
 

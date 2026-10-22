@@ -195,5 +195,5 @@ What we have covered:
 
 The chapter follows the loop discipline of the [Iteration chapter of Learn Go with Tests](https://quii.gitbook.io/learn-go-with-tests/iteration): a sequence is produced step by step, and the caller decides when to stop. The `yield` state machine is the .NET way to express that.
 
-Next: [IQueryable](../queriable.md).
+Next: [LINQ](../linq/linq.md).
 
