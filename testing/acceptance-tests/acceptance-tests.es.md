@@ -93,6 +93,8 @@ Verde. El POST devuelve `201 Created` con la tarea, y el GET devuelve la lista c
 
 `WebApplicationFactory<Program>` arranca la aplicación en memoria. `CreateClient()` te da un `HttpClient` cuyas peticiones van al servidor en memoria, no a un puerto de tu máquina.
 
+Debajo de la factory está `TestServer`, el servidor en memoria que maneja las peticiones. Casi nunca construyes `TestServer` directamente; la factory lo configura con el arranque de la app.
+
 La factory usa el camino de arranque real de la app: el mismo middleware, routing y configuración JSON que producción. Eso es lo que hace que esto sea un test de aceptación y no un test unitario. Puedes refactorizar el endpoint a un servicio, un repositorio o una base de datos y el test sigue pasando mientras el comportamiento HTTP no cambie.
 
 El paquete del host de tests debe coincidir con el framework de destino. Una app `net6.0` usa `Microsoft.AspNetCore.Mvc.Testing` `6.0.x`. Mezclar un host más nuevo con un runtime viejo es una fuente habitual de errores de arranque.
@@ -127,7 +129,7 @@ Los tests de aceptación son más lentos que los unitarios porque arrancan la ap
 
 Un test de aceptación debe describir comportamiento, no implementación. `CanCreateAndListTodos` sobrevive a un cambio de lista a base de datos. Un test que afirme que el endpoint llamó a un método del repositorio se rompería con ese refactor, y estaría probando el interior en vez de la característica.
 
-La factory también puede reemplazar servicios para escenarios de integración: una base de datos de test, un emisor de correo falso, un reloj. Esa es la costura para usar cuando la característica necesita infraestructura. Los capítulos posteriores de testing la usan para pruebas contra base de datos.
+La factory también puede reemplazar servicios para escenarios de integración: una base de datos de test, un emisor de correo falso, un reloj. Esa es la costura para usar cuando la característica necesita infraestructura. La Parte 3 la usa para pruebas contra base de datos.
 
 ## Para cerrar
 

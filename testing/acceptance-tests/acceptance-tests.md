@@ -93,6 +93,8 @@ Green. The POST returns `201 Created` with the todo, and the GET returns the lis
 
 `WebApplicationFactory<Program>` starts the application in memory. `CreateClient()` gives you an `HttpClient` whose requests go to the in-memory server, not to a port on your machine.
 
+Under the factory is `TestServer`, the in-memory server that actually handles the requests. You rarely construct `TestServer` directly; the factory configures it with the app's startup.
+
 The factory uses the app's real startup path: the same middleware, routing and JSON settings as production. That is what makes this an acceptance test rather than a unit test. You can refactor the endpoint into a service, a repository or a database and the test keeps passing as long as the HTTP behavior stays the same.
 
 The test host package must match the target framework. A `net6.0` app uses `Microsoft.AspNetCore.Mvc.Testing` `6.0.x`. Mixing a newer test host with an older runtime is a common source of startup errors.
@@ -127,7 +129,7 @@ Acceptance tests are slower than unit tests because they start the application a
 
 An acceptance test should describe behavior, not implementation. `CanCreateAndListTodos` survives a change from a list to a database. A test that asserts the endpoint called a repository method would break on that refactor, and it would be testing the inside rather than the feature.
 
-The factory can also replace services for integration scenarios: a test database, a fake email sender, a clock. That is the seam to use when the feature needs infrastructure. The later testing chapters use it for database-backed tests.
+The factory can also replace services for integration scenarios: a test database, a fake email sender, a clock. That is the seam to use when the feature needs infrastructure. Part 3 uses it for database-backed tests.
 
 ## Wrapping up
 
