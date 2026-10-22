@@ -6,54 +6,13 @@ Un test de aceptación es fácil de leer. Veinte, cada uno con su propio setup H
 
 Vamos a hacer crecer la API de tareas con validación y detección de duplicados, e introducir un driver de test para que cada test diga un solo comportamiento. La solución terminada está en `testing/scaling-acceptance-tests`.
 
-## Escribe primero el test
-
-```csharp
-[TestMethod]
-public async Task RejectsATodoWithoutATitle()
-{
-    using var api = new Api();
-
-    var response = await api.Client.CreateAsync(new Todo(1, " "));
-
-    Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode);
-}
-```
-
-## Intenta ejecutar el test
-
-La app hoy acepta cualquier tarea:
-
-```csharp
-app.MapPost("/todos", (Todo todo) =>
-{
-    todos.Add(todo);
-    return Results.Created($"/todos/{todo.Id}", todo);
-});
-```
-
-El test falla con `Expected:<BadRequest>. Actual:<Created>`.
-
-## Escribe el código suficiente para que pase
-
-```csharp
-app.MapPost("/todos", (Todo todo) =>
-{
-    if (string.IsNullOrWhiteSpace(todo.Title))
-    {
-        return Results.BadRequest(new { error = "Title is required." });
-    }
-
-    todos.Add(todo);
-    return Results.Created($"/todos/{todo.Id}", todo);
-});
-```
-
-Verde. El endpoint ahora rechaza un título vacío con 400 y un pequeño error JSON.
-
 ## Cómo funciona
 
-El test usa un driver:
+`WebApplicationFactory<Program>` arranca la API en memoria y envía peticiones por el pipeline HTTP real. Cada factory arranca una app nueva con su propia lista de tareas, lo que mantiene aislados los tests.
+
+## Cómo probarlo
+
+`Api` crea y libera la factory, y `TodoClient` envuelve las llamadas HTTP y JSON. Los tests usan esta superficie pequeña en vez de repetir el setup de la factory y el plumbing de las peticiones.
 
 ```csharp
 private sealed class Api : IDisposable
@@ -95,9 +54,70 @@ private sealed class TodoClient
 }
 ```
 
-El driver es código de test, no de producción. Esconde la factory, el cliente y las llamadas JSON, así un test se lee como "crea esta tarea y espera este estado". Cuando cambia la superficie de la API, el driver es el único lugar a actualizar.
+El driver es código de test, no de producción. Esconde la factory, el cliente y las llamadas JSON, así el test se lee como "crea esta tarea y espera este estado". Si cambia la superficie de la API, actualiza el driver en un solo lugar.
 
-Cada `Api` crea su propia factory, así cada test recibe una lista nueva. Ese aislamiento vale el costo extra de arranque; una factory compartida dejaría que las tareas de un test se filtraran al siguiente.
+## Escribe primero el test
+
+```csharp
+[TestMethod]
+public async Task RejectsATodoWithoutATitle()
+{
+    using var api = new Api();
+
+    var response = await api.Client.CreateAsync(new Todo(1, " "));
+
+    Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode);
+}
+```
+
+## Intenta ejecutar el test
+
+Ejecuta el test desde la carpeta de la solución. La API actual arranca y atiende la petición, así que el test llega al comportamiento que falta.
+
+## Escribe el código mínimo para que el test compile y mira la salida
+
+La API del capítulo anterior ya compila y responde. No hace falta un cambio solo para compilar; este es el handler mínimo que ya funciona y mantiene el test en rojo:
+
+```csharp
+app.MapPost("/todos", (Todo todo) =>
+{
+    todos.Add(todo);
+    return Results.Created($"/todos/{todo.Id}", todo);
+});
+```
+
+El test se ejecuta y falla con `Expected:<BadRequest>. Actual:<Created>`.
+
+## Escribe el código suficiente para que pase
+
+```csharp
+app.MapPost("/todos", (Todo todo) =>
+{
+    if (string.IsNullOrWhiteSpace(todo.Title))
+    {
+        return Results.BadRequest(new { error = "Title is required." });
+    }
+
+    todos.Add(todo);
+    return Results.Created($"/todos/{todo.Id}", todo);
+});
+```
+
+Verde. El endpoint ahora rechaza un título vacío con 400 y un pequeño error JSON.
+
+## Refactor
+
+El driver mantiene cortos los tests, y cada test sigue usando su propia factory. Todavía no hay código de producción que extraer; conserva el test en verde y el aislamiento por test.
+
+### Mantener manejable la suite
+
+- Un comportamiento por test. El nombre debe decir qué obtiene la persona, no qué endpoint se llamó.
+- Construye datos con ayudantes pequeños. `new Todo(1, "First")` alcanza aquí; un objeto más grande pide un builder para que el test nombre solo los campos que importan.
+- Aísla el estado. Una factory por test es la regla más simple; no dejes que los tests dependan del orden.
+- Mantén los caminos críticos en este nivel. Validación, orden y conflictos son visibles para la persona. El formato exacto de un mensaje o la rama dentro de un ayudante pertenecen a tests unitarios.
+- No afirmes detalles de implementación. El test debe sobrevivir a reemplazar la lista por un repositorio.
+
+MSTest tiene `[ClassInitialize]` y `[AssemblyInitialize]` para setup compartido. Úsalos si arrancar la app se vuelve costoso, y resetea los datos para que cada test empiece desde un estado conocido. Esta API arranca lo bastante rápido como para que una factory por test sea la mejor opción.
 
 ## Repite con requisitos nuevos
 
@@ -151,18 +171,6 @@ if (todos.Any(existing => existing.Id == todo.Id))
 ```
 
 Verde. El test usa el driver dos veces para preparar y la tercera llamada para el comportamiento bajo prueba.
-
-## Refactor
-
-El driver ya mantiene cortos los tests. Estos hábitos mantienen manejable una suite de aceptación:
-
-- Un comportamiento por test. El nombre debe decir qué recibe la persona, no qué endpoint se llamó.
-- Construye datos con ayudantes pequeños. `new Todo(1, "First")` alcanza aquí; un objeto más grande pide un builder para que el test nombre solo los campos que importan.
-- Aísla el estado. Una factory por test es la regla más simple. Si el arranque se vuelve demasiado lento, comparte un fixture y resetea los datos entre tests; no dejes que los tests dependan del orden.
-- Mantén los caminos críticos en este nivel. Validación, orden y conflictos son visibles para la persona. El formato exacto de un mensaje o la rama dentro de un ayudante pertenecen a tests unitarios.
-- No afirmes detalles de implementación. El test debe sobrevivir a reemplazar la lista por un repositorio.
-
-MSTest tiene `[ClassInitialize]` y `[AssemblyInitialize]` para setup compartido. Úsalos cuando el costo de arrancar la app domine, y agrega un paso de reset para que cada test siga empezando desde un estado conocido. La API de tareas arranca lo bastante rápido como para que el aislamiento por test sea el valor por defecto.
 
 ## Para cerrar
 

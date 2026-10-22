@@ -6,54 +6,13 @@ One acceptance test is easy to read. Twenty of them, each with its own HTTP setu
 
 We will grow the Todo API with validation and duplicate detection, and introduce a test driver so each test states one behavior. The finished solution is in `testing/scaling-acceptance-tests`.
 
-## Write the test first
-
-```csharp
-[TestMethod]
-public async Task RejectsATodoWithoutATitle()
-{
-    using var api = new Api();
-
-    var response = await api.Client.CreateAsync(new Todo(1, " "));
-
-    Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode);
-}
-```
-
-## Try to run the test
-
-The app currently accepts any todo:
-
-```csharp
-app.MapPost("/todos", (Todo todo) =>
-{
-    todos.Add(todo);
-    return Results.Created($"/todos/{todo.Id}", todo);
-});
-```
-
-The test fails with `Expected:<BadRequest>. Actual:<Created>`.
-
-## Write enough code to make it pass
-
-```csharp
-app.MapPost("/todos", (Todo todo) =>
-{
-    if (string.IsNullOrWhiteSpace(todo.Title))
-    {
-        return Results.BadRequest(new { error = "Title is required." });
-    }
-
-    todos.Add(todo);
-    return Results.Created($"/todos/{todo.Id}", todo);
-});
-```
-
-Green. The endpoint now rejects a blank title with a 400 and a small JSON error.
-
 ## How it works
 
-The test uses a driver:
+`WebApplicationFactory<Program>` starts the API in memory and sends requests through the real HTTP pipeline. Each factory starts a fresh app with its own todo list, which keeps tests isolated.
+
+## How to test
+
+The `Api` driver owns the factory, and `TodoClient` wraps the HTTP and JSON calls. Tests use this small surface instead of repeating factory setup and request plumbing.
 
 ```csharp
 private sealed class Api : IDisposable
@@ -95,9 +54,70 @@ private sealed class TodoClient
 }
 ```
 
-The driver is test code, not production code. It hides the factory, the client and the JSON calls, so a test reads as "create this todo and expect this status". When the API surface changes, the driver is the one place to update.
+The driver is test code, not production code. It hides the factory, client and JSON calls, so a test reads as "create this todo and expect this status". If the API surface changes, update the driver in one place.
 
-Each `Api` creates its own factory, so each test gets a fresh list. That isolation is worth the extra startup cost; a shared factory would let one test's todos leak into the next.
+## Write the test first
+
+```csharp
+[TestMethod]
+public async Task RejectsATodoWithoutATitle()
+{
+    using var api = new Api();
+
+    var response = await api.Client.CreateAsync(new Todo(1, " "));
+
+    Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode);
+}
+```
+
+## Try to run the test
+
+Run the test from the solution folder. The existing API starts and handles the request, so the test can reach the behavior we need to add.
+
+## Write the minimal amount of code for the test to run and check the failing test output
+
+The API from the previous chapter already compiles and responds. No compile-only change is needed; this is the smallest running handler, and it leaves the test red:
+
+```csharp
+app.MapPost("/todos", (Todo todo) =>
+{
+    todos.Add(todo);
+    return Results.Created($"/todos/{todo.Id}", todo);
+});
+```
+
+The test runs and fails with `Expected:<BadRequest>. Actual:<Created>`.
+
+## Write enough code to make it pass
+
+```csharp
+app.MapPost("/todos", (Todo todo) =>
+{
+    if (string.IsNullOrWhiteSpace(todo.Title))
+    {
+        return Results.BadRequest(new { error = "Title is required." });
+    }
+
+    todos.Add(todo);
+    return Results.Created($"/todos/{todo.Id}", todo);
+});
+```
+
+Green. The endpoint now rejects a blank title with a 400 and a small JSON error.
+
+## Refactor
+
+The driver keeps the tests short, and each test still gets its own factory. There is no production code to extract yet; keep the test green and preserve per-test isolation.
+
+### Keep the suite manageable
+
+- One behavior per test. The name should say what the user gets, not which endpoint was called.
+- Build data with small helpers. `new Todo(1, "First")` is fine here; a larger object gets a builder so the test only names the fields that matter.
+- Isolate state. A factory per test is the simplest rule; do not let tests depend on order.
+- Keep the critical paths at this level. Validation, ordering and conflicts are user-visible. The exact formatting of an error message or the branch inside a helper belongs in unit tests.
+- Do not assert implementation details. The test should survive replacing the list with a repository.
+
+MSTest has `[ClassInitialize]` and `[AssemblyInitialize]` for shared setup. Use them if starting the app becomes expensive, and reset the data so each test begins from a known state. This API starts fast enough that a factory per test is the better default.
 
 ## Repeat for new requirements
 
@@ -151,18 +171,6 @@ if (todos.Any(existing => existing.Id == todo.Id))
 ```
 
 Green. The test uses the driver twice for setup and the third call for the behavior under test.
-
-## Refactor
-
-The driver already keeps the tests short. These habits keep a suite of acceptance tests manageable:
-
-- One behavior per test. The name should say what the user gets, not which endpoint was called.
-- Build data with small helpers. `new Todo(1, "First")` is fine here; a larger object gets a builder so the test only names the fields that matter.
-- Isolate state. A factory per test is the simplest rule. If startup becomes too slow, share a fixture and reset the data between tests; do not let tests depend on order.
-- Keep the critical paths at this level. Validation, ordering and conflicts are user-visible. The exact formatting of an error message or the branch inside a helper belongs in unit tests.
-- Do not assert implementation details. The test should survive replacing the list with a repository.
-
-MSTest has `[ClassInitialize]` and `[AssemblyInitialize]` for shared setup. Use them when the cost of starting the app dominates, and add a reset step so each test still starts from a known state. The Todo API starts fast enough that per-test isolation is the better default.
 
 ## Wrapping up
 
