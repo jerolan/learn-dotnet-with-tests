@@ -189,6 +189,9 @@
 - Part 4 `streaming` now follows the runnable appendix flow in both languages.
   `mise exec dotnet@10.0.402 -- dotnet test qa/streaming/Streaming.sln -m:1`
   passed 3 tests.
+- Part 4 `signalr` companion appendix now follows the runnable flow in both
+  languages. `mise exec dotnet@10.0.402 -- dotnet test
+  qa/signalr/SignalR.sln -m:1` passed 2 tests.
 
 ## Completed increment: Part 4 delivery references
 
