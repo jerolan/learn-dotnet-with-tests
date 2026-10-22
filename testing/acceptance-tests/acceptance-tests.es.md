@@ -15,6 +15,16 @@ dotnet new sln -n AcceptanceTests
 dotnet sln add src/TodoApi/TodoApi.csproj tests/TodoApi.Tests/TodoApi.Tests.csproj
 ```
 
+## Cómo funciona
+
+`WebApplicationFactory<Program>` arranca la app en memoria, y `CreateClient()` manda peticiones por `TestServer` sin abrir un puerto en la máquina. La factory usa el camino de arranque real de la app, el middleware, routing y la configuración JSON.
+
+El paquete del host de tests debe coincidir con el framework de destino. Una app `net6.0` usa `Microsoft.AspNetCore.Mvc.Testing` `6.0.x`.
+
+## Cómo probarlo
+
+Envía peticiones HTTP por el cliente de test y comprueba los códigos de estado y los cuerpos de respuesta. Así pruebas la característica por el mismo borde que usa quien llama; una factory por test mantiene aislado el estado de la app en memoria.
+
 ## Escribe primero el test
 
 ```csharp
@@ -50,7 +60,13 @@ El test habla HTTP. No sabe si el endpoint usa una lista, un repositorio o una b
 
 ## Intenta ejecutar el test
 
-La app arranca sin endpoints:
+Ejecuta `dotnet test` desde la carpeta de la solución.
+
+La característica todavía no existe. La petición devuelve `404 Not Found` en vez de `201 Created`.
+
+## Escribe el código mínimo para que el test compile y mira la salida
+
+Empieza con una app que no tiene endpoints:
 
 ```csharp
 var builder = WebApplication.CreateBuilder(args);
@@ -65,7 +81,7 @@ public partial class Program
 }
 ```
 
-El test compila y falla con `Assert.AreEqual failed. Expected:<Created>. Actual:<NotFound>`. La característica todavía no existe.
+El test compila y falla con `Assert.AreEqual failed. Expected:<Created>. Actual:<NotFound>`.
 
 La declaración `public partial class Program` es lo que deja al proyecto de tests usar `WebApplicationFactory<Program>`. Las sentencias de nivel superior generan un `Program` interno; la declaración parcial lo hace visible sin agregar un `Main`.
 
@@ -89,15 +105,9 @@ app.Run();
 
 Verde. El POST devuelve `201 Created` con la tarea, y el GET devuelve la lista como JSON. El test pasó por routing, model binding, serialización JSON y la lógica del endpoint.
 
-## Cómo funciona
+## Refactor
 
-`WebApplicationFactory<Program>` arranca la aplicación en memoria. `CreateClient()` te da un `HttpClient` cuyas peticiones van al servidor en memoria, no a un puerto de tu máquina.
-
-Debajo de la factory está `TestServer`, el servidor en memoria que maneja las peticiones. Casi nunca construyes `TestServer` directamente; la factory lo configura con el arranque de la app.
-
-La factory usa el camino de arranque real de la app: el mismo middleware, routing y configuración JSON que producción. Eso es lo que hace que esto sea un test de aceptación y no un test unitario. Puedes refactorizar el endpoint a un servicio, un repositorio o una base de datos y el test sigue pasando mientras el comportamiento HTTP no cambie.
-
-El paquete del host de tests debe coincidir con el framework de destino. Una app `net6.0` usa `Microsoft.AspNetCore.Mvc.Testing` `6.0.x`. Mezclar un host más nuevo con un runtime viejo es una fuente habitual de errores de arranque.
+El comportamiento del endpoint se ve por HTTP, y el test no depende del almacenamiento. Ejecuta el test otra vez; para esta primera característica no hace falta otra abstracción.
 
 ## Repite con requisitos nuevos
 
@@ -121,7 +131,7 @@ public async Task EmptyList_ReturnsNoTodos()
 
 Pasa. Cada test crea su propia factory, que crea su propia app y su propia lista `todos`. Si los tests compartieran una factory, la tarea del primero se filtraría al segundo.
 
-## Refactor
+### Mantener central el contrato HTTP
 
 Todavía no hay código de producción que limpiar. El borde importante es el test.
 

@@ -89,6 +89,9 @@
 - Part 1 `with`: English and Spanish pairs now contain the required sections
   in order. `mise exec dotnet@10.0.402 -- dotnet test
   fundamentals/with/With.sln -m:1` passed 3 tests.
+- Part 2 `acceptance-tests`: English and Spanish pairs now contain the
+  required sections in order. `mise exec dotnet@10.0.402 -- dotnet test
+  testing/acceptance-tests/AcceptanceTests.sln -m:1` passed 2 tests.
 
 ## Completed increment: Part 4 delivery references
 
