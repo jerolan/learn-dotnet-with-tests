@@ -126,5 +126,5 @@ What we have covered:
 - A contract test that reads the generated JSON.
 - Keeping the document accurate with examples, versioning and hidden internal routes.
 
-Next: v13: resilience with Polly.
+Next: [v13: resilience with Polly](../v13-resilience/v13-resilience.md).
 

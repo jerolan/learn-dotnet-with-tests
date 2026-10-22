@@ -126,5 +126,5 @@ Lo que cubrimos:
 - Un test de contrato que lee el JSON generado.
 - Mantener el documento exacto con ejemplos, versionado y rutas internas ocultas.
 
-Siguiente: v13: resiliencia con Polly.
+Siguiente: [v13: resiliencia con Polly](../v13-resilience/v13-resilience.es.md).
 

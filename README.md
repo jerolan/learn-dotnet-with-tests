@@ -83,3 +83,4 @@ One API, grown version by version. Each version is a standalone solution with it
 10. 🟢 [v10: Caching](build-an-app/v10-caching/v10-caching.md) ([ES](build-an-app/v10-caching/v10-caching.es.md)) - Cache reads with IMemoryCache and invalidate on writes.
 11. 🟢 [v11: Messaging and scheduling](build-an-app/v11-messaging-scheduling/v11-messaging-scheduling.md) ([ES](build-an-app/v11-messaging-scheduling/v11-messaging-scheduling.es.md)) - Publish events to a channel, consume them in a hosted service and schedule cleanup.
 12. 🟢 [v12: OpenAPI](build-an-app/v12-openapi/v12-openapi.md) ([ES](build-an-app/v12-openapi/v12-openapi.es.md)) - Generate the API document, declare Bearer auth and test the contract.
+13. 🟢 [v13: Resilience](build-an-app/v13-resilience/v13-resilience.md) ([ES](build-an-app/v13-resilience/v13-resilience.es.md)) - Retry transient notifier failures with a bounded Polly policy.
