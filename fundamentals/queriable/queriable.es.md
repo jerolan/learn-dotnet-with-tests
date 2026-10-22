@@ -210,5 +210,5 @@ Lo que cubrimos:
 
 El capítulo se apoya en el [capítulo LINQ](../linq/linq.es.md): los operadores son los mismos, pero el tipo destino decide si compilan a delegados o a un árbol de expresión. EF Core hará concreto el proveedor en la Parte 3.
 
-Siguiente: [La palabra ref](../ref.md).
+Siguiente: [La palabra ref](../ref/ref.es.md).
 

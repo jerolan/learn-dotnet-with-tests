@@ -210,5 +210,5 @@ What we have covered:
 
 The chapter builds on the [LINQ chapter](../linq/linq.md): the operators are the same, but the target type decides whether they compile to delegates or to an expression tree. EF Core will make the provider concrete in Part 3.
 
-Next: [The ref keyword](../ref.md).
+Next: [The ref keyword](../ref/ref.md).
 

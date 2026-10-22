@@ -192,5 +192,5 @@ Lo que cubrimos:
 
 El capítulo sigue el [capítulo Generics de Learn Go with Tests](https://quii.gitbook.io/learn-go-with-tests/generics): una función o tipo que trabaja con varios tipos de elemento mientras el compilador mantiene los tipos honestos. .NET agrega restricciones y varianza sobre la misma idea.
 
-Siguiente: [La palabra ref](../ref.md).
+Siguiente: [La palabra ref](../ref/ref.es.md).
 

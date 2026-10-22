@@ -192,5 +192,5 @@ What we have covered:
 
 The chapter follows the [Generics chapter of Learn Go with Tests](https://quii.gitbook.io/learn-go-with-tests/generics): a function or type that works across element types while the compiler keeps the types honest. .NET adds constraints and variance on top of the same idea.
 
-Next: [The ref keyword](../ref.md).
+Next: [The ref keyword](../ref/ref.md).
 
