@@ -38,9 +38,11 @@ than a mock, and how to refactor while tests stay green.
   persistence reset and external container setup remain in the Part 4 appendix.
 - The root index links the four chapters and their Spanish versions.
 
-## Status: implementation present; template-order alignment pending
+## Status: aligned and locally verified
 
-The four pairs and four solutions are present. Their tests passed in the full
-57-solution run on 2026-10-22: 10 tests passed across Part 2. Local Markdown
-links resolve throughout the repository, and the root README indexes both
-languages for all four chapters.
+All four English/Spanish pairs follow the template order. Local solution runs
+on 2026-10-22 passed 10 tests across Part 2: acceptance tests (2), scaling
+acceptance tests (3), working without mocks (2), and refactoring checklist
+(3). Local chapter links resolve, and the root README indexes both languages
+for all four chapters. These are local results and do not establish CI status
+for the current unpushed documentation changes.

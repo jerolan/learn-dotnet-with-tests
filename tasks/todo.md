@@ -101,6 +101,10 @@
   first scenario. `mise exec dotnet@10.0.402 -- dotnet test
   testing/scaling-acceptance-tests/ScalingAcceptanceTests.sln -m:1` passed 3
   tests.
+- Part 2 `refactoring-checklist`: English and Spanish pairs now contain the
+  required sections in order, and the chapter records its green starting
+  point. `mise exec dotnet@10.0.402 -- dotnet test
+  testing/refactoring-checklist/RefactoringChecklist.sln -m:1` passed 3 tests.
 
 ## Completed increment: Part 4 delivery references
 

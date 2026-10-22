@@ -6,7 +6,15 @@ Refactorizar es cambiar la estructura del código sin cambiar su comportamiento.
 
 Vamos a tomar un cálculo de descuentos que funciona y limpiarlo con los tests en verde. La solución terminada está en `testing/refactoring-checklist`.
 
-## Escribe primero los tests
+## Cómo funciona
+
+`Discounts.Apply` rechaza porcentajes fuera de 0–100, resta el descuento porcentual y después resta otro cinco por ciento a miembros.
+
+## Cómo probarlo
+
+Usa MSTest para fijar el resultado normal, el descuento adicional para miembros y el porcentaje inválido. Estos ejemplos definen el comportamiento que el refactor debe conservar.
+
+## Escribe primero el test
 
 ```csharp
 [TestClass]
@@ -33,7 +41,15 @@ public sealed class DiscountsTests
 }
 ```
 
-La implementación es simple a propósito:
+Estos tests se escribieron antes del refactor. Este capítulo parte de una implementación existente para verificar que la base está en verde antes de cambiar su estructura.
+
+## Intenta ejecutar el test
+
+Ejecuta `mise exec dotnet@10.0.402 -- dotnet test testing/refactoring-checklist/RefactoringChecklist.sln -m:1`. Los tres tests pasan; un refactor debe empezar en verde.
+
+## Escribe el código mínimo para que el test compile y mira la salida
+
+La app ya compila y pasa, así que no hace falta un cambio solo para compilar. Esta es la implementación deliberadamente sencilla antes del refactor:
 
 ```csharp
 public static decimal Apply(decimal price, int percent, bool member)
@@ -54,9 +70,13 @@ public static decimal Apply(decimal price, int percent, bool member)
 }
 ```
 
-Los tres tests pasan. Ahora el refactor empieza desde un estado verde conocido.
+## Escribe el código suficiente para que pase
 
-## La lista
+No hace falta agregar código de comportamiento: los tres tests ya pasan. Déjalos sin cambios mientras mejoramos los nombres y las expresiones.
+
+## Refactor
+
+### La lista
 
 Recórrela en orden, ejecutando los tests después de cada cambio:
 
@@ -72,7 +92,7 @@ Recórrela en orden, ejecutando los tests después de cada cambio:
 
 Si un test tiene que cambiar, detente. Eso es un cambio de comportamiento, no un refactor; necesita su propio ciclo rojo-verde.
 
-## Aplica la lista
+### Aplica la lista
 
 La primera pasada es de nombres. `d` no dice qué guarda. Renómbrala a `afterPercent`:
 
@@ -148,13 +168,17 @@ public static class Discounts
 
 El guard usa un patrón relacional, `percent is < 0 or > 100`. Dice lo mismo que las dos comparaciones y mantiene la condición en un solo lugar. Es una elección de legibilidad; las dos formas son correctas.
 
-## Qué no hacer
+### Qué no hacer
 
 No extraigas un método solo para que la clase parezca más ocupada. `ApplyPercent` y `ApplyMemberDiscount` serían métodos de una línea usados una vez. Eso es indirección sin concepto; la lista pide nombres que aclaren, no más capas.
 
 No mezcles un renombre con un cambio de comportamiento. Si el descuento de miembro debe aplicarse antes del descuento por porcentaje, escribe un test que falle para el nuevo orden, hazlo pasar y recién entonces refactoriza. Los tests te dicen qué cambio estás haciendo.
 
 No refactorices sin una base verde. Si la suite está en rojo, no puedes saber si un fallo vino del refactor o de un bug que ya estaba.
+
+## Repite con requisitos nuevos
+
+Este capítulo no agrega comportamiento nuevo. Si un requisito posterior cambia el orden de los descuentos, primero escribe un test que falle e implementa ese comportamiento en su propio ciclo rojo-verde; después usa esta lista para limpiar el código.
 
 ## Para cerrar
 

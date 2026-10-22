@@ -6,7 +6,15 @@ Refactoring changes the structure of code without changing its behavior. The tes
 
 We will take a working discount calculation and clean it up with the tests green. The finished solution is in `testing/refactoring-checklist`.
 
-## Write the tests first
+## How it works
+
+`Discounts.Apply` rejects percentages outside 0–100, subtracts the percentage discount, then subtracts another five percent for members.
+
+## How to test
+
+Use MSTest to pin the normal result, the extra member discount and the invalid percentage. These examples define the behavior the refactor must preserve.
+
+## Write the test first
 
 ```csharp
 [TestClass]
@@ -33,7 +41,15 @@ public sealed class DiscountsTests
 }
 ```
 
-The implementation is deliberately plain:
+These tests were written before the refactor. This chapter starts from an existing implementation so we can verify a green baseline before changing its structure.
+
+## Try to run the test
+
+Run `mise exec dotnet@10.0.402 -- dotnet test testing/refactoring-checklist/RefactoringChecklist.sln -m:1`. All three tests pass; a refactor must begin from green.
+
+## Write the minimal amount of code for the test to run and check the failing test output
+
+The app already compiles and passes, so no compile-only change is needed. Here is the deliberately plain implementation before the refactor:
 
 ```csharp
 public static decimal Apply(decimal price, int percent, bool member)
@@ -54,9 +70,13 @@ public static decimal Apply(decimal price, int percent, bool member)
 }
 ```
 
-All three tests pass. Now the refactor starts from a known green state.
+## Write enough code to make it pass
 
-## The checklist
+No behavior code needs to be added: the three tests already pass. Keep them unchanged while improving the names and expressions.
+
+## Refactor
+
+### The checklist
 
 Work through these in order, running the tests after each change:
 
@@ -72,7 +92,7 @@ Work through these in order, running the tests after each change:
 
 If a test has to change, stop. That is a behavior change, not a refactor; it needs its own red-green cycle.
 
-## Apply the checklist
+### Apply the checklist
 
 The first pass is names. `d` does not say what it holds. Rename it to `afterPercent`:
 
@@ -148,13 +168,17 @@ public static class Discounts
 
 The guard uses a relational pattern, `percent is < 0 or > 100`. It says the same thing as the two comparisons and keeps the condition in one place. This is a readability choice; either form is correct.
 
-## What not to do
+### What not to do
 
 Do not extract a method just to make the class look busier. `ApplyPercent` and `ApplyMemberDiscount` would each be a one-line method used once. That is indirection without a concept; the checklist asks for names that clarify, not for more layers.
 
 Do not mix a rename with a behavior change. If the member discount should apply before the percent discount, write a failing test for the new order, make it pass, and only then refactor. The tests tell you which change you are making.
 
 Do not refactor without a green baseline. If the suite is red, you cannot tell whether a failure came from the refactor or from the existing bug.
+
+## Repeat for new requirements
+
+This chapter adds no new behavior. If a later requirement changes the discount order, first write a failing test and implement that behavior in its own red-green cycle; then use this checklist for cleanup.
 
 ## Wrapping up
 
