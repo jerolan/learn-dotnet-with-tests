@@ -208,5 +208,5 @@ Lo que cubrimos:
 
 El capítulo sigue la disciplina de recursos del [capítulo I/O de Learn Go with Tests](https://quii.gitbook.io/learn-go-with-tests/io): quien abre un recurso es responsable de cerrarlo a tiempo. .NET hace explícita esa propiedad con `IDisposable` y `using`.
 
-Siguiente: [Inyección de dependencias](../dependency-injection/dependency-injection.es.md).
+Con esto termina la Parte 1. La Parte 2 cubre los fundamentos de testing.
 

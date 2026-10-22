@@ -208,5 +208,5 @@ What we have covered:
 
 The chapter follows the resource discipline of the [I/O chapter of Learn Go with Tests](https://quii.gitbook.io/learn-go-with-tests/io): whoever opens a resource is responsible for closing it promptly. .NET makes that ownership explicit with `IDisposable` and `using`.
 
-Next: [Dependency Injection](../dependency-injection/dependency-injection.md).
+That completes Part 1. Part 2 covers testing fundamentals.
 
