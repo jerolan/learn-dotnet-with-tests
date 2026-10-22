@@ -6,27 +6,25 @@ Version 2 validated that a title was not blank. Version 3 adds a real rule: a ma
 
 The finished solution is in `build-an-app/v3-configuration`.
 
-## Write the test first
+## How it works
 
-```csharp
-[TestMethod]
-public async Task TitleLongerThanTheConfiguredLimit_ReturnsBadRequest()
+`appsettings.json` supplies the default limit. `Configure<TaskOptions>` binds the `Tasks` section and makes the typed options available through `IOptions<TaskOptions>`. A test can add an in-memory configuration source after the app's files to override that value.
+
+```json
 {
-    using var api = new Api(maxTitleLength: 10);
-
-    var response = await api.Client.PostAsJsonAsync(
-        "/tasks",
-        new CreateTaskRequest(new string('a', 11)));
-
-    Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode);
-
-    var error = await response.Content.ReadFromJsonAsync<ErrorResponse>();
-    Assert.IsNotNull(error);
-    StringAssert.Contains(error.Error, "10");
+  "Tasks": {
+    "MaxTitleLength": 120
+  }
 }
 ```
 
-The test driver accepts the limit and overrides configuration:
+`builder.Configuration.GetSection("Tasks")` selects that subtree. The endpoint reads `IOptions<TaskOptions>.Value`; it does not parse strings or reach into `IConfiguration`.
+
+`IOptions<T>` is a singleton snapshot read once. If a value must change while the app is running, use `IOptionsMonitor<T>` or `IOptionsSnapshot<T>`; for this startup rule, the singleton is the right default.
+
+## How to test
+
+Send a title through the HTTP API and assert the status and error body. The test driver can override the limit for one host without editing production files:
 
 ```csharp
 public Api(int? maxTitleLength = null)
@@ -48,13 +46,35 @@ public Api(int? maxTitleLength = null)
 }
 ```
 
+`ConfigureAppConfiguration` adds the in-memory source after the app's files, so the test value wins and production files remain untouched.
+
+## Write the test first
+
+```csharp
+[TestMethod]
+public async Task TitleLongerThanTheConfiguredLimit_ReturnsBadRequest()
+{
+    using var api = new Api(maxTitleLength: 10);
+
+    var response = await api.Client.PostAsJsonAsync(
+        "/tasks",
+        new CreateTaskRequest(new string('a', 11)));
+
+    Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode);
+
+    var error = await response.Content.ReadFromJsonAsync<ErrorResponse>();
+    Assert.IsNotNull(error);
+    StringAssert.Contains(error.Error, "10");
+}
+```
+
 ## Try to run the test
 
 The API has no length rule yet, so the POST returns `201 Created` and the test fails with `Expected:<BadRequest>. Actual:<Created>`.
 
-## Write enough code to make it pass
+## Write the minimal amount of code for the test to run and check the failing test output
 
-Add the options type:
+Add and bind the options type:
 
 ```csharp
 public sealed class TaskOptions
@@ -65,14 +85,16 @@ public sealed class TaskOptions
 }
 ```
 
-Bind it in `Program.cs`:
-
 ```csharp
 builder.Services.Configure<TaskOptions>(
     builder.Configuration.GetSection(TaskOptions.SectionName));
 ```
 
-and use it in the POST handler:
+The app still accepts the 11-character title. The new setting is registered, but the handler does not use it yet.
+
+## Write enough code to make it pass
+
+Use the typed options in the POST handler:
 
 ```csharp
 app.MapPost("/tasks", (CreateTaskRequest request, InMemoryTaskStore store, IOptions<TaskOptions> options) =>
@@ -99,23 +121,14 @@ app.MapPost("/tasks", (CreateTaskRequest request, InMemoryTaskStore store, IOpti
 
 Green. The 11-character title is rejected with the configured limit in the message.
 
-## How it works
+## Refactor
 
-`appsettings.json` holds the default:
+The options type is small, but two habits keep configuration healthy:
 
-```json
-{
-  "Tasks": {
-    "MaxTitleLength": 120
-  }
-}
-```
+- Validate the options at startup. `MaxTitleLength` must be positive; a zero or negative value would reject every title. Data annotations and `ValidateOnStart()` turn that into a startup failure instead of a strange 400 at request time.
+- Keep configuration access at the composition root. A handler that reads `configuration["Tasks:MaxTitleLength"]` hides a dependency and is harder to test. The endpoint asks for the typed options it needs.
 
-`builder.Configuration.GetSection("Tasks")` selects that subtree. `Configure<TaskOptions>` binds its keys to the properties and registers `IOptions<TaskOptions>` in DI. The endpoint asks for `IOptions<TaskOptions>` and reads `Value`; it does not parse a string or reach into `IConfiguration`.
-
-The test's `WithWebHostBuilder` creates a modified host for that test. `ConfigureAppConfiguration` adds an in-memory source after the app's files, so the test value wins. The production files stay untouched, and each test can choose its own limit.
-
-`IOptions<T>` is a singleton snapshot read once. If the limit must change while the app is running, use `IOptionsMonitor<T>` or `IOptionsSnapshot<T>`. For a startup rule like this one, the singleton is the right default.
+For environment-specific values, add `appsettings.Development.json` or use environment variables with the same keys. The in-memory test source is another configuration provider, which is why it overrides the file cleanly.
 
 ## Repeat for new requirements
 
@@ -162,15 +175,6 @@ public async Task DefaultLimit_ComesFromAppSettings()
 ```
 
 It passes because the test host reads the app's `appsettings.json`. This is the test that proves the default is wired, not just the override mechanism.
-
-## Refactor
-
-The options type is small, but two habits keep configuration healthy:
-
-- Validate the options at startup. `MaxTitleLength` must be positive; a zero or negative value would reject every title. Data annotations and `ValidateOnStart()` turn that into a startup failure instead of a strange 400 at request time.
-- Keep configuration access at the composition root. A handler that reads `configuration["Tasks:MaxTitleLength"]` hides a dependency and is harder to test. The endpoint asks for the typed options it needs.
-
-For environment-specific values, add `appsettings.Development.json` or use environment variables with the same keys. The in-memory test source is another configuration provider, which is why it overrides the file cleanly.
 
 ## Wrapping up
 

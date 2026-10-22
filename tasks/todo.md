@@ -113,6 +113,10 @@
   sections in order; the PATCH story separates the store update from the new
   route. `mise exec dotnet@10.0.402 -- dotnet test
   build-an-app/v2-json-routing/TaskTracker.sln -m:1` passed 9 tests.
+- Part 3 `v3-configuration`: English and Spanish pairs now contain the
+  required sections in order, with the options override explained before the
+  scenario. `mise exec dotnet@10.0.402 -- dotnet test
+  build-an-app/v3-configuration/TaskTracker.sln -m:1` passed 12 tests.
 
 ## Completed increment: Part 4 delivery references
 
