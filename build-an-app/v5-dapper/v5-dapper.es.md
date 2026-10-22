@@ -193,5 +193,5 @@ Lo que cubrimos:
 - Un DTO de fila que mapea el `long` de SQLite al `int` y `bool` de la API.
 - Cuándo sirve un diseño mixto EF/Dapper.
 
-Siguiente: v6: validación con FluentValidation.
+Siguiente: [v6: validación con FluentValidation](../v6-validation/v6-validation.es.md).
 

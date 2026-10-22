@@ -76,3 +76,4 @@ One API, grown version by version. Each version is a standalone solution with it
 3. 🟢 [v3: Configuration and options](build-an-app/v3-configuration/v3-configuration.md) ([ES](build-an-app/v3-configuration/v3-configuration.es.md)) - Bind a typed options object from appsettings and override it in the test host.
 4. 🟢 [v4: EF Core and SQLite](build-an-app/v4-ef-core/v4-ef-core.md) ([ES](build-an-app/v4-ef-core/v4-ef-core.es.md)) - Persist tasks with a code-first model, a migration and a repository.
 5. 🟢 [v5: Dapper read queries](build-an-app/v5-dapper/v5-dapper.md) ([ES](build-an-app/v5-dapper/v5-dapper.es.md)) - Split reads and writes: Dapper queries the same SQLite rows that EF stores.
+6. 🟢 [v6: Validation](build-an-app/v6-validation/v6-validation.md) ([ES](build-an-app/v6-validation/v6-validation.es.md)) - Move title rules into FluentValidation and return per-field errors.
