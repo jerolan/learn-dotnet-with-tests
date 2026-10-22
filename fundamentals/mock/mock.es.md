@@ -140,5 +140,5 @@ Lo que cubrimos:
 
 El capítulo sigue el [capítulo Mocking de Learn Go with Tests](https://quii.gitbook.io/learn-go-with-tests/mocking): el test reemplaza un colaborador lento o externo con un doble controlado. .NET agrega el proxy de interfaz y la API de verificación de Moq.
 
-Siguiente: [Colecciones](../collections.md).
+Siguiente: [Colecciones](../collections/collections.es.md).
 
