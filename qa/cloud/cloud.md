@@ -11,7 +11,7 @@ There is no cloud subscription in this repository, so this appendix does not dep
 - One port. The container listens on `8080`; App Service and Container Apps expect the app to bind to the port they provide through `PORT` or `WEBSITES_PORT`.
 - Configuration from the environment. `ConnectionStrings__TaskTracker` and the JWT key are read from configuration; the defaults in `appsettings.json` are for local runs.
 - A writable data path. SQLite needs `/data`; a managed database needs a connection string and network access.
-- A health endpoint. The container can answer `/health` before it can serve tasks.
+- A health endpoint. Add one before the platform starts probing; the app does not expose one yet.
 - Logs on stdout. The platform collects them; a file inside the container disappears with the instance.
 
 ## Choose a target

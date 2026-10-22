@@ -11,7 +11,7 @@ Este repositorio no tiene una suscripción de nube, así que este apéndice no d
 - Un puerto. El contenedor escucha en `8080`; App Service y Container Apps esperan que la app se enlace al puerto que entregan por `PORT` o `WEBSITES_PORT`.
 - Configuración desde el entorno. `ConnectionStrings__TaskTracker` y la clave JWT se leen de configuración; los defaults de `appsettings.json` son para local.
 - Una ruta de datos escribible. SQLite necesita `/data`; una base administrada necesita una cadena de conexión y acceso de red.
-- Un endpoint de salud. El contenedor puede responder `/health` antes de servir tareas.
+- Un endpoint de salud. Agrégalo antes de que la plataforma empiece a sondear; la app todavía no expone uno.
 - Logs en stdout. La plataforma los recoge; un archivo dentro del contenedor desaparece con la instancia.
 
 ## Elige un destino
