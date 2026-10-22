@@ -174,5 +174,5 @@ What we have covered:
 - Log levels and the boundary logging habit.
 - Avoiding interpolation, secrets and noisy per-line logs.
 
-Next: v10: caching with IMemoryCache.
+Next: [v10: caching with IMemoryCache](../v10-caching/v10-caching.md).
 

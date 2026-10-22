@@ -174,5 +174,5 @@ Lo que cubrimos:
 - Niveles de log y el hábito de loguear en los bordes.
 - Evitar interpolación, secretos y logs ruidosos por línea.
 
-Siguiente: v10: caché con IMemoryCache.
+Siguiente: [v10: caché con IMemoryCache](../v10-caching/v10-caching.es.md).
 
