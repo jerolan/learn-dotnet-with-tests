@@ -11,7 +11,7 @@ This part closes the roadmap. The Q&A chapters answer the questions that do not 
 ## Appendices
 
 - 🟠 [Snapshot testing with Verify](snapshot-verify/snapshot-verify.md) ([ES](snapshot-verify/snapshot-verify.es.md)) - Approve a formatted output with a verified file and review its diffs.
-- 🟠 End-to-end testing with Playwright. *Planned.*
+- 🟠 [End-to-end testing with Playwright](e2e-playwright/e2e-playwright.md) ([ES](e2e-playwright/e2e-playwright.es.md)) - Start Kestrel on a free port and drive the task board in Chromium.
 - 🟠 [Performance testing with NBomber](performance-nbomber/performance-nbomber.md) ([ES](performance-nbomber/performance-nbomber.es.md)) - Run a fixed load against an API and read throughput and percentiles.
 - 🟠 [Test data with Bogus](test-data-bogus/test-data-bogus.md) ([ES](test-data-bogus/test-data-bogus.es.md)) - Generate valid orders from seeded rules and keep literal values for the edges.
 - 🟠 [Integration testing tools: Respawn, Testcontainers and Docker](integration-testing-tools/integration-testing-tools.md) ([ES](integration-testing-tools/integration-testing-tools.es.md)) - Start PostgreSQL in Docker and reset it between tests.
@@ -49,7 +49,7 @@ This part closes the roadmap. The Q&A chapters answer the questions that do not 
 | Task scheduling | [v11](../build-an-app/v11-messaging-scheduling/v11-messaging-scheduling.md) | covered |
 | .NET libraries | [SDK libraries](sdk-libraries/sdk-libraries.md) | covered |
 | SignalR | [Real-time updates with SignalR](signalr/signalr.md) | covered |
-| Snapshot, E2E, performance | [Snapshot](snapshot-verify/snapshot-verify.md), [NBomber](performance-nbomber/performance-nbomber.md), Playwright appendix | snapshot and performance covered; E2E planned |
+| Snapshot, E2E, performance | [Snapshot](snapshot-verify/snapshot-verify.md), [Playwright](e2e-playwright/e2e-playwright.md), [NBomber](performance-nbomber/performance-nbomber.md) | covered |
 | Containers, CI/CD, monitoring, cloud, DevOps | [Containers](containers/containers.md), [CI/CD](ci-cd/ci-cd.md), [Monitoring](monitoring-telemetry/monitoring-telemetry.md), cloud and DevOps appendices | containers, CI/CD and monitoring covered; cloud and DevOps planned |
 | Streaming, NoSQL, gRPC, GraphQL | [gRPC](grpc/grpc.md), [GraphQL](graphql/graphql.md), [NoSQL](nosql/nosql.md), [Streaming](streaming/streaming.md) | covered |
 | General development skills | README preface and testing Q&A | covered |

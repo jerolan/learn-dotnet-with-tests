@@ -11,7 +11,7 @@ Esta parte cierra el roadmap. Los capítulos de preguntas responden dudas que no
 ## Apéndices
 
 - 🟠 [Snapshot testing con Verify](snapshot-verify/snapshot-verify.es.md) ([EN](snapshot-verify/snapshot-verify.md)) - Aprueba una salida formateada con un archivo verificado y revisa sus diffs.
-- 🟠 Tests end-to-end con Playwright. *Planeado.*
+- 🟠 [Tests end-to-end con Playwright](e2e-playwright/e2e-playwright.es.md) ([EN](e2e-playwright/e2e-playwright.md)) - Arranca Kestrel en un puerto libre y maneja el tablero en Chromium.
 - 🟠 [Tests de rendimiento con NBomber](performance-nbomber/performance-nbomber.es.md) ([EN](performance-nbomber/performance-nbomber.md)) - Corre una carga fija contra una API y lee throughput y percentiles.
 - 🟠 [Datos de test con Bogus](test-data-bogus/test-data-bogus.es.md) ([EN](test-data-bogus/test-data-bogus.md)) - Genera pedidos válidos con reglas y semilla, y deja valores literales para los bordes.
 - 🟠 [Herramientas de integración: Respawn, Testcontainers y Docker](integration-testing-tools/integration-testing-tools.es.md) ([EN](integration-testing-tools/integration-testing-tools.md)) - Levanta PostgreSQL en Docker y resetea entre tests.
@@ -49,7 +49,7 @@ Esta parte cierra el roadmap. Los capítulos de preguntas responden dudas que no
 | Scheduling de tareas | [v11](../build-an-app/v11-messaging-scheduling/v11-messaging-scheduling.es.md) | cubierto |
 | Bibliotecas .NET | [Bibliotecas SDK](sdk-libraries/sdk-libraries.es.md) | cubierto |
 | SignalR | [Actualizaciones en tiempo real con SignalR](signalr/signalr.es.md) | cubierto |
-| Snapshot, E2E, rendimiento | [Snapshot](snapshot-verify/snapshot-verify.es.md), [NBomber](performance-nbomber/performance-nbomber.es.md), apéndice de Playwright | snapshot y rendimiento cubiertos; E2E planeado |
+| Snapshot, E2E, rendimiento | [Snapshot](snapshot-verify/snapshot-verify.es.md), [Playwright](e2e-playwright/e2e-playwright.es.md), [NBomber](performance-nbomber/performance-nbomber.es.md) | cubierto |
 | Contenedores, CI/CD, monitoreo, nube, DevOps | [Contenedores](containers/containers.es.md), [CI/CD](ci-cd/ci-cd.es.md), [Monitoreo](monitoring-telemetry/monitoring-telemetry.es.md), apéndices de nube y DevOps | contenedores, CI/CD y monitoreo cubiertos; nube y DevOps planeados |
 | Streaming, NoSQL, gRPC, GraphQL | [gRPC](grpc/grpc.es.md), [GraphQL](graphql/graphql.es.md), [NoSQL](nosql/nosql.es.md), [Streaming](streaming/streaming.es.md) | cubierto |
 | Habilidades generales de desarrollo | Prefacio del README y preguntas de testing | cubierto |

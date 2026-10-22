@@ -35,7 +35,7 @@ Close the roadmap with LGWT-style Q&A chapters and the 🟠 appendices. Every ro
 | .NET libraries | Appendix `sdk-libraries` | covered |
 | SignalR | Appendix `signalr` | covered |
 | Snapshot testing (Verify) | Appendix `snapshot-verify` | covered |
-| E2E (Playwright) | Appendix `e2e-playwright` | planned |
+| E2E (Playwright) | Appendix `e2e-playwright` | covered |
 | Performance (K6/NBomber) | Appendix `performance-nbomber` | covered |
 | Containers | Appendix `containers` | covered |
 | CI/CD | Appendix `ci-cd` | covered |
