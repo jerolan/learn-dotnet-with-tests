@@ -147,7 +147,7 @@ El primer test tiene un escenario de datos válidos generados. Todavía no hace 
 - No generes el valor esperado con las mismas reglas que generan la entrada. El generador no es un oráculo.
 - Un valor generado dentro de una aserción solo es seguro mientras la semilla y la versión de la librería estén fijas.
 
-## Repite para los nuevos requisitos
+## Repite con requisitos nuevos
 
 La primera regla: un pedido cuyo email no tiene `@` es inválido. Es un borde, así que dale un valor literal en vez de generarlo:
 

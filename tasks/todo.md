@@ -7,8 +7,8 @@
 ### Task 1: Align chapter pairs with the canonical template
 - [x] Align Part 1 English/Spanish chapters with the section order in `fundamentals/TEMPLATE.md`.
 - [x] Align Part 2 and Part 3 pairs with the same order.
-- [ ] Align runnable Part 4 appendices where their sample supports the TDD flow; preserve the Phase 4 Q&A and explicit deferral exceptions.
-- [ ] Verify each slice has every required section in matching bilingual order, resolving links and passing solution tests.
+- [x] Align runnable Part 4 appendices where their sample supports the TDD flow; preserve the Phase 4 Q&A and explicit deferral exceptions.
+- [x] Verify each slice has every required section in matching bilingual order, resolving links and passing solution tests.
 - Verify: required-section audit, full local-link audit and `dotnet test` for affected solutions.
 - Files: `fundamentals/**`, `testing/**`, `build-an-app/**`, runnable `qa/**`, phase specs and task artifacts.
 - Dependency: the chapter pairs and runnable solutions already exist.
@@ -195,6 +195,14 @@
 - Part 4 `e2e-playwright` now follows the runnable appendix flow in both
   languages. `RUN_E2E=1 mise exec dotnet@10.0.402 -- dotnet test
   qa/e2e-playwright/E2E.sln -m:1` passed 1 browser test.
+- Part 4 `performance-nbomber` keeps its explicit deferral note for CI load
+  gating. `mise exec dotnet@10.0.402 -- dotnet test
+  qa/performance-nbomber/PerformanceNbomber.sln -m:1` passed 1 test.
+- Required section order passed for all 44 Part 1-3 bilingual solution pairs
+  and all 11 runnable Part 4 appendix pairs. NBomber is excluded from the TDD
+  heading audit under its explicit Phase 4 deferral.
+- Full local Markdown link audit: 460 local links checked across the
+  repository; 0 broken links.
 
 ## Completed increment: Part 4 delivery references
 

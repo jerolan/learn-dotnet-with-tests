@@ -136,7 +136,7 @@ version, v15, so their commands match the Part 3 index and the CI workflow.
 - The Part 4 coverage map distinguishes text-map topics from topics added by the
   roadmap image and points to the source.
 
-## Current Increment: Chapter section order
+## Completed Increment: Chapter section order
 
 ### Overview
 Align code chapters with the section sequence in `fundamentals/TEMPLATE.md`.
@@ -159,3 +159,6 @@ moving its explanation into the approved teaching flow.
 ### Checkpoint
 - Every applicable chapter pair contains the required template sections in the prescribed order, with matching English/Spanish structure.
 - Part 4 exceptions remain explicit and consistent with `SPEC-phase4.md`.
+- The order audit passed for 44 Part 1-3 solution pairs and 11 runnable Part 4 appendix pairs.
+- The repository-wide local Markdown link audit checked 460 links and found none broken.
+- All Part 4 appendix solutions passed; the E2E gate was enabled for Playwright, and NBomber retains its explicit CI load-gating deferral.
