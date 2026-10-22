@@ -6,6 +6,31 @@ Un mock registra llamadas y deja que el test las verifique. Un fake es una imple
 
 Vamos a probar un servicio de tareas con un repositorio en memoria y sin biblioteca de mocking. La solución terminada está en `testing/working-without-mocks`.
 
+## Cómo funciona
+
+`TodoService` depende de la interfaz `ITodoRepository`. El test proporciona una implementación en memoria que guarda las tareas en una lista, así el servicio puede probarse sin una base de datos. Un mock podría registrar llamadas, pero este test comprueba las tareas que produce el servicio.
+
+## Cómo probarlo
+
+Deja el fake en el proyecto de tests. Implementa el contrato del repositorio con el almacenamiento mínimo que sirve y comprueba su estado después de usar el servicio.
+
+```csharp
+private sealed class InMemoryTodoRepository : ITodoRepository
+{
+    private readonly List<Todo> _todos = new();
+
+    public void Add(Todo todo)
+    {
+        _todos.Add(todo);
+    }
+
+    public IReadOnlyList<Todo> All()
+    {
+        return _todos;
+    }
+}
+```
+
 ## Escribe primero el test
 
 ```csharp
@@ -29,7 +54,7 @@ El test usa el fake como colaborador y comprueba el estado resultante.
 ## Intenta ejecutar el test
 
 ```text
-error CS0246: The type or namespace name 'TodoService' could not be found
+El compilador todavía no encuentra `Todo`, `ITodoRepository` ni `TodoService`.
 ```
 
 ## Escribe el código mínimo para que el test compile y mira la salida
@@ -84,26 +109,27 @@ public IReadOnlyList<Todo> List()
 
 Verde. El fake guarda la tarea en una lista, y `List` la devuelve. Sin mock, sin setup y sin verificar el orden de las llamadas.
 
-## El fake
+## Refactor
 
-```csharp
-private sealed class InMemoryTodoRepository : ITodoRepository
-{
-    private readonly List<Todo> _todos = new();
+La implementación de producción es pequeña y no hay comportamiento duplicado que extraer. Mantén el test en verde; usa un fake cuando importe el estado resultante y un mock cuando la interacción en sí sea el contrato.
 
-    public void Add(Todo todo)
-    {
-        _todos.Add(todo);
-    }
+### Elegir un fake o un mock
 
-    public IReadOnlyList<Todo> All()
-    {
-        return _todos;
-    }
-}
-```
+Usa un fake cuando:
 
-Es una implementación real con el almacenamiento mínimo que funciona. El test puede inspeccionar `All()` después de la acción, que es exactamente el comportamiento que le importa a quien llama.
+- La interfaz es tuya y puedes escribir una implementación pequeña.
+- Al test le importa el estado resultante.
+- El colaborador tiene un comportamiento fácil de modelar en memoria, como un repositorio, una caché o un reloj.
+
+Usa un mock cuando:
+
+- La interacción en sí es el contrato, como "manda exactamente un correo" o "llama una vez a la pasarela de pago".
+- El colaborador es un borde externo con una API grande que no quieres implementar.
+- Necesitas simular un fallo específico de una dependencia sin construir un fake completo.
+
+El fake vive en el proyecto de tests y puede reutilizarse en muchos tests. Si se vuelve complejo, es una señal: o la interfaz hace demasiado o el comportamiento pertenece a un adaptador real con sus propios tests.
+
+Mocks y fakes responden preguntas distintas. Un mock dice "¿llamaste a esto, con estos argumentos?". Un fake dice "dado este comportamiento, ¿qué produjo el sistema?". La mayoría de los tests se leen mejor cuando hacen la segunda pregunta.
 
 ## Repite con requisitos nuevos
 
@@ -136,26 +162,6 @@ _repository.Add(new Todo(id, title));
 ```
 
 Verde. La segunda aserción es la importante: una tarea rechazada no debe llegar al repositorio. El fake hace visible ese estado sin una llamada a `Verify`.
-
-## Refactor
-
-El código de producción es pequeño. La pregunta de diseño es cuándo usar un fake y cuándo un mock.
-
-Usa un fake cuando:
-
-- La interfaz es tuya y puedes escribir una implementación pequeña.
-- Al test le importa el estado resultante.
-- El colaborador tiene un comportamiento fácil de modelar en memoria, como un repositorio, una caché o un reloj.
-
-Usa un mock cuando:
-
-- La interacción en sí es el contrato, como "manda exactamente un correo" o "llama una vez a la pasarela de pago".
-- El colaborador es un borde externo con una API grande que no quieres implementar.
-- Necesitas simular un fallo específico de una dependencia sin construir un fake completo.
-
-El fake vive en el proyecto de tests y puede reutilizarse en muchos tests. Si se vuelve complejo, es una señal: o la interfaz hace demasiado o el comportamiento pertenece a un adaptador real con sus propios tests.
-
-Mocks y fakes responden preguntas distintas. Un mock dice "¿llamaste a esto, con estos argumentos?". Un fake dice "dado este comportamiento, ¿qué produjo el sistema?". La mayoría de los tests se leen mejor cuando hacen la segunda pregunta.
 
 ## Para cerrar
 

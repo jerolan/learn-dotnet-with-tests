@@ -92,6 +92,10 @@
 - Part 2 `acceptance-tests`: English and Spanish pairs now contain the
   required sections in order. `mise exec dotnet@10.0.402 -- dotnet test
   testing/acceptance-tests/AcceptanceTests.sln -m:1` passed 2 tests.
+- Part 2 `working-without-mocks`: English and Spanish pairs now contain the
+  required sections in order, including the in-memory fake before the first
+  test. `mise exec dotnet@10.0.402 -- dotnet test
+  testing/working-without-mocks/WorkingWithoutMocks.sln -m:1` passed 2 tests.
 
 ## Completed increment: Part 4 delivery references
 

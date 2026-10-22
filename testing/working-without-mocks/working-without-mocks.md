@@ -6,6 +6,31 @@ A mock records calls and lets the test verify them. A fake is a small working im
 
 We will test a todo service with an in-memory repository and no mocking library. The finished solution is in `testing/working-without-mocks`.
 
+## How it works
+
+`TodoService` depends on an `ITodoRepository` interface. The test supplies an in-memory implementation that stores todos in a list, so the service can be tested without a database. A mock could record calls instead, but this test cares about the todos the service produces.
+
+## How to test
+
+Keep the fake in the test project. It implements the repository contract with the smallest useful storage, and the test checks its state after using the service.
+
+```csharp
+private sealed class InMemoryTodoRepository : ITodoRepository
+{
+    private readonly List<Todo> _todos = new();
+
+    public void Add(Todo todo)
+    {
+        _todos.Add(todo);
+    }
+
+    public IReadOnlyList<Todo> All()
+    {
+        return _todos;
+    }
+}
+```
+
 ## Write the test first
 
 ```csharp
@@ -29,7 +54,7 @@ The test uses the fake as the collaborator and checks the resulting state.
 ## Try to run the test
 
 ```text
-error CS0246: The type or namespace name 'TodoService' could not be found
+The compiler cannot find `Todo`, `ITodoRepository` or `TodoService` yet.
 ```
 
 ## Write the minimal amount of code for the test to run and check the failing test output
@@ -84,26 +109,27 @@ public IReadOnlyList<Todo> List()
 
 Green. The fake stores the todo in a list, and `List` returns it. No mock, no setup and no verification of call order.
 
-## The fake
+## Refactor
 
-```csharp
-private sealed class InMemoryTodoRepository : ITodoRepository
-{
-    private readonly List<Todo> _todos = new();
+The production implementation is small, and there is no duplicated behavior to extract. Keep the test green; use a fake when the test cares about resulting state and a mock when the interaction itself is the contract.
 
-    public void Add(Todo todo)
-    {
-        _todos.Add(todo);
-    }
+### Choose a fake or a mock
 
-    public IReadOnlyList<Todo> All()
-    {
-        return _todos;
-    }
-}
-```
+Use a fake when:
 
-It is a real implementation with the smallest storage that works. The test can inspect `All()` after the action, which is exactly the behavior a caller cares about.
+- You own the interface and can write a small implementation.
+- The test cares about the resulting state.
+- The collaborator has behavior that is easy to model in memory, such as a repository, a cache or a clock.
+
+Use a mock when:
+
+- The interaction itself is the contract, such as "send exactly one email" or "call the payment gateway once".
+- The collaborator is an external boundary with a large API you do not want to implement.
+- You need to simulate a specific failure from a dependency without building a full fake.
+
+The fake lives in the test project and can be reused by many tests. If it grows complex, that is a signal: either the interface is doing too much or the behavior belongs in a real adapter with its own tests.
+
+Mocks and fakes answer different questions. A mock says "did you call this, with these arguments?" A fake says "given this behavior, what did the system produce?" Most tests are easier to read when they ask the second question.
 
 ## Repeat for new requirements
 
@@ -136,26 +162,6 @@ _repository.Add(new Todo(id, title));
 ```
 
 Green. The second assertion is the important one: a rejected todo must not reach the repository. The fake makes that state visible without a `Verify` call.
-
-## Refactor
-
-The production code is small. The design question is when to reach for a fake and when to reach for a mock.
-
-Use a fake when:
-
-- You own the interface and can write a small implementation.
-- The test cares about the resulting state.
-- The collaborator has behavior that is easy to model in memory, such as a repository, a cache or a clock.
-
-Use a mock when:
-
-- The interaction itself is the contract, such as "send exactly one email" or "call the payment gateway once".
-- The collaborator is an external boundary with a large API you do not want to implement.
-- You need to simulate a specific failure from a dependency without building a full fake.
-
-The fake lives in the test project and can be reused by many tests. If it grows complex, that is a signal: either the interface is doing too much or the behavior belongs in a real adapter with its own tests.
-
-Mocks and fakes answer different questions. A mock says "did you call this, with these arguments?" A fake says "given this behavior, what did the system produce?" Most tests are easier to read when they ask the second question.
 
 ## Wrapping up
 
