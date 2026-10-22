@@ -17,7 +17,7 @@ Esta parte cierra el roadmap. Los capítulos de preguntas responden dudas que no
 - 🟠 Herramientas de integración: Respawn, Testcontainers y Docker. *Planeado.*
 - 🟠 Contenedores para la API TaskTracker. *Planeado.*
 - 🟠 CI/CD más allá del job único de tests. *Planeado.*
-- 🟠 Monitoreo y telemetría. *Planeado.*
+- 🟠 [Monitoreo y telemetría](monitoring-telemetry/monitoring-telemetry.es.md) ([EN](monitoring-telemetry/monitoring-telemetry.md)) - Registra un contador con tags y captúralo con un MeterListener.
 - 🟠 Despliegue en la nube. *Planeado.*
 - 🟠 Streaming. *Planeado.*
 - 🟠 NoSQL. *Planeado.*
@@ -50,7 +50,7 @@ Esta parte cierra el roadmap. Los capítulos de preguntas responden dudas que no
 | Bibliotecas .NET | Apéndice de bibliotecas SDK | planeado |
 | SignalR | Apéndice de SignalR | planeado |
 | Snapshot, E2E, rendimiento | [Snapshot](snapshot-verify/snapshot-verify.es.md), apéndices de Playwright y NBomber | snapshot cubierto; E2E y rendimiento planeados |
-| Contenedores, CI/CD, monitoreo, nube, DevOps | Apéndices de entrega | planeado |
+| Contenedores, CI/CD, monitoreo, nube, DevOps | [Monitoreo](monitoring-telemetry/monitoring-telemetry.es.md), apéndices de contenedores, CI/CD, nube y DevOps | monitoreo cubierto; el resto planeado |
 | Streaming, NoSQL, gRPC, GraphQL | Apéndices de protocolos y almacenamiento | planeado |
 | Habilidades generales de desarrollo | Prefacio del README y preguntas de testing | cubierto |
 

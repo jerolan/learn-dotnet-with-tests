@@ -95,3 +95,4 @@ The closing part answers the questions that do not need a new project and maps t
 - 🟠 [Design Questions](qa/design-questions.md) ([ES](qa/design-questions.es.md)) - Rules, boundaries, CQRS, caching, logging and DI lifetimes.
 - 🟠 [.NET Questions](qa/dotnet-questions.md) ([ES](qa/dotnet-questions.es.md)) - Records, sequences, tasks, money, collections and ref.
 - 🟠 [Snapshot Testing with Verify](qa/snapshot-verify/snapshot-verify.md) ([ES](qa/snapshot-verify/snapshot-verify.es.md)) - Approve a formatted output with a verified file and review its diffs.
+- 🟠 [Monitoring and Telemetry](qa/monitoring-telemetry/monitoring-telemetry.md) ([ES](qa/monitoring-telemetry/monitoring-telemetry.es.md)) - Record a tagged counter and capture it in a test.

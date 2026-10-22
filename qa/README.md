@@ -17,7 +17,7 @@ This part closes the roadmap. The Q&A chapters answer the questions that do not 
 - 🟠 Integration testing tools: Respawn, Testcontainers and Docker. *Planned.*
 - 🟠 Containers for the TaskTracker API. *Planned.*
 - 🟠 CI/CD beyond the single test job. *Planned.*
-- 🟠 Monitoring and telemetry. *Planned.*
+- 🟠 [Monitoring and telemetry](monitoring-telemetry/monitoring-telemetry.md) ([ES](monitoring-telemetry/monitoring-telemetry.es.md)) - Record a tagged counter and capture it with a MeterListener.
 - 🟠 Cloud deployment. *Planned.*
 - 🟠 Streaming. *Planned.*
 - 🟠 NoSQL. *Planned.*
@@ -50,7 +50,7 @@ This part closes the roadmap. The Q&A chapters answer the questions that do not 
 | .NET libraries | SDK libraries appendix | planned |
 | SignalR | SignalR appendix | planned |
 | Snapshot, E2E, performance | [Snapshot](snapshot-verify/snapshot-verify.md), Playwright and NBomber appendices | snapshot covered; E2E and performance planned |
-| Containers, CI/CD, monitoring, cloud, DevOps | Delivery appendices | planned |
+| Containers, CI/CD, monitoring, cloud, DevOps | [Monitoring](monitoring-telemetry/monitoring-telemetry.md), container, CI/CD, cloud and DevOps appendices | monitoring covered; the rest planned |
 | Streaming, NoSQL, gRPC, GraphQL | Protocol and storage appendices | planned |
 | General development skills | README preface and testing Q&A | covered |
 
