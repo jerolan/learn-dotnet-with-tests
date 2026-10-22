@@ -2,9 +2,25 @@
 
 [You can find all the code for this chapter here](https://github.com/jerolan/learn-dotnet-with-tests/tree/main/fundamentals/records)
 
-A struct is a value type: assigning it copies its data. A record is a reference type with value equality: two records are equal when their values are equal, even though they are different objects. Both are useful for data, and they behave differently when you pass them around.
+A copied counter should change independently from its source. Two `Person` records with the same name and age should compare equal.
 
-We will build a small counter to see the copy, then a person record to see equality. The finished solution is in `fundamentals/records`; if you are building it from scratch, use the same layout as the previous chapters: a class library in `src/Records`, an MSTest project in `tests/Records.Tests`, a solution and a project reference.
+The first example cannot compile because `Counter` does not exist:
+
+```csharp
+var original = new Counter { Value = 1 };
+var copy = original;
+copy.Increment();
+```
+
+Running `dotnet test` reports `error CS0246: The type or namespace name 'Counter' could not be found`. We will use one test to see how structs copy, then tests to see how records compare. The finished solution is in `fundamentals/records`; if you are building it from scratch, use the same layout as the previous chapters: a class library in `src/Records`, an MSTest project in `tests/Records.Tests`, a solution and a project reference.
+
+## How it works
+
+A `struct` is a value type: assigning it copies its data. A `record` is a reference type with value equality: two records compare equal when their values match, even when they are different objects. Structs and records can both hold data, but assignment and equality work differently for each.
+
+## How to test
+
+These examples stay in memory. For a struct, mutate a copy and assert that the source stays unchanged. For a record, create two instances and compare them with `Assert.AreEqual`. Those assertions make copying and value equality visible at the call site.
 
 ## Write the test first
 
@@ -67,6 +83,10 @@ public void Increment()
 Green. The interesting part is what did not happen to `original`. `copy = original` copied the struct's fields, so `copy` and `original` are two separate values. Calling `Increment` on the copy changed only the copy.
 
 That is value semantics. A struct is copied when it is assigned, passed to a method, or returned from one. It is a good fit for small values that behave like numbers. Mutable structs are easy to misuse, which is why production code usually makes them `readonly`.
+
+## Refactor
+
+There is nothing to change in this counter: it is mutable on purpose so the test can show the copy. When a value should not change, use `readonly struct` and let the compiler reject mutations.
 
 ## Repeat for new requirements
 
@@ -136,9 +156,7 @@ public record Person(string Name, int Age)
 
 Green. A record is not just a bag of fields; it can have properties and methods like any other type. The difference is the equality and the concise syntax.
 
-## Refactor
-
-There is not much to clean up. The counter is mutable on purpose: it makes the copy visible. If you were modeling a value you never change, declare it `readonly struct` so the compiler enforces that every field is readonly.
+### Keep record values immutable
 
 The record's properties are init-only. Trying to assign one after construction is a compile error:
 

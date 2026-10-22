@@ -2,9 +2,25 @@
 
 [Encuentras todo el código de este capítulo aquí](https://github.com/jerolan/learn-dotnet-with-tests/tree/main/fundamentals/records)
 
-Un struct es un tipo por valor: asignarlo copia sus datos. Un record es un tipo por referencia con igualdad por valor: dos records son iguales cuando sus valores son iguales, aunque sean objetos distintos. Los dos sirven para datos, y se comportan distinto al pasarlos de un lado a otro.
+Una copia de un contador debe cambiar sin modificar el original. Dos records `Person` con el mismo nombre y edad deben compararse como iguales.
 
-Vamos a construir un contador pequeño para ver la copia y después un record de persona para ver la igualdad. La solución terminada está en `fundamentals/records`; si la estás armando desde cero, usa la misma estructura que en los capítulos anteriores: una biblioteca de clases en `src/Records`, un proyecto de MSTest en `tests/Records.Tests`, una solución y una referencia entre proyectos.
+El primer ejemplo no compila porque `Counter` no existe:
+
+```csharp
+var original = new Counter { Value = 1 };
+var copy = original;
+copy.Increment();
+```
+
+Al ejecutar `dotnet test`, aparece `error CS0246: The type or namespace name 'Counter' could not be found`. Usaremos un test para ver cómo se copian los structs y después otros para ver cómo se comparan los records. La solución terminada está en `fundamentals/records`; si la estás armando desde cero, usa la misma estructura que en los capítulos anteriores: una biblioteca de clases en `src/Records`, un proyecto de MSTest en `tests/Records.Tests`, una solución y una referencia entre proyectos.
+
+## Cómo funciona
+
+Un `struct` es un tipo por valor: asignarlo copia sus datos. Un `record` es un tipo por referencia con igualdad por valor: dos records se comparan como iguales cuando sus valores coinciden, aunque sean objetos distintos. Tanto los structs como los records pueden guardar datos, pero la asignación y la igualdad funcionan de forma distinta en cada caso.
+
+## Cómo probarlo
+
+Estos ejemplos se mantienen en memoria. Para un struct, modifica una copia y comprueba que el original no cambie. Para un record, crea dos instancias y compáralas con `Assert.AreEqual`. Esas aserciones hacen visibles la copia y la igualdad por valor en el punto de uso.
 
 ## Escribe primero el test
 
@@ -67,6 +83,10 @@ public void Increment()
 Verde. Lo interesante es lo que no le pasó a `original`. `copy = original` copió los campos del struct, así que `copy` y `original` son dos valores separados. Llamar a `Increment` en la copia cambió solo la copia.
 
 Eso es semántica de valores. Un struct se copia cuando se asigna, cuando se pasa a un método y cuando se devuelve desde uno. Es una buena opción para valores pequeños que se comportan como números. Los structs mutables son fáciles de usar mal, y por eso el código de producción suele declararlos `readonly`.
+
+## Refactor
+
+No hay nada que cambiar en este contador: es mutable a propósito para que el test muestre la copia. Si un valor no debe cambiar, usa `readonly struct` y deja que el compilador rechace las mutaciones.
 
 ## Repite con requisitos nuevos
 
@@ -136,9 +156,7 @@ public record Person(string Name, int Age)
 
 Verde. Un record no es solo un saco de campos; puede tener propiedades y métodos como cualquier otro tipo. La diferencia está en la igualdad y en la sintaxis concisa.
 
-## Refactor
-
-No hay mucho que limpiar. El contador es mutable a propósito: hace visible la copia. Si estuvieras modelando un valor que nunca cambia, decláralo `readonly struct` para que el compilador exija que todos los campos sean de solo lectura.
+### Mantener inmutables los valores del record
 
 Las propiedades del record son de solo inicialización. Intentar asignar una después de construirlo es un error de compilación:
 
