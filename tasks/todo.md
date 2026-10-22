@@ -121,6 +121,10 @@
   sections in order, with the restart test leading into SQLite persistence.
   `mise exec dotnet@10.0.402 -- dotnet test
   build-an-app/v4-ef-core/TaskTracker.sln -m:1` passed 13 tests.
+- Part 3 `v5-dapper`: English and Spanish pairs now contain the required
+  sections in order, with the passing v4 behavior recorded as the baseline for
+  the Dapper read-path change. `mise exec dotnet@10.0.402 -- dotnet test
+  build-an-app/v5-dapper/TaskTracker.sln -m:1` passed 14 tests.
 
 ## Completed increment: Part 4 delivery references
 

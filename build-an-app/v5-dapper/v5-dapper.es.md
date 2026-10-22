@@ -6,6 +6,18 @@ EF Core es bueno trackeando cambios y guardando entidades. Las consultas de repo
 
 La solución terminada está en `build-an-app/v5-dapper`.
 
+## Cómo funciona
+
+EF Core conserva el camino de escritura y su seguimiento de cambios. Dapper lee de la misma base SQLite por la conexión que pertenece a `TaskDbContext`; las interfaces separadas `ITaskReader` y `ITaskWriter` hacen visibles esas responsabilidades.
+
+`Query<T>` mapea filas, `QuerySingleOrDefault<T>` devuelve `null` cuando no hay coincidencia y `AsList()` materializa la consulta antes de reutilizar la conexión. El tipo de fila convierte las columnas enteras de SQLite a los valores `int` y `bool` de la API.
+
+La separación lectura/escritura es un paso pequeño de CQRS: dos interfaces con trabajos distintos, no una base separada ni un bus de mensajes. Las lecturas pueden seleccionar solo las columnas que necesita una pantalla; las escrituras conservan el tracking y las migraciones de EF.
+
+## Cómo probarlo
+
+El test inserta una fila directamente en la conexión SQLite abierta, sin pasar por EF, y luego la lee por la API HTTP. El driver usa la misma conexión que la app para que ambas bibliotecas vean la misma base en memoria.
+
 ## Escribe primero el test
 
 ```csharp
@@ -26,13 +38,21 @@ public async Task Get_SeesRowsWrittenOutsideEf()
 
 El test escribe una fila con SQL crudo, salteando EF por completo. Si GET la ve, el camino de lectura consulta la base, no una caché de EF.
 
-## Agrega Dapper
+## Intenta ejecutar el test
+
+Ejecútalo contra la implementación de v4. Pasa porque EF también lee la base SQLite compartida. Este capítulo cambia la implementación de lectura y conserva ese comportamiento, así que la base verde es intencional.
+
+## Escribe el código mínimo para que el test compile y mira la salida
+
+El test ya compila y se ejecuta, así que no hace falta un cambio solo para compilar. Agrega Dapper y separa los contratos de lectura y escritura antes de reemplazar la implementación.
+
+### Agrega Dapper
 
 ```sh
 dotnet add src/TaskTracker.Api package Dapper --version 2.1.35
 ```
 
-## Separa lectura y escritura
+### Separa lectura y escritura
 
 ```csharp
 public interface ITaskReader
@@ -52,7 +72,9 @@ public interface ITaskWriter
 
 Los endpoints cambian su dependencia: GET recibe `ITaskReader`, POST y PATCH reciben `ITaskWriter`. El contrato HTTP queda igual.
 
-## El lector Dapper
+## Escribe el código suficiente para que pase
+
+### El lector Dapper
 
 ```csharp
 public sealed class DapperTaskReader : ITaskReader
@@ -114,7 +136,7 @@ El lector toma prestada la conexión de EF con `GetDbConnection()`. Eso importa 
 
 `TaskRow` existe porque SQLite devuelve las columnas enteras como `long`, mientras `TaskItem` usa `int` y `bool`. Mapear explícitamente mantiene independientes el esquema SQL y el modelo de la API.
 
-## El escritor EF
+### El escritor EF
 
 ```csharp
 public interface ITaskWriter
@@ -166,13 +188,7 @@ builder.Services.AddScoped<ITaskReader, DapperTaskReader>();
 builder.Services.AddScoped<ITaskWriter, EfTaskWriter>();
 ```
 
-## Cómo funciona
-
-`Query<T>` ejecuta una sentencia SQL y mapea cada fila. `QuerySingleOrDefault<T>` espera cero o una fila y devuelve `null` cuando no hay ninguna. `AsList()` materializa el resultado; sin él, la secuencia perezosa de Dapper mantendría el data reader abierto mientras el llamador itera.
-
-El parámetro del id se pasa como objeto anónimo, no concatenado en la cadena. Dapper convierte `@Id` en un parámetro, que es la defensa contra inyección SQL y además deja que el proveedor reutilice el plan de la consulta.
-
-La separación lectura/escritura es un paso pequeño de CQRS. No es una base separada ni un bus de mensajes; son dos interfaces con trabajos distintos. El lado de lectura puede crecer SQL que devuelva exactamente las columnas que necesita una pantalla, mientras el de escritura conserva el tracking y las migraciones de EF.
+La fila que inserta el test ahora aparece por el lector Dapper. El resto de la API sigue escribiendo con EF, y los tests de aceptación existentes se mantienen en verde.
 
 ## Refactor
 
@@ -182,6 +198,10 @@ Algunas reglas para el enfoque mixto:
 - No liberes una conexión que pertenece al contexto. Si el lector crea su propia conexión más adelante, él es dueño de liberarla.
 - Usa Dapper para lecturas que son incómodas en LINQ: joins de reporte, agregados, proyecciones a mano. Usa EF para escrituras y para consultas que se benefician del tracking o de las propiedades de navegación.
 - Mantén el SQL cerca del lector. Un repositorio que esconde SQL y EF detrás de un método hace difícil ver qué camino corre.
+
+## Repite con requisitos nuevos
+
+Esta versión no agrega comportamiento HTTP. Las rutas de listar y buscar ahora usan Dapper; los tests existentes de crear y actualizar aseguran que las escrituras sigan con EF y conserven el mismo contrato.
 
 ## Para cerrar
 

@@ -6,6 +6,18 @@ EF Core is good at tracking changes and saving entities. Reporting queries often
 
 The finished solution is in `build-an-app/v5-dapper`.
 
+## How it works
+
+EF Core keeps the write path and its change tracking. Dapper reads from the same SQLite database through the connection owned by `TaskDbContext`; separate `ITaskReader` and `ITaskWriter` interfaces keep those jobs visible.
+
+`Query<T>` maps rows, `QuerySingleOrDefault<T>` returns `null` when no row matches, and `AsList()` materializes the query before the connection is reused. The row type maps SQLite's integer columns to the API's `int` and `bool` values.
+
+The read/write split is a small CQRS step: two interfaces with different jobs, not a separate database or message bus. Reads can select exactly the columns a screen needs; writes keep EF's tracking and migrations.
+
+## How to test
+
+The test inserts a row directly into the open SQLite connection, bypassing EF, then reads it through the HTTP API. The test driver uses the same connection as the app so both libraries see the same in-memory database.
+
 ## Write the test first
 
 ```csharp
@@ -26,13 +38,21 @@ public async Task Get_SeesRowsWrittenOutsideEf()
 
 The test writes a row with raw SQL, bypassing EF entirely. If GET sees it, the read path is querying the database, not an EF cache.
 
-## Add Dapper
+## Try to run the test
+
+Run it against the v4 implementation. It passes because EF also reads the shared SQLite database. This chapter changes the read implementation while preserving that behavior, so the green baseline is intentional.
+
+## Write the minimal amount of code for the test to run and check the failing test output
+
+The test already compiles and runs, so no compile-only change is needed. Add Dapper and split the read and write contracts before replacing the implementation.
+
+### Add Dapper
 
 ```sh
 dotnet add src/TaskTracker.Api package Dapper --version 2.1.35
 ```
 
-## Split the read and write sides
+### Split the read and write sides
 
 ```csharp
 public interface ITaskReader
@@ -52,7 +72,9 @@ public interface ITaskWriter
 
 The endpoints change their dependency: GET takes `ITaskReader`, POST and PATCH take `ITaskWriter`. The HTTP contract stays the same.
 
-## The Dapper reader
+## Write enough code to make it pass
+
+### The Dapper reader
 
 ```csharp
 public sealed class DapperTaskReader : ITaskReader
@@ -114,7 +136,7 @@ The reader borrows EF's connection with `GetDbConnection()`. That matters for te
 
 `TaskRow` exists because SQLite returns integer columns as `long`, while `TaskItem` uses `int` and `bool`. Mapping explicitly keeps the SQL schema and the API model independent.
 
-## The EF writer
+### The EF writer
 
 ```csharp
 public interface ITaskWriter
@@ -166,13 +188,7 @@ builder.Services.AddScoped<ITaskReader, DapperTaskReader>();
 builder.Services.AddScoped<ITaskWriter, EfTaskWriter>();
 ```
 
-## How it works
-
-`Query<T>` runs a SQL statement and maps each row. `QuerySingleOrDefault<T>` expects zero or one row and returns `null` when there is none. `AsList()` materializes the result; without it, Dapper's lazy sequence would keep the data reader open while the caller iterates.
-
-The id parameter is passed as an anonymous object, not concatenated into the string. Dapper turns `@Id` into a parameter, which is the defense against SQL injection and also lets the provider reuse the query plan.
-
-The read/write split is a small CQRS step. It is not a separate database or a message bus; it is two interfaces with different jobs. The read side can grow SQL that returns exactly the columns a screen needs, while the write side keeps EF's change tracking and migrations.
+The row inserted by the test now appears through the Dapper reader. The rest of the API still writes through EF, and the existing acceptance tests stay green.
 
 ## Refactor
 
@@ -182,6 +198,10 @@ A few rules for the mixed approach:
 - Do not dispose a connection owned by the context. If the reader creates its own connection later, it owns the disposal.
 - Use Dapper for reads that are awkward in LINQ: reporting joins, aggregates, hand-tuned projections. Use EF for writes and for queries that benefit from tracking or navigation properties.
 - Keep the SQL close to the reader. A repository that hides both SQL and EF behind one method makes it hard to see which path runs.
+
+## Repeat for new requirements
+
+There is no new HTTP behavior in this version. The list and get routes now use Dapper; the existing create and update tests ensure writes still use EF and preserve the same contract.
 
 ## Wrapping up
 
