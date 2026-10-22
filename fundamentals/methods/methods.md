@@ -177,5 +177,5 @@ What we have covered:
 
 The chapter follows the methods section of [Structs, Methods and Interfaces in Learn Go with Tests](https://quii.gitbook.io/learn-go-with-tests/structs-methods-and-interfaces): a small type, a method that computes something useful, and tests that pin the result. .NET adds properties and named arguments to the same idea.
 
-Next: [Classes and Objects](../classes.md).
+Next: [Classes and Objects](../classes/classes.md).
 
