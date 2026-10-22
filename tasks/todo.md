@@ -133,6 +133,10 @@
   sections in order, with the anonymous 401 test leading into token issuance
   and protected routes. `mise exec dotnet@10.0.402 -- dotnet test
   build-an-app/v7-auth/TaskTracker.sln -m:1` passed 17 tests.
+- Part 3 `v8-di`: English and Spanish pairs now contain the required sections
+  in order, with request and app lifetimes introduced before the diagnostics
+  scenario. `mise exec dotnet@10.0.402 -- dotnet test
+  build-an-app/v8-di/TaskTracker.sln -m:1` passed 19 tests.
 
 ## Completed increment: Part 4 delivery references
 

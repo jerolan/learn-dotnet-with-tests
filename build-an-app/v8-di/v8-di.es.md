@@ -6,6 +6,16 @@ La API tiene más dependencias ahora: un contexto, un lector, un escritor, un va
 
 La solución terminada está en `build-an-app/v8-di`.
 
+## Cómo funciona
+
+Un servicio scoped se crea una vez por petición HTTP y se libera al final. `TaskDbContext` y los repositorios son scoped para una unidad de trabajo. Un singleton se crea una vez por app y se comparte entre peticiones concurrentes, así que su estado mutable debe ser thread-safe. Un transient se crea cada vez que se resuelve.
+
+La combinación peligrosa es un singleton que captura un servicio scoped. Mantiene viva la instancia scoped después de que termina la petición y una petición posterior podría usar un contexto liberado. Eso es una dependencia cautiva; la validación de scopes puede detectarla y ASP.NET Core la activa en Development por defecto.
+
+## Cómo probarlo
+
+Llama dos veces a `/diagnostics`. El id de la app debe mantenerse y el id de petición debe cambiar. El driver se autentica por defecto, así estas peticiones prueban la ruta protegida por medio de `WebApplicationFactory`.
+
 ## Escribe primero el test
 
 ```csharp
@@ -24,9 +34,13 @@ public async Task Diagnostics_UsesAScopedRequestIdAndASingletonAppId()
 }
 ```
 
-Contra v7, la ruta devuelve 404. El test describe el contrato de tiempos de vida antes de que exista el endpoint.
+## Intenta ejecutar el test
 
-## Agrega los servicios de tiempo de vida
+Contra v7, la ruta devuelve `404 Not Found`. El test describe el contrato de tiempos de vida antes de que exista el endpoint.
+
+## Escribe el código mínimo para que el test compile y mira la salida
+
+### Agrega los servicios de tiempo de vida
 
 ```csharp
 public sealed class RequestContext
@@ -60,7 +74,11 @@ builder.Services.AddSingleton<AppInstance>();
 builder.Services.AddSingleton<ReadCounter>();
 ```
 
-y expónlos:
+Los servicios ya tienen los tiempos de vida esperados, pero el test sigue recibiendo 404 porque falta la ruta de diagnóstico.
+
+## Escribe el código suficiente para que pase
+
+Expón los servicios en la ruta:
 
 ```csharp
 app.MapGet("/diagnostics", (RequestContext request, AppInstance app, ReadCounter counter) =>
@@ -69,15 +87,19 @@ app.MapGet("/diagnostics", (RequestContext request, AppInstance app, ReadCounter
 
 Verde. Dos peticiones comparten el id singleton y reciben ids scoped distintos.
 
-## Cómo funciona
+`ReadCounter` usa `Interlocked.Increment` y `Volatile.Read` para actualizar y leer su conteo compartido de forma segura entre peticiones concurrentes.
 
-Un servicio scoped se crea una vez por petición HTTP. La misma instancia se reutiliza en toda la petición y se libera al final. `TaskDbContext` y los repositorios son scoped por eso: una unidad de trabajo, un contexto.
+## Refactor
 
-Un singleton se crea una vez por aplicación. `AppInstance` y `ReadCounter` son singletons; cada petición ve la misma instancia. Un singleton debe ser thread-safe, porque peticiones concurrentes lo usan a la vez. `ReadCounter` usa `Interlocked.Increment` y `Volatile.Read` por eso.
+Las registraciones son ahora la raíz de composición de la aplicación. Mantenlas juntas y haz explícita la elección del tiempo de vida:
 
-Un transient se crea cada vez que se resuelve. Sirve para servicios baratos y sin estado, pero resolverlo muchas veces dentro de una petición puede crear más objetos de los esperados.
+- Scoped para lo que posee una unidad de trabajo: `TaskDbContext`, los repositorios y el validador.
+- Singleton para configuración sin estado y contadores de proceso, con estado thread-safe.
+- Transient para ayudantes baratos y sin estado que no deben compartirse.
 
-La combinación peligrosa es un singleton que captura un servicio scoped. El singleton mantiene viva la instancia scoped después de que termina la petición, y una petición posterior usa un contexto liberado. Eso es una dependencia cautiva. El contenedor puede validarlo si activas la validación de scopes; ASP.NET Core lo hace en Development por defecto.
+El decorador es un ejemplo pequeño de una preocupación transversal. Un decorador de logging, caché o métricas puede envolver la misma interfaz sin editar `DapperTaskReader`. Los capítulos siguientes usan la misma forma para logging y caché.
+
+Evita el service locator en los handlers. Pedir `IServiceProvider` y resolver servicios a mano esconde las dependencias y vuelve los tests menos directos. Los parámetros del endpoint son la lista de dependencias.
 
 ## Repite con requisitos nuevos
 
@@ -100,6 +122,8 @@ public async Task ReadCounter_IsIncrementedByTheDecorator()
     Assert.AreEqual(before.ReadCount + 1, after.ReadCount);
 }
 ```
+
+Antes del decorador, el conteo sigue en cero, así que este test falla después de la petición a `/tasks`.
 
 Agrega el decorador:
 
@@ -142,18 +166,6 @@ builder.Services.AddScoped<ITaskReader>(services =>
 Verde. Los endpoints siguen pidiendo `ITaskReader`; no saben que un contador lo envuelve.
 
 Un `AddScoped<ITaskReader, CountingTaskReader>()` simple no funcionaría: el decorador necesita otro `ITaskReader` que envolver, y el contenedor resolvería la misma registración recursivamente. La factory rompe el ciclo nombrando el tipo concreto interno.
-
-## Refactor
-
-Las registraciones son ahora la raíz de composición de la aplicación. Mantenlas juntas y haz explícita la elección de tiempo de vida:
-
-- Scoped para lo que posee una unidad de trabajo: `TaskDbContext`, los repositorios, el validador.
-- Singleton para configuración sin estado y contadores de proceso, con estado thread-safe.
-- Transient para ayudantes baratos y sin estado que no deben compartirse.
-
-El decorador es un ejemplo pequeño de una preocupación transversal. Un decorador de logging, caché o métricas puede envolver la misma interfaz sin editar `DapperTaskReader`. Los capítulos siguientes usan la misma forma para logging y caché.
-
-Evita el service locator en los handlers. Pedir `IServiceProvider` y resolver servicios a mano esconde las dependencias y vuelve los tests menos directos. Los parámetros del endpoint son la lista de dependencias.
 
 ## Para cerrar
 
