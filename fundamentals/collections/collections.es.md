@@ -229,5 +229,5 @@ Lo que cubrimos:
 
 El capítulo sigue el [capítulo Maps de Learn Go with Tests](https://quii.gitbook.io/learn-go-with-tests/maps): un mapa guarda conteos, una clave ausente es parte del comportamiento y los tests fijan la búsqueda. .NET agrega las interfaces de solo lectura y el paso por lista ordenada para un ranking.
 
-Siguiente: [IEnumerable](../enumerable.md).
+Siguiente: [IEnumerable](../enumerable/enumerable.es.md).
 

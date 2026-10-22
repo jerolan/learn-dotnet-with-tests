@@ -229,5 +229,5 @@ What we have covered:
 
 The chapter follows the [Maps chapter of Learn Go with Tests](https://quii.gitbook.io/learn-go-with-tests/maps): a map stores counts, a missing key is part of the behavior, and the tests pin the lookup. .NET adds the read-only interfaces and the sorted-list step for a ranking.
 
-Next: [IEnumerable](../enumerable.md).
+Next: [IEnumerable](../enumerable/enumerable.md).
 
