@@ -73,3 +73,4 @@ One API, grown version by version. Each version is a standalone solution with it
 
 1. 🟢 [v1: The API and its first tests](build-an-app/v1-intro/v1-intro.md) ([ES](build-an-app/v1-intro/v1-intro.es.md)) - Create the TaskTracker API with a minimal endpoint set and its first acceptance tests.
 2. 🟢 [v2: JSON, routing and a consistent error shape](build-an-app/v2-json-routing/v2-json-routing.md) ([ES](build-an-app/v2-json-routing/v2-json-routing.es.md)) - Pin the wire contract with named errors, camelCase JSON and a PATCH route.
+3. 🟢 [v3: Configuration and options](build-an-app/v3-configuration/v3-configuration.md) ([ES](build-an-app/v3-configuration/v3-configuration.es.md)) - Bind a typed options object from appsettings and override it in the test host.

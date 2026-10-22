@@ -171,5 +171,5 @@ Lo que cubrimos:
 - JSON camelCase explícito y manejo de null.
 - Tipos de entrada, salida, error y almacenamiento como bordes separados.
 
-Siguiente: v3: configuración y el patrón de opciones.
+Siguiente: [v3: configuración y el patrón de opciones](../v3-configuration/v3-configuration.es.md).
 

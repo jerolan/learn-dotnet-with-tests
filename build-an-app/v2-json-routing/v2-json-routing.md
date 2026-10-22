@@ -171,5 +171,5 @@ What we have covered:
 - Explicit camelCase JSON and null handling.
 - Request, response, error and storage types as separate boundaries.
 
-Next: v3: configuration and the options pattern.
+Next: [v3: configuration and the options pattern](../v3-configuration/v3-configuration.md).
 
