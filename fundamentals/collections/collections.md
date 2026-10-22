@@ -2,9 +2,24 @@
 
 [You can find all the code for this chapter here](https://github.com/jerolan/learn-dotnet-with-tests/tree/main/fundamentals/collections)
 
-An array has a fixed length. A `List<T>` grows. A `Dictionary<TKey, TValue>` looks values up by key, and a `HashSet<T>` answers "is this value present?" quickly. Choosing the right one changes how the code reads and how fast it runs.
+In `"the cat and the dog"`, the word `the` appears twice and `cat` appears once. The counter should also return the most common words in a stable order.
 
-We will build a word counter: read a text, count each word, and return the most common ones. The finished solution is in `fundamentals/collections`; if you are building it from scratch, use the same layout as the previous chapters: a class library in `src/Collections`, an MSTest project in `tests/Collections.Tests`, a solution and a project reference.
+The first call cannot compile because `WordCounter` does not exist:
+
+```csharp
+var counter = new WordCounter("the cat and the dog");
+Console.WriteLine(counter.Counts["the"]);
+```
+
+Running `dotnet test` reports `error CS0246: The type or namespace name 'WordCounter' could not be found`. We will count words first, then choose collections for lookup and ranking. The finished solution is in `fundamentals/collections`; if you are building it from scratch, use the same layout as the previous chapters: a class library in `src/Collections`, an MSTest project in `tests/Collections.Tests`, a solution and a project reference.
+
+## How it works
+
+An array has a fixed length. A `List<T>` grows and can be sorted. A `Dictionary<TKey, TValue>` looks up values by key, while a `HashSet<T>` answers whether a value is present. The word counter needs a dictionary for counts and a list for the ranked result.
+
+## How to test
+
+The counter reads one string and keeps its results in memory. A unit test can check the dictionary counts and the ordered list directly. The ranking test will also pin how ties are resolved so the result is deterministic.
 
 ## Write the test first
 
@@ -87,6 +102,10 @@ public sealed class WordCounter
 Green. `Dictionary<string, int>` maps a word to its count. `TryGetValue` looks up the current count and returns `false` when the key is new; `out var current` gives you `0` in that case. The indexer assignment then creates the entry or updates it.
 
 `IReadOnlyDictionary` exposes the map without letting callers add or remove entries. The field stays private and mutable; the property is the public view.
+
+## Refactor
+
+The first implementation uses one dictionary and one private counting method. Splitting that small loop further would hide the lookup and update, so leave it as-is and run the test again.
 
 ## Repeat for new requirements
 
@@ -205,7 +224,7 @@ public void MostCommon_ReturnsEverythingWhenAskedForMore()
 
 It passes because of the `i < entries.Count` condition.
 
-## Refactor
+### Choose a collection for each job
 
 The code is small and each collection has a job:
 

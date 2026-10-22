@@ -2,9 +2,24 @@
 
 [Encuentras todo el código de este capítulo aquí](https://github.com/jerolan/learn-dotnet-with-tests/tree/main/fundamentals/collections)
 
-Un arreglo tiene longitud fija. Una `List<T>` crece. Un `Dictionary<TKey, TValue>` busca valores por clave, y un `HashSet<T>` responde rápido si un valor está presente. Elegir el correcto cambia cómo se lee el código y qué tan rápido corre.
+En `"the cat and the dog"`, la palabra `the` aparece dos veces y `cat` aparece una. El contador también debe devolver las palabras más comunes en un orden estable.
 
-Vamos a construir un contador de palabras: leer un texto, contar cada palabra y devolver las más comunes. La solución terminada está en `fundamentals/collections`; si la estás armando desde cero, usa la misma estructura que en los capítulos anteriores: una biblioteca de clases en `src/Collections`, un proyecto de MSTest en `tests/Collections.Tests`, una solución y una referencia entre proyectos.
+La primera llamada no compila porque `WordCounter` no existe:
+
+```csharp
+var counter = new WordCounter("the cat and the dog");
+Console.WriteLine(counter.Counts["the"]);
+```
+
+Al ejecutar `dotnet test`, aparece `error CS0246: The type or namespace name 'WordCounter' could not be found`. Primero contaremos las palabras y después elegiremos colecciones para buscarlas y ordenarlas. La solución terminada está en `fundamentals/collections`; si la estás armando desde cero, usa la misma estructura que en los capítulos anteriores: una biblioteca de clases en `src/Collections`, un proyecto de MSTest en `tests/Collections.Tests`, una solución y una referencia entre proyectos.
+
+## Cómo funciona
+
+Un arreglo tiene longitud fija. Una `List<T>` crece y se puede ordenar. Un `Dictionary<TKey, TValue>` busca valores por clave, mientras un `HashSet<T>` responde si un valor está presente. El contador necesita un diccionario para los conteos y una lista para el resultado ordenado.
+
+## Cómo probarlo
+
+El contador recibe una cadena y guarda sus resultados en memoria. Un test unitario puede revisar directamente los conteos del diccionario y la lista ordenada. El test del ranking también fijará cómo se resuelven los empates para que el resultado sea determinista.
 
 ## Escribe primero el test
 
@@ -87,6 +102,10 @@ public sealed class WordCounter
 Verde. `Dictionary<string, int>` asocia una palabra con su conteo. `TryGetValue` busca el conteo actual y devuelve `false` cuando la clave es nueva; `out var current` te da `0` en ese caso. La asignación por índice crea o actualiza la entrada.
 
 `IReadOnlyDictionary` expone el mapa sin dejar que quien llama agregue o quite entradas. El campo sigue privado y mutable; la propiedad es la vista pública.
+
+## Refactor
+
+La primera implementación usa un diccionario y un método privado para contar. Dividir ese bucle pequeño escondería la búsqueda y la actualización, así que lo dejamos igual y ejecutamos el test otra vez.
 
 ## Repite con requisitos nuevos
 
@@ -205,7 +224,7 @@ public void MostCommon_ReturnsEverythingWhenAskedForMore()
 
 Pasa por la condición `i < entries.Count`.
 
-## Refactor
+### Elegir una colección para cada trabajo
 
 El código es pequeño y cada colección tiene un trabajo:
 

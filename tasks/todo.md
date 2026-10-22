@@ -38,6 +38,9 @@
 - Part 1 `composition`: English and Spanish pairs now contain the required
   sections in order. `mise exec dotnet@10.0.402 -- dotnet test
   fundamentals/composition/Composition.sln -m:1` passed 4 tests.
+- Part 1 `collections`: English and Spanish pairs now contain the required
+  sections in order. `mise exec dotnet@10.0.402 -- dotnet test
+  fundamentals/collections/Collections.sln -m:1` passed 5 tests.
 
 ## Completed increment: Part 4 delivery references
 
