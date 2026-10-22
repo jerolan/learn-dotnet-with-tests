@@ -2,11 +2,23 @@
 
 [You can find all the code for this chapter here](https://github.com/jerolan/learn-dotnet-with-tests/tree/main/fundamentals/exceptions)
 
-Invalid input is part of a method's contract. .NET reports it with exceptions, and the type of the exception is part of the contract too: a caller should not have to catch `FormatException` because our parser happened to use `int.Parse`.
+The signup form receives `"42"` and should produce the age `42`. It accepts whole numbers from 0 to 120 and rejects other input with an `InvalidAgeException` the caller can handle.
 
-We will build an age parser for a signup form. It accepts whole numbers from 0 to 120 and rejects everything else with a domain exception.
+The first call cannot compile because `Age` does not exist:
 
-The finished solution is in `fundamentals/exceptions`. If you are building it from scratch, use the same layout as the previous chapters: a class library in `src/Exceptions`, an MSTest project in `tests/Exceptions.Tests`, a solution and a project reference.
+```csharp
+var age = Age.Parse("42");
+```
+
+Running `dotnet test` reports `error CS0103: The name 'Age' does not exist in the current context`. We will use the compiler and failing tests to build the parser's contract. The finished solution is in `fundamentals/exceptions`. If you are building it from scratch, use the same layout as the previous chapters: a class library in `src/Exceptions`, an MSTest project in `tests/Exceptions.Tests`, a solution and a project reference.
+
+## How it works
+
+`int.Parse` converts text to an integer, but it throws `FormatException` when the text is malformed. `int.TryParse` reports success as a `bool` and writes the parsed integer to an `out` variable. A domain exception lets the parser state which invalid input its caller must handle.
+
+## How to test
+
+The parser only converts an input string to an age or rejects it. It has no file, network or clock dependency, so a unit test can call it directly. The tests will check both the returned age and the exception type for invalid input.
 
 ## Write the test first
 
@@ -62,6 +74,10 @@ public static int Parse(string text)
 ```
 
 Green. `int.Parse` also throws `FormatException` when the text is not a number. That is useful behavior, but it is the wrong exception for our callers.
+
+## Refactor
+
+The valid path is one call to `int.Parse`, so there is nothing to extract yet. Run the test again; it remains green. Next, a failing test will define the exception type for invalid text.
 
 ## Repeat for new requirements
 
@@ -172,7 +188,7 @@ public void Parse_InvalidAge_ThrowsInvalidAge(string text)
 }
 ```
 
-## Refactor
+### Keep the error boundary narrow
 
 The production code is already small: one parse, two guards, one return. The constant gives the upper bound a name, and the two messages say which rule failed.
 
