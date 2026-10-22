@@ -206,5 +206,5 @@ Lo que cubrimos:
 
 El capítulo sigue el hábito del camino de error de [Pointers and Errors en Learn Go with Tests](https://quii.gitbook.io/learn-go-with-tests/pointers-and-errors): el caso inválido es un requisito con su propio test. .NET expresa ese requisito como un tipo de excepción en vez de un valor de error devuelto.
 
-Siguiente: [Métodos](../methods.md).
+Siguiente: [Propiedades y métodos](../methods/methods.es.md).
 

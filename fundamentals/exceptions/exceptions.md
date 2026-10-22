@@ -206,5 +206,5 @@ What we have covered:
 
 The chapter follows the error-path habit of [Pointers and Errors in Learn Go with Tests](https://quii.gitbook.io/learn-go-with-tests/pointers-and-errors): the invalid case is a requirement with its own test. .NET expresses that requirement as an exception type instead of a returned error value.
 
-Next: [Methods](../methods.md).
+Next: [Properties and Methods](../methods/methods.md).
 
