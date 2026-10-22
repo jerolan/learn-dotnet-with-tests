@@ -2,7 +2,7 @@
 
 Welcome to "Learn .NET with Tests," your journey into the world of test-driven development (TDD) within the .NET ecosystem. This guide is designed to help you master the fundamentals of TDD, a development approach that emphasizes writing tests before writing the code itself. By following this guide, you will learn not just how to write tests, but also how to think about software design and development in a way that improves code quality, reduces bugs, and enhances your productivity as a developer.
 
-This guide it's absolutely inspired by the amazing [Learn Go with Tests](https://quii.gitbook.io/learn-go-with-tests/) by Chris James. I love the way he explains the concepts and the way he guides the reader through the process of learning TDD.
+This guide is inspired by the amazing [Learn Go with Tests](https://quii.gitbook.io/learn-go-with-tests/) by Chris James. I love the way he explains the concepts and the way he guides the reader through the process of learning TDD.
 
 ## What Is Test-Driven Development?
 

@@ -21,3 +21,11 @@ Derived from goal-objective.md, no new questions.
 ## Success Criteria
 - Every fundamentals chapter folder has runnable solution with passing dotnet test.
 - Every chapter bilingual and template-ordered, CI green.
+
+## Status: complete (2026-10-21)
+
+- All 25 indexed chapters have a folder with `<name>.md`, `<name>.es.md` and a standalone `.sln`.
+- 26 solutions total (the 25 chapters plus `MyFirstDotNetApp`), 140 passing tests.
+- CI run `39707185992` passed on the full tree with the 6.0.x SDK.
+- The local link checker reports 0 broken links; only `fundamentals/TEMPLATE.md` remains at the folder root.
+- The README index is ordered by dependency and marks every fundamentals chapter as must-know.
