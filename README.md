@@ -30,9 +30,9 @@ This cycle encourages developers to write only the code necessary to pass tests,
 2. [Hello, world](fundamentals/hello-world/hello-world.md) ([ES](fundamentals/hello-world/hello-world.es.md)) - Dive into C# with your first program, exploring the basic structure of a C# application and the use of Console.WriteLine.
 3. [Types and Variables](fundamentals/types/types.md) ([ES](fundamentals/types/types.es.md)) - Understand C#'s built-in types such as integers, floats, strings, and how to declare and use variables.
 4. [Decimals](fundamentals/decimal/decimal.md) ([ES](fundamentals/decimal/decimal.es.md)) - Learn how to use decimal types for precise financial and scientific calculations.
-5. [Declarations, Const and Var](fundamentals/declarations.md) - Explore different variable declaration methods, including the use of const for constants and var for type inference
-6. [Control Flow](fundamentals/control-flow.md) - Learn control flow statements such as if, switch, and loops (for, while, etc.) to direct the execution flow of your programs.
-7. [Exceptions](fundamentals/exceptions.md) - Learn exception handling for graceful error management in your applications.
+5. [Declarations, Const and Var](fundamentals/declarations/declarations.md) ([ES](fundamentals/declarations/declarations.es.md)) - Explore different variable declaration methods, including the use of const for constants and var for type inference
+6. [Control Flow](fundamentals/control-flow/control-flow.md) ([ES](fundamentals/control-flow/control-flow.es.md)) - Learn control flow statements such as if, switch, and loops (for, while, etc.) to direct the execution flow of your programs.
+7. [Exceptions](fundamentals/exceptions/exceptions.md) ([ES](fundamentals/exceptions/exceptions.es.md)) - Learn exception handling for graceful error management in your applications.
 
 ### Object-Oriented Programming
 
