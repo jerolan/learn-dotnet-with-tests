@@ -44,7 +44,7 @@ Close the roadmap with LGWT-style Q&A chapters and the 🟠 appendices. Every ro
 | Streaming | Appendix `streaming` | planned |
 | NoSQL | Appendix `nosql` | planned |
 | gRPC | Appendix `grpc` | covered |
-| GraphQL | Appendix `graphql` | planned |
+| GraphQL | Appendix `graphql` | covered |
 | DevOps/IaC | Appendix `devops-iac` | planned |
 | General development skills | README preface and Q&A | covered |
 

@@ -103,3 +103,4 @@ The closing part answers the questions that do not need a new project and maps t
 - 🟠 [CI/CD beyond the test job](qa/ci-cd/ci-cd.md) ([ES](qa/ci-cd/ci-cd.es.md)) - Cache packages, keep test results and publish the API as an artifact.
 - 🟠 [Real-Time Updates with SignalR](qa/signalr/signalr.md) ([ES](qa/signalr/signalr.es.md)) - Push a created task to a connected client and test the hub through TestServer.
 - 🟠 [gRPC](qa/grpc/grpc.md) ([ES](qa/grpc/grpc.es.md)) - Define a proto contract, generate the service and client, and call it through TestServer.
+- 🟠 [GraphQL](qa/graphql/graphql.md) ([ES](qa/graphql/graphql.es.md)) - Publish a query and a mutation over one endpoint and test the documents over HTTP.
