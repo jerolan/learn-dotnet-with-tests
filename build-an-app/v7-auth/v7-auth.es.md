@@ -210,5 +210,5 @@ Lo que cubrimos:
 - Un driver de tests que se autentica por defecto y un cliente crudo para el caso anónimo.
 - Los límites de seguridad del setup didáctico.
 
-Siguiente: v8: tiempos de vida de servicios y un decorador.
+Siguiente: [v8: tiempos de vida de servicios y un decorador](../v8-di/v8-di.es.md).
 

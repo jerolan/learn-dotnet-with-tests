@@ -210,5 +210,5 @@ What we have covered:
 - A test driver that authenticates by default and a raw client for the anonymous case.
 - The security limits of the teaching setup.
 
-Next: v8: service lifetimes and a decorator.
+Next: [v8: service lifetimes and a decorator](../v8-di/v8-di.md).
 

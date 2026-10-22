@@ -1,0 +1,150 @@
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using FluentValidation;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
+using TaskTracker.Api;
+
+var builder = WebApplication.CreateBuilder(args);
+var jwt = builder.Configuration.GetSection(JwtOptions.SectionName).Get<JwtOptions>() ?? new JwtOptions();
+
+builder.Services.AddDbContext<TaskDbContext>(options =>
+    options.UseSqlite(builder.Configuration.GetConnectionString("TaskTracker")));
+builder.Services.AddScoped<DapperTaskReader>();
+builder.Services.AddScoped<ITaskReader>(services =>
+    new CountingTaskReader(
+        services.GetRequiredService<DapperTaskReader>(),
+        services.GetRequiredService<ReadCounter>()));
+builder.Services.AddScoped<ITaskWriter, EfTaskWriter>();
+builder.Services.AddScoped<RequestContext>();
+builder.Services.AddSingleton<AppInstance>();
+builder.Services.AddSingleton<ReadCounter>();
+builder.Services.AddScoped<IValidator<CreateTaskRequest>, CreateTaskRequestValidator>();
+builder.Services.Configure<TaskOptions>(builder.Configuration.GetSection(TaskOptions.SectionName));
+builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection(JwtOptions.SectionName));
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidIssuer = jwt.Issuer,
+            ValidateAudience = true,
+            ValidAudience = jwt.Audience,
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwt.Key)),
+            ValidateLifetime = true,
+            ClockSkew = TimeSpan.Zero
+        };
+    });
+builder.Services.AddAuthorization();
+builder.Services.Configure<Microsoft.AspNetCore.Http.Json.JsonOptions>(options =>
+{
+    options.SerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+    options.SerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+});
+
+var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<TaskDbContext>();
+    db.Database.Migrate();
+}
+
+app.UseAuthentication();
+app.UseAuthorization();
+
+app.MapPost("/auth/token", (LoginRequest request, IOptions<JwtOptions> options) =>
+{
+    var settings = options.Value;
+
+    if (request.Username != settings.DemoUser || request.Password != settings.DemoPassword)
+    {
+        return Results.Unauthorized();
+    }
+
+    var claims = new[]
+    {
+        new Claim(JwtRegisteredClaimNames.Sub, request.Username),
+        new Claim(ClaimTypes.Name, request.Username)
+    };
+
+    var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(settings.Key));
+    var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+    var token = new JwtSecurityToken(
+        settings.Issuer,
+        settings.Audience,
+        claims,
+        expires: DateTime.UtcNow.AddMinutes(settings.ExpiryMinutes),
+        signingCredentials: credentials);
+
+    return Results.Ok(new TokenResponse(new JwtSecurityTokenHandler().WriteToken(token)));
+});
+
+app.MapGet("/tasks", (ITaskReader reader) => reader.All()).RequireAuthorization();
+
+app.MapGet("/tasks/{id:int}", (int id, ITaskReader reader) =>
+{
+    var task = reader.Find(id);
+
+    return task is null
+        ? Results.NotFound(new ErrorResponse($"Task {id} was not found."))
+        : Results.Ok(task);
+}).RequireAuthorization();
+
+app.MapPost("/tasks", async (CreateTaskRequest request, ITaskWriter writer, IValidator<CreateTaskRequest> validator) =>
+{
+    var validation = await validator.ValidateAsync(request);
+
+    if (!validation.IsValid)
+    {
+        var errors = validation.Errors
+            .GroupBy(failure => failure.PropertyName)
+            .ToDictionary(
+                group => group.Key,
+                group => group.Select(failure => failure.ErrorMessage).ToArray());
+
+        return Results.ValidationProblem(errors);
+    }
+
+    var task = writer.Add(request.Title.Trim());
+
+    return Results.Created($"/tasks/{task.Id}", task);
+}).RequireAuthorization();
+
+app.MapMethods("/tasks/{id:int}/done", new[] { HttpMethods.Patch }, (int id, ITaskWriter writer) =>
+{
+    var task = writer.MarkDone(id);
+
+    return task is null
+        ? Results.NotFound(new ErrorResponse($"Task {id} was not found."))
+        : Results.NoContent();
+}).RequireAuthorization();
+
+app.MapGet("/diagnostics", (RequestContext request, AppInstance app, ReadCounter counter) =>
+    new DiagnosticsResponse(app.Id, request.Id, counter.Count)).RequireAuthorization();
+
+app.Run();
+
+public sealed record CreateTaskRequest(string Title);
+
+public sealed record TaskItem(int Id, string Title, bool IsDone);
+
+public sealed record ErrorResponse(string Error);
+
+public sealed record LoginRequest(string Username, string Password);
+
+public sealed record TokenResponse(string AccessToken);
+
+public sealed record DiagnosticsResponse(Guid AppId, Guid RequestId, int ReadCount);
+
+public partial class Program
+{
+}
+
