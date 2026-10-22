@@ -6,6 +6,18 @@ Logs tell you what happened in one request. Metrics tell you how often it happen
 
 The sample records created orders, tagged by customer type.
 
+## How it works
+
+A `Meter` is a named source of instruments. A `Counter<long>` is monotonically increasing; use it for "how many" events. `Histogram<double>` records distributions such as durations. `ObservableGauge` reports a value when the collector asks.
+
+A tag is a key/value pair attached to one measurement. The metric backend groups by tag: `orders.created{customer.type=premium}` and `orders.created{customer.type=standard}` are two series from one counter.
+
+`MeterListener` subscribes in process. It is useful for a test, a custom exporter or a diagnostic tool. Production usually wires an OpenTelemetry exporter: the same `Meter` and `Counter` go to a collector, a dashboard and an alerting rule.
+
+## How to test
+
+Capture the measurement in process with `MeterListener`; this test does not need an exporter or a running collector. Run the solution with `dotnet test MonitoringTelemetry.sln`.
+
 ## Write the test first
 
 ```csharp
@@ -50,7 +62,33 @@ public void Create_RecordsACounterWithTheCustomerTag()
 }
 ```
 
-## Add the metrics
+## Try to run the test
+
+Run `dotnet test MonitoringTelemetry.sln`. Before the production types exist, the compiler reports that `OrderMetrics` and `OrderService` are missing.
+
+## Write the minimal amount of code for the test to run and check the failing test output
+
+Add the `Meter` and a no-op `OrderService.Create` so the test compiles. The listener now runs, but the assertion still fails because no instrument reports a measurement.
+
+```csharp
+public sealed class OrderMetrics : IDisposable
+{
+    public OrderMetrics(string name = "TaskTracker.Orders") => Meter = new Meter(name, "1.0");
+
+    public Meter Meter { get; }
+
+    public void Dispose() => Meter.Dispose();
+}
+
+public sealed class OrderService
+{
+    public OrderService(OrderMetrics metrics) { }
+
+    public void Create(string customerType) { }
+}
+```
+
+## Write enough code to make it pass
 
 ```csharp
 public sealed class OrderMetrics : IDisposable
@@ -94,39 +132,6 @@ public sealed class OrderService
 
 Green. The counter is a long instrument; the tag is part of the measurement, not part of the metric name.
 
-## How it works
-
-A `Meter` is a named source of instruments. A `Counter<long>` is monotonically increasing; use it for "how many" events. `Histogram<double>` records distributions such as durations. `ObservableGauge` reports a value when the collector asks.
-
-A tag is a key/value pair attached to one measurement. The metric backend groups by tag: `orders.created{customer.type=premium}` and `orders.created{customer.type=standard}` are two series from one counter.
-
-`MeterListener` subscribes in process. It is useful for a test, a custom exporter or a diagnostic tool. Production usually wires an OpenTelemetry exporter: the same `Meter` and `Counter` go to a collector, a dashboard and an alerting rule.
-
-## Repeat: two measurements
-
-```csharp
-[TestMethod]
-public void TwoCreates_RecordTwoMeasurements()
-{
-    using var metrics = new OrderMetrics("TaskTracker.Orders.Count.Tests");
-    var service = new OrderService(metrics);
-    using var listener = new MeterListener();
-    var total = 0L;
-
-    listener.SetMeasurementEventCallback<long>((_, measurement, _, _) =>
-        total += measurement);
-
-    listener.Start();
-
-    service.Create("standard");
-    service.Create("standard");
-
-    Assert.AreEqual(2, total);
-}
-```
-
-Green. A counter's value in a backend is the sum of its measurements over the aggregation window.
-
 ## Refactor
 
 Metrics are a public contract with a cost:
@@ -148,6 +153,41 @@ builder.Services.AddOpenTelemetry()
 ```
 
 The application code keeps using `Meter` and `Counter<T>`; only the exporter changes.
+
+## Repeat for new requirements
+
+The next requirement is to count two creates. Write the test first:
+
+```csharp
+[TestMethod]
+public void TwoCreates_RecordTwoMeasurements()
+{
+    using var metrics = new OrderMetrics("TaskTracker.Orders.Count.Tests");
+    var service = new OrderService(metrics);
+    using var listener = new MeterListener();
+    var total = 0L;
+
+    listener.InstrumentPublished = (instrument, meterListener) =>
+    {
+        if (instrument.Meter == metrics.Meter)
+        {
+            meterListener.EnableMeasurementEvents(instrument);
+        }
+    };
+
+    listener.SetMeasurementEventCallback<long>((_, measurement, _, _) =>
+        total += measurement);
+
+    listener.Start();
+
+    service.Create("standard");
+    service.Create("standard");
+
+    Assert.AreEqual(2, total);
+}
+```
+
+The assertion passes with two measurements. A counter's value in a backend is the sum of its measurements over the aggregation window.
 
 ## Wrapping up
 
