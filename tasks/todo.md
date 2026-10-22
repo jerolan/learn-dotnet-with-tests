@@ -145,6 +145,11 @@
   sections in order, with cache hits followed by write-invalidation scenarios.
   `mise exec dotnet@10.0.402 -- dotnet test
   build-an-app/v10-caching/TaskTracker.sln -m:1` passed 24 tests.
+- Part 3 `v11-messaging-scheduling`: English and Spanish pairs now contain
+  the required sections in order, with the event queue and cleanup job
+  introduced after their failing tests. `mise exec dotnet@10.0.402 -- dotnet
+  test build-an-app/v11-messaging-scheduling/TaskTracker.sln -m:1` passed 27
+  tests.
 
 ## Completed increment: Part 4 delivery references
 

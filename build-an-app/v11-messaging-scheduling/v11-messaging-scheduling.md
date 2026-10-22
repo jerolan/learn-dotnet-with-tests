@@ -6,6 +6,18 @@ Writing a task can trigger work that does not belong in the request: an audit en
 
 The finished solution is in `build-an-app/v11-messaging-scheduling`.
 
+## How it works
+
+A writer decorator publishes an event to an in-process `Channel<TaskEvent>`. A singleton `BackgroundService` reads the channel and sends each event to an audit processor. The cleanup service is also a hosted singleton, but it creates a scope for each run because the cleanup job uses the scoped writer.
+
+The channel is intentionally in memory: a restart loses messages. The cleanup job can run directly in a test, while the hosted service runs it at startup and then on the configured interval.
+
+## How to test
+
+Test the event path through HTTP: create a task, then wait for the audit log to contain the event. The wait has a deadline so a missing event fails clearly without relying on a fixed sleep.
+
+Test cleanup separately by resolving `TaskCleanupJob` from a scope and calling `Run()`. This checks the deletion result immediately without waiting for the scheduler.
+
 ## Write the test first
 
 ```csharp
@@ -44,9 +56,13 @@ private static async Task WaitForAsync(Func<bool> condition)
 }
 ```
 
-Against v10 there is no queue, so the test times out.
+## Try to run the test
 
-## The queue
+The test does not compile yet because `TaskEventQueue`, `IAuditLog` and `InMemoryAuditLog` have not been added.
+
+## Write the minimal amount of code for the test to run and check the failing test output
+
+Add the event queue and a small thread-safe audit log. The test now compiles, but it still times out because no writer publishes an event.
 
 ```csharp
 public sealed record TaskEvent(int TaskId, string Title, string Type);
@@ -65,17 +81,51 @@ public sealed class TaskEventQueue
         return _channel.Reader.ReadAllAsync(cancellationToken);
     }
 }
+
+public interface IAuditLog
+{
+    void Record(string entry);
+}
+
+public sealed class InMemoryAuditLog : IAuditLog
+{
+    private readonly ConcurrentQueue<string> _entries = new();
+
+    public IReadOnlyCollection<string> Entries => _entries.ToArray();
+
+    public void Record(string entry)
+    {
+        _entries.Enqueue(entry);
+    }
+}
 ```
+
+Register those services:
+
+```csharp
+builder.Services.AddSingleton<TaskEventQueue>();
+builder.Services.AddSingleton<IAuditLog, InMemoryAuditLog>();
+```
+
+With the queue and audit log registered, the test runs but still times out because there is no publisher or consumer yet. The failure is `Timed out waiting for the background consumer.`
 
 `Channel<T>` is the in-process queue. An unbounded channel never rejects a write; `TryWrite` returns `true`. A bounded channel would apply backpressure and return `false` when full.
 
-## The publisher
+## Write enough code to make it pass
+
+Implement the writer decorator so it publishes a `Created` event after the inner writer saves the task:
 
 ```csharp
 public sealed class PublishingTaskWriter : ITaskWriter
 {
     private readonly ITaskWriter _inner;
     private readonly TaskEventQueue _queue;
+
+    public PublishingTaskWriter(ITaskWriter inner, TaskEventQueue queue)
+    {
+        _inner = inner;
+        _queue = queue;
+    }
 
     public TaskItem Add(string title)
     {
@@ -85,34 +135,40 @@ public sealed class PublishingTaskWriter : ITaskWriter
         return task;
     }
 
-    public TaskItem? MarkDone(int id)
-    {
-        var task = _inner.MarkDone(id);
-
-        if (task is not null)
-        {
-            _queue.TryPublish(new TaskEvent(task.Id, task.Title, "Done"));
-        }
-
-        return task;
-    }
-
-    public int DeleteDone()
-    {
-        return _inner.DeleteDone();
-    }
+    public TaskItem? MarkDone(int id) => _inner.MarkDone(id);
 }
 ```
 
-The publisher is the outermost writer decorator: the cache invalidator and EF run first, then the event is published. The endpoint does not know the queue exists.
+The publisher is the outermost writer decorator: the cache invalidator and EF writer run first, then it publishes the event. The endpoint does not know about the queue.
 
-## The consumer
+A processor records the event in the audit log, and a hosted consumer drains the queue:
 
 ```csharp
+public sealed class TaskEventProcessor
+{
+    private readonly IAuditLog _audit;
+
+    public TaskEventProcessor(IAuditLog audit)
+    {
+        _audit = audit;
+    }
+
+    public void Process(TaskEvent taskEvent)
+    {
+        _audit.Record($"{taskEvent.Type}:{taskEvent.TaskId}");
+    }
+}
+
 public sealed class TaskEventConsumer : BackgroundService
 {
     private readonly TaskEventQueue _queue;
     private readonly TaskEventProcessor _processor;
+
+    public TaskEventConsumer(TaskEventQueue queue, TaskEventProcessor processor)
+    {
+        _queue = queue;
+        _processor = processor;
+    }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
@@ -130,17 +186,27 @@ public sealed class TaskEventConsumer : BackgroundService
 }
 ```
 
-Register the queue, the audit log, the processor and the hosted service:
+Register the processor and hosted consumer; the queue and audit log are already registered:
 
 ```csharp
-builder.Services.AddSingleton<TaskEventQueue>();
-builder.Services.AddSingleton<IAuditLog, InMemoryAuditLog>();
 builder.Services.AddSingleton<TaskEventProcessor>();
 builder.Services.AddHostedService<TaskEventConsumer>();
 ```
 
+The test passes: the audit log receives the `Created` event.
 
 `BackgroundService` starts when the host starts. `ReadAllAsync` waits for events and ends when the stopping token is canceled. The consumer is a singleton; the queue and processor must be safe for concurrent use.
+
+## Refactor
+
+The in-process queue is a teaching stand-in for a broker:
+
+- Messages live in memory and disappear on restart. A durable broker (SQS, RabbitMQ, Kafka) persists them and adds retries and dead-letter queues.
+- Delivery is at least once in most brokers. Consumers must be idempotent; the audit example tolerates duplicates, a payment would not.
+- A transactional outbox solves the "write committed, message lost" gap. The database write and the outbox row commit together, and a publisher drains the outbox.
+- A background service can overlap with the next scheduled run if a run takes longer than the interval. Use a lock or a distributed lease when the job must not run twice.
+
+No code change is needed here: the queue, publisher and consumer already have separate responsibilities. The solution’s tests pass after the refactor. Background work tests should wait for an observable condition, not a fixed sleep. The audit log is the observable state; the five-second deadline is only a failure bound.
 
 ## Repeat for new requirements
 
@@ -158,69 +224,28 @@ public async Task MarkDone_PublishesADoneEvent()
 
     var audit = (InMemoryAuditLog)api.Services.GetRequiredService<IAuditLog>();
     await WaitForAsync(() => audit.Entries.Contains($"Done:{task.Id}"));
+
+    CollectionAssert.Contains(audit.Entries.ToList(), $"Done:{task.Id}");
 }
 ```
 
-It passes with the same publisher; `MarkDone` adds a second event type.
+It times out because the publisher only emits `Created` events. Add publication after a successful `MarkDone` call:
+
+```csharp
+public TaskItem? MarkDone(int id)
+{
+    var task = _inner.MarkDone(id);
+
+    if (task is not null)
+    {
+        _queue.TryPublish(new TaskEvent(task.Id, task.Title, "Done"));
+    }
+
+    return task;
+}
+```
 
 ### A scheduled cleanup
-
-Add a delete operation to the writer:
-
-```csharp
-public int DeleteDone()
-{
-    var done = _db.Tasks.Where(task => task.IsDone).ToList();
-
-    _db.Tasks.RemoveRange(done);
-    _db.SaveChanges();
-
-    return done.Count;
-}
-```
-
-The job:
-
-```csharp
-public sealed class TaskCleanupJob
-{
-    public int Run()
-    {
-        var deleted = _writer.DeleteDone();
-        _audit.Record($"Cleanup:{deleted}");
-
-        return deleted;
-    }
-}
-```
-
-and the hosted service:
-
-```csharp
-public sealed class TaskCleanupService : BackgroundService
-{
-    private readonly IServiceScopeFactory _scopeFactory;
-    private readonly IOptions<CleanupOptions> _options;
-
-    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
-    {
-        while (!stoppingToken.IsCancellationRequested)
-        {
-            using (var scope = _scopeFactory.CreateScope())
-            {
-                var job = scope.ServiceProvider.GetRequiredService<TaskCleanupJob>();
-                job.Run();
-            }
-
-            await Task.Delay(
-                TimeSpan.FromSeconds(_options.Value.IntervalSeconds),
-                stoppingToken);
-        }
-    }
-}
-```
-
-The hosted service is a singleton; the job is scoped because it uses the scoped writer. `CreateScope()` gives the job a fresh context per run.
 
 Test the job directly:
 
@@ -247,18 +272,105 @@ public async Task CleanupJob_DeletesCompletedTasks()
 }
 ```
 
-Green. The hosted service calls the same job once at startup and then every configured interval.
+Before the job exists, this test does not compile because `TaskCleanupJob` has not been added. The writer interface also needs a `DeleteDone()` operation.
 
-## Refactor
+Add the operation to `ITaskWriter` and delegate it through the publisher:
 
-The in-process queue is a teaching stand-in for a broker:
+```csharp
+int DeleteDone();
 
-- Messages live in memory and disappear on restart. A durable broker (SQS, RabbitMQ, Kafka) persists them and adds retries and dead-letter queues.
-- Delivery is at least once in most brokers. Consumers must be idempotent; the audit example tolerates duplicates, a payment would not.
-- A transactional outbox solves the "write committed, message lost" gap. The database write and the outbox row commit together, and a publisher drains the outbox.
-- A background service can overlap with the next scheduled run if a run takes longer than the interval. Use a lock or a distributed lease when the job must not run twice.
+public int DeleteDone() => _inner.DeleteDone();
+```
 
-Tests of background work should wait for an observable condition, not a fixed sleep. The audit log is the observable state here; the five-second deadline is only a failure bound.
+Add a delete operation to the EF writer:
+
+```csharp
+public int DeleteDone()
+{
+    var done = _db.Tasks.Where(task => task.IsDone).ToList();
+
+    _db.Tasks.RemoveRange(done);
+    _db.SaveChanges();
+
+    return done.Count;
+}
+```
+
+The job:
+
+```csharp
+public sealed class TaskCleanupJob
+{
+    private readonly ITaskWriter _writer;
+    private readonly IAuditLog _audit;
+
+    public TaskCleanupJob(ITaskWriter writer, IAuditLog audit)
+    {
+        _writer = writer;
+        _audit = audit;
+    }
+
+    public int Run()
+    {
+        var deleted = _writer.DeleteDone();
+        _audit.Record($"Cleanup:{deleted}");
+
+        return deleted;
+    }
+}
+```
+
+and the hosted service:
+
+```csharp
+public sealed class TaskCleanupService : BackgroundService
+{
+    private readonly IServiceScopeFactory _scopeFactory;
+    private readonly IOptions<CleanupOptions> _options;
+
+    public TaskCleanupService(
+        IServiceScopeFactory scopeFactory,
+        IOptions<CleanupOptions> options)
+    {
+        _scopeFactory = scopeFactory;
+        _options = options;
+    }
+
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    {
+        while (!stoppingToken.IsCancellationRequested)
+        {
+            using (var scope = _scopeFactory.CreateScope())
+            {
+                var job = scope.ServiceProvider.GetRequiredService<TaskCleanupJob>();
+                job.Run();
+            }
+
+            try
+            {
+                await Task.Delay(
+                    TimeSpan.FromSeconds(_options.Value.IntervalSeconds),
+                    stoppingToken);
+            }
+            catch (OperationCanceledException) when (stoppingToken.IsCancellationRequested)
+            {
+                break;
+            }
+        }
+    }
+}
+```
+
+The hosted service is a singleton; the job is scoped because it uses the scoped writer. `CreateScope()` gives the job a fresh context per run.
+
+Register the job as scoped and the scheduler as a hosted service:
+
+```csharp
+builder.Services.AddScoped<TaskCleanupJob>();
+builder.Services.AddHostedService<TaskCleanupService>();
+```
+
+The test passes. The hosted service runs the same job at startup and then after each configured interval.
 
 ## Wrapping up
 
@@ -272,4 +384,3 @@ What we have covered:
 - The gaps between this design and a durable broker.
 
 Next: [v12: OpenAPI](../v12-openapi/v12-openapi.md).
-
