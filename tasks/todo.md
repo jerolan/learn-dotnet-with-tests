@@ -62,6 +62,9 @@
 - Part 1 `hello-world`: English and Spanish pairs now contain the required
   sections in order. `mise exec dotnet@10.0.402 -- dotnet test
   fundamentals/hello-world/HelloWorld.sln -m:1` passed 2 tests.
+- Part 1 `install`: English and Spanish pairs now contain the required
+  sections in order. `mise exec dotnet@10.0.402 -- dotnet test
+  fundamentals/install/InstallCheck.sln -m:1` passed 1 test.
 
 ## Completed increment: Part 4 delivery references
 

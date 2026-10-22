@@ -2,7 +2,9 @@
 
 The official installation instructions for .NET are available [here](https://dotnet.microsoft.com/download).
 
-## The SDK and the runtime
+## How it works
+
+### The SDK and the runtime
 
 The .NET SDK contains the compilers, the CLI and the runtime you need to build and run code. The runtime alone can run an application that somebody else built, but it cannot compile one. Install the SDK.
 
@@ -23,7 +25,9 @@ dotnet --list-runtimes
 
 If `dotnet` is not recognized as a command, the installer did not put it on your `PATH`. Close and reopen the terminal first; on macOS and Linux the installer adds the path to your shell profile, and the change only applies to new sessions.
 
-## Projects and solutions
+## How to test
+
+### Projects and solutions
 
 A .NET project is a `.csproj` file: it names the target framework, the package references and, for a console program, the output type. A solution is a file that groups projects so one command can build or test all of them.
 
@@ -55,24 +59,19 @@ dotnet run --project src/HelloWorld
 
 `dotnet test` restores packages, builds the solution and runs every test project it finds. In this book, every chapter folder is a solution on its own, so you can open `fundamentals/types` and run `dotnet test` without building anything else.
 
-## Verify the installation
+### The editor
 
-The `fundamentals/install` folder contains a small solution with one test. Run it:
+You can follow the whole book in VS Code with the C# extension, or in Visual Studio/Rider. The editor matters less than what you can do with it. You should be able to do these without leaving the keyboard:
 
-```sh
-cd fundamentals/install
-dotnet test
-```
+- Rename a symbol across the solution.
+- Extract a variable or a method from a selection.
+- Go to a definition and find all usages.
+- Format the file. `dotnet format` does this from the terminal.
+- Run a single test, or the whole suite, and see the result.
 
-You should see one passing test:
+## Write the test first
 
-```text
-Passed!  - Failed:     0, Passed:     1, Skipped:     0, Total:     1, Duration: 19 ms - InstallCheck.Tests.dll (net6.0)
-```
-
-The duration depends on your machine.
-
-The test calls `SdkInfo.GetRuntimeVersion()` and checks that it returns something:
+The `fundamentals/install` folder contains a small solution with one test. It checks that the runtime version is available without pinning a patch number:
 
 ```csharp
 [TestClass]
@@ -88,25 +87,60 @@ public sealed class SdkInfoTests
 }
 ```
 
-The assertion is deliberately weak. It does not pin a version, because that would break on every patch release. What it proves is that the SDK compiled C#, resolved the project reference, the test runner discovered the MSTest class, and the runtime executed the method. Those are the four things that have to work before any later chapter can.
+## Try to run the test
+
+From the chapter folder, run:
+
+```sh
+dotnet test
+```
+
+When rebuilding this small example before adding `SdkInfo`, the compiler reports that `InstallCheck.SdkInfo` does not exist.
+
+## Write the minimal amount of code for the test to run and check the failing test output
+
+Add the type with a placeholder result:
+
+```csharp
+namespace InstallCheck;
+
+public static class SdkInfo
+{
+    public static string GetRuntimeVersion()
+    {
+        return string.Empty;
+    }
+}
+```
+
+The test now compiles, but fails because the version string is empty.
+
+## Write enough code to make it pass
+
+Return the runtime version:
+
+```csharp
+public static string GetRuntimeVersion()
+{
+    return System.Environment.Version.ToString();
+}
+```
+
+Run `dotnet test` again. The solution includes this implementation and passes one test. That proves the SDK compiled C#, resolved the project reference, the test runner discovered the MSTest class and the runtime executed the method.
+
+## Refactor
+
+The helper only returns `Environment.Version`; there is no extra behavior to extract. Run the test again and keep the assertion broad so patch updates do not break it.
+
+## Repeat for new requirements
+
+### Diagnose a failed check
 
 If the command fails, read the error before changing anything:
 
 - `dotnet: command not found` means the SDK is missing or not on `PATH`.
 - `You must install .NET to run this application` means the build worked but the 6.0 runtime is missing.
 - A `CS0246` about `InstallCheck` means the project reference is missing.
-
-## Your editor
-
-You can follow the whole book in VS Code with the C# extension, or in Visual Studio/Rider. The editor matters less than what you can do with it. You should be able to do these without leaving the keyboard:
-
-- Rename a symbol across the solution.
-- Extract a variable or a method from a selection.
-- Go to a definition and find all usages.
-- Format the file. `dotnet format` does this from the terminal.
-- Run a single test, or the whole suite, and see the result.
-
-The refactoring moves are how the "refactor" step stays cheap. If renaming a class takes ten manual edits, you will skip the refactor and the design will drift.
 
 ## Wrapping up
 
