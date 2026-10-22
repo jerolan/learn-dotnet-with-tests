@@ -6,6 +6,14 @@ La versión 1 devolvía un objeto anónimo `{ error }` y solo usaba GET y POST. 
 
 La solución terminada está en `build-an-app/v2-json-routing`.
 
+## Cómo funciona
+
+`MapMethods` enlaza una ruta con un verbo HTTP específico. .NET 6 no tiene un ayudante `MapPatch` dedicado, así que se usa `MapMethods` con `HttpMethods.Patch`. La restricción entera evita que `/tasks/abc` coincida, y el segmento `/done` forma la ruta `/tasks/{id}/done`. `204 NoContent` indica que la operación salió bien y no hay cuerpo; un `200` con la tarea actualizada también serviría, pero el test fija el contrato elegido. Esta versión también nombra la respuesta de error y hace explícito el formato JSON.
+
+## Cómo probarlo
+
+Envía PATCH y GET por el `HttpClient` que crea `WebApplicationFactory`. Comprueba el estado de la respuesta y lee la tarea de vuelta; así pruebas el contrato público sin depender de la implementación del store.
+
 ## Escribe primero el test
 
 ```csharp
@@ -51,6 +59,10 @@ public TaskItem? MarkDone(int id)
 }
 ```
 
+El test sigue fallando con `NotFound`; el store ya puede actualizar una tarea, pero la API todavía no tiene una ruta PATCH.
+
+## Escribe el código suficiente para que pase
+
 Conecta la ruta:
 
 ```csharp
@@ -59,20 +71,16 @@ app.MapMethods("/tasks/{id:int}/done", new[] { HttpMethods.Patch }, (int id, InM
     var task = store.MarkDone(id);
 
     return task is null
-        ? Results.NotFound(new ErrorResponse($"Task {id} was not found."))
+        ? Results.NotFound()
         : Results.NoContent();
 });
 ```
 
 Verde. El store reemplaza el elemento por una copia con `IsDone` en true; los records son inmutables, así que `with` crea el valor actualizado.
 
-## Cómo funciona
+## Refactor
 
-`MapMethods` permite unir una ruta a un método HTTP que no tiene un ayudante `Map...` dedicado. En .NET 6, `MapPatch` no está disponible, así que `MapMethods` con `HttpMethods.Patch` es la forma explícita.
-
-`204 NoContent` dice que la operación salió bien y no hay cuerpo que leer. Un `200` con la tarea actualizada también sería válido; la elección pertenece al contrato de la API y el test la fija.
-
-La restricción `{id:int}` evita que la ruta matchee `/tasks/abc`. La ruta PATCH agrega un segundo segmento, `/done`, así el camino es `/tasks/{id}/done`.
+Los tipos del contrato tienen trabajos distintos: el request es la entrada, `TaskItem` representa la tarea en la API y el store maneja la persistencia. Al conservar estos bordes, los cambios de almacenamiento no se filtran al JSON. La versión 4 agrega una base de datos detrás del store y mantiene iguales las firmas de los endpoints.
 
 ## Repite con requisitos nuevos
 
@@ -118,6 +126,8 @@ public async Task BlankTitle_ReturnsAnErrorBody()
 
 Verde. Cada error que produce la API tiene ahora la misma forma. Un cliente puede parsear `error` sin adivinar si el cuerpo es un objeto, una cadena o está vacío.
 
+`ErrorResponse` es pequeño a propósito. Cuando llegue la validación en la versión 6, crecerá a una forma de errores por campo o a un documento Problem Details. Esta versión hace que la forma del fallo tenga nombre y pueda probarse.
+
 ### Nombres JSON
 
 Escribe el test:
@@ -147,19 +157,6 @@ builder.Services.Configure<Microsoft.AspNetCore.Http.Json.JsonOptions>(options =
 ```
 
 Verde. El contrato JSON de la API ya no depende de un valor por defecto del framework que podría cambiar. `DefaultIgnoreCondition` deja las propiedades null fuera de las respuestas, lo que importa cuando el modelo de tarea crezca con campos opcionales.
-
-## Refactor
-
-Ahora hay cuatro tipos de API con trabajos distintos:
-
-- `CreateTaskRequest` es la entrada.
-- `TaskItem` es la tarea tal como la expone la API.
-- `ErrorResponse` es la forma del fallo.
-- El store es el borde de almacenamiento.
-
-Mantenerlos separados significa que un cambio de almacenamiento no se filtra al JSON, y un cambio en la forma de error no exige un tipo de dominio nuevo. La versión 4 agrega una base de datos detrás del store; las firmas de los endpoints quedan iguales.
-
-`ErrorResponse` es pequeño a propósito. Cuando llegue la validación en la versión 6, crecerá a una forma de errores por campo o a un documento Problem Details. El punto de esta versión es que la forma tiene nombre y test.
 
 ## Para cerrar
 

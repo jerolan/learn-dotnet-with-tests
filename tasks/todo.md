@@ -109,6 +109,10 @@
   sections in order, with the test host and per-test factory explained before
   the first scenario. `mise exec dotnet@10.0.402 -- dotnet test
   build-an-app/v1-intro/TaskTracker.sln -m:1` passed 4 tests.
+- Part 3 `v2-json-routing`: English and Spanish pairs now contain the required
+  sections in order; the PATCH story separates the store update from the new
+  route. `mise exec dotnet@10.0.402 -- dotnet test
+  build-an-app/v2-json-routing/TaskTracker.sln -m:1` passed 9 tests.
 
 ## Completed increment: Part 4 delivery references
 

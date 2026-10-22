@@ -6,6 +6,14 @@ Version 1 returned an anonymous `{ error }` object and used only GET and POST. V
 
 The finished solution is in `build-an-app/v2-json-routing`.
 
+## How it works
+
+`MapMethods` binds a route to a specific HTTP verb. .NET 6 has no dedicated `MapPatch` helper, so use `MapMethods` with `HttpMethods.Patch`. The integer constraint keeps `/tasks/abc` from matching, and the extra `/done` segment makes the route `/tasks/{id}/done`. `204 NoContent` means the operation succeeded with no body; `200` with the updated task would also work, but the test pins the chosen contract. This version also names its error response and makes JSON naming explicit.
+
+## How to test
+
+Send PATCH and GET through the `HttpClient` created by `WebApplicationFactory`. Assert the response status and read the task back; this checks the public contract without depending on the store implementation.
+
 ## Write the test first
 
 ```csharp
@@ -51,6 +59,10 @@ public TaskItem? MarkDone(int id)
 }
 ```
 
+The test still fails with `NotFound`; the store can now update a task, but the API has no PATCH route yet.
+
+## Write enough code to make it pass
+
 Wire the route:
 
 ```csharp
@@ -59,20 +71,16 @@ app.MapMethods("/tasks/{id:int}/done", new[] { HttpMethods.Patch }, (int id, InM
     var task = store.MarkDone(id);
 
     return task is null
-        ? Results.NotFound(new ErrorResponse($"Task {id} was not found."))
+        ? Results.NotFound()
         : Results.NoContent();
 });
 ```
 
 Green. The store replaces the item with a copy whose `IsDone` is true; the records are immutable, so `with` creates the updated value.
 
-## How it works
+## Refactor
 
-`MapMethods` lets you bind a route to an HTTP method that has no dedicated `Map...` helper. In .NET 6, `MapPatch` is not available, so `MapMethods` with `HttpMethods.Patch` is the explicit form.
-
-`204 NoContent` says the operation succeeded and there is no body to read. A `200` with the updated task would also be valid; the choice belongs in the API contract and the test pins it.
-
-The `{id:int}` constraint keeps the route from matching `/tasks/abc`. The PATCH route adds a second segment, `/done`, so the path is `/tasks/{id}/done`.
+The request and response types have separate jobs: the request is input, `TaskItem` is the API's task representation, and the store owns persistence. Keeping these boundaries means storage changes do not leak into JSON. Version 4 adds a database behind the store while the endpoint signatures stay the same.
 
 ## Repeat for new requirements
 
@@ -118,6 +126,8 @@ public async Task BlankTitle_ReturnsAnErrorBody()
 
 Green. Every error the API produces now has the same shape. A client can parse `error` without guessing whether the body is an object, a string or empty.
 
+`ErrorResponse` is deliberately small. When validation arrives in version 6, it grows into a field-error shape or a Problem Details document. This version makes the failure shape named and testable.
+
 ### JSON naming
 
 Write the test:
@@ -147,19 +157,6 @@ builder.Services.Configure<Microsoft.AspNetCore.Http.Json.JsonOptions>(options =
 ```
 
 Green. The API's JSON contract no longer depends on a framework default that could change. `DefaultIgnoreCondition` keeps null properties out of responses, which matters once the task model grows optional fields.
-
-## Refactor
-
-There are now four wire types with different jobs:
-
-- `CreateTaskRequest` is the input.
-- `TaskItem` is the task as the API exposes it.
-- `ErrorResponse` is the failure shape.
-- The store is the storage boundary.
-
-Keeping them separate means a change to storage does not leak into the JSON, and a change to the error shape does not require a new domain type. Version 4 adds a database behind the store; the endpoint signatures stay the same.
-
-`ErrorResponse` is deliberately small. When validation arrives in version 6, it grows into a field-error shape or a Problem Details document. The point of this version is that the shape is named and tested.
 
 ## Wrapping up
 
