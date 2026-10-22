@@ -204,5 +204,5 @@ What we have covered:
 
 The chapter builds on the interface section of [Structs, Methods and Interfaces in Learn Go with Tests](https://quii.gitbook.io/learn-go-with-tests/structs-methods-and-interfaces): a small contract lets independent pieces fit together. The pipeline is the composition version of the shape hierarchy from the previous chapter.
 
-Next: [Dependency Injection](../dependency-injection.md).
+Next: [Dependency Injection](../dependency-injection/dependency-injection.md).
 
