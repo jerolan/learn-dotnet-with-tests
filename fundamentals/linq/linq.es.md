@@ -187,5 +187,5 @@ Lo que cubrimos:
 
 El capítulo sigue las operaciones de secuencia del [capítulo Generics de Learn Go with Tests](https://quii.gitbook.io/learn-go-with-tests/generics), donde una función genérica pequeña reemplaza un bucle. LINQ generaliza esa idea a filtrado, proyección, agrupación y orden.
 
-Siguiente: [IQueryable](../queriable.md).
+Siguiente: [IQueryable](../queriable/queriable.es.md).
 

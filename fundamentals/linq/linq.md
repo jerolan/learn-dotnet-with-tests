@@ -187,5 +187,5 @@ What we have covered:
 
 The chapter follows the sequence operations of the [Generics chapter of Learn Go with Tests](https://quii.gitbook.io/learn-go-with-tests/generics), where a small generic function replaces a loop. LINQ generalizes that idea across filtering, projection, grouping and ordering.
 
-Next: [IQueryable](../queriable.md).
+Next: [IQueryable](../queriable/queriable.md).
 

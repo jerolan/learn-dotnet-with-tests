@@ -51,7 +51,7 @@ This cycle encourages developers to write only the code necessary to pass tests,
 17. [Linq](fundamentals/linq/linq.md) ([ES](fundamentals/linq/linq.es.md)) - Explore LINQ (Language Integrated Query) for querying collections and data sources in a declarative manner.
 18. [Tasks](fundamentals/tasks.md) - Understand how to work with tasks for performing asynchronous operations.
 19. [Async/Await](fundamentals/async.md) - Dive into the async/await pattern for writing clean, efficient asynchronous code.
-20. [IQueryable](fundamentals/queriable.md) - Learn about IQueryable for efficient querying against data sources like databases.
+20. [IQueryable](fundamentals/queriable/queriable.md) ([ES](fundamentals/queriable/queriable.es.md)) - Learn about IQueryable for efficient querying against data sources like databases.
 21. [IEnumerable](fundamentals/enumerable/enumerable.md) ([ES](fundamentals/enumerable/enumerable.es.md)) - Explore IEnumerable and its role in iterating over collections.
 22. [Files and I/O ](fundamentals/io.md) - Get to grips with reading from and writing to files and performing other I/O operations.
 23. [`using` Keyword](fundamentals/using.md) - Discover how to manage resources automatically with the using statement.
