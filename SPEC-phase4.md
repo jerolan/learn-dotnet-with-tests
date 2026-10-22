@@ -33,7 +33,7 @@ Close the roadmap with LGWT-style Q&A chapters and the 🟠 appendices. Every ro
 | Messaging | Part 3, `v11` | covered |
 | Task scheduling | Part 3, `v11` | covered |
 | .NET libraries | Appendix `sdk-libraries` | planned |
-| SignalR | Appendix `signalr` | planned |
+| SignalR | Appendix `signalr` | covered |
 | Snapshot testing (Verify) | Appendix `snapshot-verify` | covered |
 | E2E (Playwright) | Appendix `e2e-playwright` | planned |
 | Performance (K6/NBomber) | Appendix `performance-nbomber` | covered |

@@ -23,7 +23,7 @@ This part closes the roadmap. The Q&A chapters answer the questions that do not 
 - 🟠 NoSQL. *Planned.*
 - 🟠 gRPC. *Planned.*
 - 🟠 GraphQL. *Planned.*
-- 🟠 SignalR. *Planned.*
+- 🟠 [Real-time updates with SignalR](signalr/signalr.md) ([ES](signalr/signalr.es.md)) - Push a created task to a connected client and test the hub through TestServer.
 - 🟠 AsyncAPI. *Planned.*
 - 🟠 SDK libraries. *Planned.*
 - 🟠 DevOps and infrastructure as code. *Planned.*
@@ -48,7 +48,7 @@ This part closes the roadmap. The Q&A chapters answer the questions that do not 
 | Messaging | [v11](../build-an-app/v11-messaging-scheduling/v11-messaging-scheduling.md) | covered |
 | Task scheduling | [v11](../build-an-app/v11-messaging-scheduling/v11-messaging-scheduling.md) | covered |
 | .NET libraries | SDK libraries appendix | planned |
-| SignalR | SignalR appendix | planned |
+| SignalR | [Real-time updates with SignalR](signalr/signalr.md) | covered |
 | Snapshot, E2E, performance | [Snapshot](snapshot-verify/snapshot-verify.md), [NBomber](performance-nbomber/performance-nbomber.md), Playwright appendix | snapshot and performance covered; E2E planned |
 | Containers, CI/CD, monitoring, cloud, DevOps | [Containers](containers/containers.md), [CI/CD](ci-cd/ci-cd.md), [Monitoring](monitoring-telemetry/monitoring-telemetry.md), cloud and DevOps appendices | containers, CI/CD and monitoring covered; cloud and DevOps planned |
 | Streaming, NoSQL, gRPC, GraphQL | Protocol and storage appendices | planned |

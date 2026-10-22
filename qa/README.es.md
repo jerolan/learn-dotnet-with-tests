@@ -23,7 +23,7 @@ Esta parte cierra el roadmap. Los capítulos de preguntas responden dudas que no
 - 🟠 NoSQL. *Planeado.*
 - 🟠 gRPC. *Planeado.*
 - 🟠 GraphQL. *Planeado.*
-- 🟠 SignalR. *Planeado.*
+- 🟠 [Actualizaciones en tiempo real con SignalR](signalr/signalr.es.md) ([EN](signalr/signalr.md)) - Empuja una tarea creada a un cliente conectado y prueba el hub a través de TestServer.
 - 🟠 AsyncAPI. *Planeado.*
 - 🟠 Bibliotecas SDK. *Planeado.*
 - 🟠 DevOps e infraestructura como código. *Planeado.*
@@ -48,7 +48,7 @@ Esta parte cierra el roadmap. Los capítulos de preguntas responden dudas que no
 | Mensajería | [v11](../build-an-app/v11-messaging-scheduling/v11-messaging-scheduling.es.md) | cubierto |
 | Scheduling de tareas | [v11](../build-an-app/v11-messaging-scheduling/v11-messaging-scheduling.es.md) | cubierto |
 | Bibliotecas .NET | Apéndice de bibliotecas SDK | planeado |
-| SignalR | Apéndice de SignalR | planeado |
+| SignalR | [Actualizaciones en tiempo real con SignalR](signalr/signalr.es.md) | cubierto |
 | Snapshot, E2E, rendimiento | [Snapshot](snapshot-verify/snapshot-verify.es.md), [NBomber](performance-nbomber/performance-nbomber.es.md), apéndice de Playwright | snapshot y rendimiento cubiertos; E2E planeado |
 | Contenedores, CI/CD, monitoreo, nube, DevOps | [Contenedores](containers/containers.es.md), [CI/CD](ci-cd/ci-cd.es.md), [Monitoreo](monitoring-telemetry/monitoring-telemetry.es.md), apéndices de nube y DevOps | contenedores, CI/CD y monitoreo cubiertos; nube y DevOps planeados |
 | Streaming, NoSQL, gRPC, GraphQL | Apéndices de protocolos y almacenamiento | planeado |
