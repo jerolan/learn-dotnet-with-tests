@@ -30,7 +30,8 @@ jobs:
           mkdir -p artifacts/test-results
           for sln in $(find . -name "*.sln" -print | sort); do
             echo "Testing $sln"
-            name=$(echo "$sln" | tr '/' '_')
+            name="${sln#./}"
+            name="${name//\//_}"
             dotnet test "$sln" --nologo \
               --logger "trx;LogFileName=$name.trx" \
               --results-directory artifacts/test-results

@@ -54,7 +54,8 @@ The key changes when any project file changes. A version bump or a new package p
     mkdir -p artifacts/test-results
     for sln in $(find . -name "*.sln" -print | sort); do
       echo "Testing $sln"
-      name=$(echo "$sln" | tr '/' '_')
+      name="${sln#./}"
+      name="${name//\//_}"
       dotnet test "$sln" --nologo \
         --logger "trx;LogFileName=$name.trx" \
         --results-directory artifacts/test-results
@@ -67,7 +68,7 @@ The key changes when any project file changes. A version bump or a new package p
     path: artifacts/test-results
 ```
 
-Each solution writes its own TRX file, named from its path. The slash replacement matters: a logger treats the name as a file name, not a directory tree. `if: always()` runs the upload even when the test step failed, which is exactly when the results are worth keeping.
+Each solution writes its own TRX file, named from its path. Strip the leading `./` before replacing slashes: otherwise the result is a hidden file that the artifact upload omits. Replacing slashes keeps every result in one directory as a unique file name. `if: always()` runs the upload even when the test step failed, which is exactly when the results are worth keeping.
 
 ## Build once, deploy that build
 

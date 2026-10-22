@@ -54,7 +54,8 @@ La clave cambia cuando cambia cualquier archivo de proyecto. Un bump de versión
     mkdir -p artifacts/test-results
     for sln in $(find . -name "*.sln" -print | sort); do
       echo "Testing $sln"
-      name=$(echo "$sln" | tr '/' '_')
+      name="${sln#./}"
+      name="${name//\//_}"
       dotnet test "$sln" --nologo \
         --logger "trx;LogFileName=$name.trx" \
         --results-directory artifacts/test-results
@@ -67,7 +68,7 @@ La clave cambia cuando cambia cualquier archivo de proyecto. Un bump de versión
     path: artifacts/test-results
 ```
 
-Cada solución escribe su propio archivo TRX, nombrado a partir de su ruta. Reemplazar la barra importa: el logger trata el nombre como archivo, no como árbol de directorios. `if: always()` sube los resultados aunque el step de tests haya fallado, que es justo cuando valen la pena.
+Cada solución escribe su propio archivo TRX, nombrado a partir de su ruta. Quita el prefijo `./` antes de reemplazar las barras: de otro modo, el resultado es un archivo oculto que el upload de artefactos omite. Reemplazar las barras mantiene cada resultado en un solo directorio con un nombre único. `if: always()` sube los resultados aunque el step de tests haya fallado, que es justo cuando valen la pena.
 
 ## Construye una vez, despliega ese build
 
