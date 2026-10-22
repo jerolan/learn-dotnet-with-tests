@@ -26,7 +26,7 @@ This cycle encourages developers to write only the code necessary to pass tests,
 
 ### C# fundamentals
 
-1. [Install Dotnet](fundamentals/install.md) - Set up your environment to write and run C# code, including installing the .NET SDK and choosing an IDE or editor.
+1. [Install Dotnet](fundamentals/install/install.md) - Set up your environment to write and run C# code, including installing the .NET SDK and choosing an IDE or editor.
 2. [Hello, world](fundamentals/hello-world.md) - Dive into C# with your first program, exploring the basic structure of a C# application and the use of Console.WriteLine.
 3. [Types and Variables](fundamentals/types.md) - Understand C#'s built-in types such as integers, floats, strings, and how to declare and use variables.
 4. [Decimals](fundamentals/decimal.md) - Learn how to use decimal types for precise financial and scientific calculations.
