@@ -84,7 +84,7 @@ dotnet add tests/HelloWorld.Tests/HelloWorld.Tests.csproj reference src/HelloWor
 
 Borra el `UnitTest1.cs` generado. Solo existe para demostrar que la plantilla corrió.
 
-Este libro incluye la solución terminada de cada capítulo. Si creaste tu propio proyecto, usa los mismos nombres; si no, abre `fundamentals/hello-world` y ejecuta los comandos desde ahí.
+El repositorio incluye la solución terminada de este capítulo. Si creaste tu propio proyecto, usa los mismos nombres; si no, abre `fundamentals/hello-world` y ejecuta los comandos desde ahí.
 
 ## De vuelta a los tests
 

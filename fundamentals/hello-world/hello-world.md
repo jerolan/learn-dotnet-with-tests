@@ -84,7 +84,7 @@ dotnet add tests/HelloWorld.Tests/HelloWorld.Tests.csproj reference src/HelloWor
 
 Delete the generated `UnitTest1.cs`. It exists only to prove that the template ran.
 
-This book ships the finished solution for every chapter. If you created your own project, keep the same names; otherwise open `fundamentals/hello-world` and run the commands from there.
+The repository ships the finished solution for this chapter. If you created your own project, keep the same names; otherwise open `fundamentals/hello-world` and run the commands from there.
 
 ## Back to testing
 
