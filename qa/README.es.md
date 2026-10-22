@@ -18,7 +18,7 @@ Esta parte cierra el roadmap. Los capítulos de preguntas responden dudas que no
 - 🟠 [Contenedores para la API TaskTracker](containers/containers.es.md) ([EN](containers/containers.md)) - Construye una imagen multi-stage, ejecútala con SQLite sobre un volumen y comprueba OpenAPI desde fuera.
 - 🟠 [CI/CD más allá del job de tests](ci-cd/ci-cd.es.md) ([EN](ci-cd/ci-cd.md)) - Cachea paquetes, conserva resultados TRX y publica la API como artefacto condicionado a los tests.
 - 🟠 [Monitoreo y telemetría](monitoring-telemetry/monitoring-telemetry.es.md) ([EN](monitoring-telemetry/monitoring-telemetry.md)) - Registra un contador con tags y captúralo con un MeterListener.
-- 🟠 Despliegue en la nube. *Planeado.*
+- 🟠 [Despliegue en la nube](cloud/cloud.es.md) ([EN](cloud/cloud.md)) - Mapea el artefacto publicado a un host: configuración, secretos, migraciones, probes, rollback y un job de deploy.
 - 🟠 [Streaming con IAsyncEnumerable](streaming/streaming.es.md) ([EN](streaming/streaming.md)) - Produce tareas a medida que llegan, cancela a mitad y conserva lo entregado antes de un fallo.
 - 🟠 [NoSQL con MongoDB](nosql/nosql.es.md) ([EN](nosql/nosql.md)) - Guarda documentos en MongoDB, levántalo con Testcontainers y corrige un orden sensible a mayúsculas con una collation.
 - 🟠 [gRPC](grpc/grpc.es.md) ([EN](grpc/grpc.md)) - Define un contrato proto, genera el servicio y el cliente, y llámalo a través de TestServer.
@@ -50,7 +50,7 @@ Esta parte cierra el roadmap. Los capítulos de preguntas responden dudas que no
 | Bibliotecas .NET | [Bibliotecas SDK](sdk-libraries/sdk-libraries.es.md) | cubierto |
 | SignalR | [Actualizaciones en tiempo real con SignalR](signalr/signalr.es.md) | cubierto |
 | Snapshot, E2E, rendimiento | [Snapshot](snapshot-verify/snapshot-verify.es.md), [Playwright](e2e-playwright/e2e-playwright.es.md), [NBomber](performance-nbomber/performance-nbomber.es.md) | cubierto |
-| Contenedores, CI/CD, monitoreo, nube, DevOps | [Contenedores](containers/containers.es.md), [CI/CD](ci-cd/ci-cd.es.md), [Monitoreo](monitoring-telemetry/monitoring-telemetry.es.md), apéndices de nube y DevOps | contenedores, CI/CD y monitoreo cubiertos; nube y DevOps planeados |
+| Contenedores, CI/CD, monitoreo, nube, DevOps | [Contenedores](containers/containers.es.md), [CI/CD](ci-cd/ci-cd.es.md), [Monitoreo](monitoring-telemetry/monitoring-telemetry.es.md), [Nube](cloud/cloud.es.md), apéndice de DevOps | contenedores, CI/CD, monitoreo y nube cubiertos; DevOps planeado |
 | Streaming, NoSQL, gRPC, GraphQL | [gRPC](grpc/grpc.es.md), [GraphQL](graphql/graphql.es.md), [NoSQL](nosql/nosql.es.md), [Streaming](streaming/streaming.es.md) | cubierto |
 | Habilidades generales de desarrollo | Prefacio del README y preguntas de testing | cubierto |
 

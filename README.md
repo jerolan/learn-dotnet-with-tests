@@ -109,3 +109,4 @@ The closing part answers the questions that do not need a new project and maps t
 - 🟠 [NoSQL with MongoDB](qa/nosql/nosql.md) ([ES](qa/nosql/nosql.es.md)) - Store documents in MongoDB, start it with Testcontainers and fix a case-sensitive sort.
 - 🟠 [Streaming with IAsyncEnumerable](qa/streaming/streaming.md) ([ES](qa/streaming/streaming.es.md)) - Yield tasks as they arrive, cancel halfway and keep partial results.
 - 🟠 [End-to-End Testing with Playwright](qa/e2e-playwright/e2e-playwright.md) ([ES](qa/e2e-playwright/e2e-playwright.es.md)) - Start Kestrel on a free port and drive the task board in Chromium.
+- 🟠 [Cloud Deployment](qa/cloud/cloud.md) ([ES](qa/cloud/cloud.es.md)) - Map the published artifact to a host: config, secrets, migrations, probes and rollback.

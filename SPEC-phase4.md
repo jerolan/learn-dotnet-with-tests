@@ -40,7 +40,7 @@ Close the roadmap with LGWT-style Q&A chapters and the 🟠 appendices. Every ro
 | Containers | Appendix `containers` | covered |
 | CI/CD | Appendix `ci-cd` | covered |
 | Monitoring/telemetry | Appendix `monitoring-telemetry` | covered |
-| Cloud | Appendix `cloud` | planned |
+| Cloud | Appendix `cloud` | covered |
 | Streaming | Appendix `streaming` | covered |
 | NoSQL | Appendix `nosql` | covered |
 | gRPC | Appendix `grpc` | covered |
