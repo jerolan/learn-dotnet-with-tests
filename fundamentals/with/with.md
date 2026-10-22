@@ -6,6 +6,20 @@ A record's properties are init-only: once the object exists, you cannot assign t
 
 The finished solution is in `fundamentals/with`. If you are building it from scratch, use the same layout as the previous chapters: a class library in `src/WithKeyword`, an MSTest project in `tests/WithKeyword.Tests`, a solution and a project reference.
 
+## How it works
+
+For a record, `original with { Age = 37 }` creates a new object, copies the existing property values and then applies the named assignments. It leaves `original` unchanged. Records compare by value, so a changed property makes the two records unequal.
+
+You can change more than one property in the same initializer; properties you do not name are copied unchanged:
+
+```csharp
+var renamed = original with { Name = "Grace", Age = 37 };
+```
+
+## How to test
+
+Keep both objects and assert the property values on each one. That checks the update and proves the original remains unchanged without relying on object identity alone.
+
 ## Write the test first
 
 ```csharp
@@ -46,27 +60,13 @@ namespace WithKeyword;
 public record Person(string Name, int Age);
 ```
 
-Run the tests. Green.
+## Write enough code to make it pass
 
-There was no behavioral red this time: `with` is a language feature that works as soon as the record exists. The test still earned its place, because it pins the behavior we care about: the original keeps its age and the copy has the new one.
+Run the tests. Green. There is no behavioral red this time: `with` is a language feature that works as soon as the record exists. The test pins the behavior we care about: the original keeps its age and the copy has the new one.
 
-## How it works
+## Refactor
 
-`original with { Age = 37 }` does three things:
-
-1. Copies every property from `original` into a new record.
-2. Applies the assignments in the initializer. Here, `Age` becomes `37`.
-3. Returns the new record.
-
-`original` is untouched. The expression does not mutate the object; it builds a second one. `older` and `original` are different objects, and records compare by value, so they are not equal because their ages differ.
-
-You can change more than one property in the same initializer:
-
-```csharp
-var renamed = original with { Name = "Grace", Age = 37 };
-```
-
-Properties you do not name are copied unchanged.
+The `with` expression already makes the copy and update explicit. Run the test again; no helper or mutation is needed.
 
 ## Repeat for new requirements
 
@@ -118,7 +118,7 @@ Green. The inner `with` creates a new address, and the outer `with` creates a ne
 
 If you only wrote `customer with { Home = new Address("Paris") }`, you would replace the whole address. The nested form is useful when the address has more fields and you want to change one.
 
-## Refactor
+### Shallow copies and mutable properties
 
 `with` makes a shallow copy. It copies the values of the properties, and for a reference-type property the value is the reference. If a record holds a mutable list, both records see changes made through that list:
 

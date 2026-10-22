@@ -26,7 +26,7 @@ placement in Learn Go with Tests.
 - Every fundamentals chapter folder has runnable solution with passing dotnet test.
 - Every chapter bilingual and template-ordered, CI green.
 
-## Status: implementation present; template-order alignment pending (2026-10-22)
+## Status: implementation present; Part 1 template-order alignment complete locally (2026-10-22)
 
 - All 25 indexed chapters have a folder with `<name>.md`, `<name>.es.md` and a standalone `.sln`.
 - 26 solutions total (the 25 chapters plus `MyFirstDotNetApp`), 140 passing tests.
@@ -35,4 +35,6 @@ placement in Learn Go with Tests.
 - The README index is ordered by dependency and marks every fundamentals chapter as must-know.
 - The final reading order places Dependency Injection and Mocking at positions 10 and 11, before the remaining object-oriented topics.
 - All 26 Part 1 solutions (25 chapters plus `MyFirstDotNetApp`) passed in the 57-solution repository run on 2026-10-22.
-- The chapter pairs still need to follow the canonical section order; that work is tracked in `tasks/todo.md`.
+- All 25 English/Spanish chapter pairs now contain the nine required template sections in canonical order.
+- The 25 chapter solutions passed locally: 93 tests total. The full local Markdown link audit reports no broken links.
+- CI has not run on the current unpushed documentation changes; the earlier CI run remains evidence for the solution tree before this alignment.

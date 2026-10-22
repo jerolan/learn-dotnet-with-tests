@@ -6,6 +6,20 @@ Las propiedades de un record son de solo inicialización: una vez que el objeto 
 
 La solución terminada está en `fundamentals/with`. Si la estás armando desde cero, usa la misma estructura que en los capítulos anteriores: una biblioteca de clases en `src/WithKeyword`, un proyecto de MSTest en `tests/WithKeyword.Tests`, una solución y una referencia entre proyectos.
 
+## Cómo funciona
+
+Para un record, `original with { Age = 37 }` crea un objeto nuevo, copia los valores de las propiedades existentes y después aplica las asignaciones nombradas. Deja intacto a `original`. Los records comparan por valor, así que un cambio en una propiedad hace que los dos records sean distintos.
+
+Puedes cambiar más de una propiedad en el mismo inicializador; las propiedades que no nombras se copian sin cambios:
+
+```csharp
+var renamed = original with { Name = "Grace", Age = 37 };
+```
+
+## Cómo probarlo
+
+Conserva los dos objetos y comprueba las propiedades de cada uno. Así verificas la actualización y que el original quede intacto sin depender solo de la identidad de objeto.
+
 ## Escribe primero el test
 
 ```csharp
@@ -46,27 +60,13 @@ namespace WithKeyword;
 public record Person(string Name, int Age);
 ```
 
-Ejecuta los tests. Verde.
+## Escribe el código suficiente para que pase
 
-Esta vez no hubo un rojo de comportamiento: `with` es una característica del lenguaje que funciona en cuanto el record existe. El test igual se ganó su lugar, porque fija el comportamiento que importa: el original conserva su edad y la copia tiene la nueva.
+Ejecuta los tests. Verde. Esta vez no hay un rojo de comportamiento: `with` es una característica del lenguaje que funciona en cuanto existe el record. El test fija el comportamiento que importa: el original conserva su edad y la copia tiene la nueva.
 
-## Cómo funciona
+## Refactor
 
-`original with { Age = 37 }` hace tres cosas:
-
-1. Copia cada propiedad de `original` en un record nuevo.
-2. Aplica las asignaciones del inicializador. Aquí, `Age` pasa a `37`.
-3. Devuelve el record nuevo.
-
-`original` queda intacto. La expresión no muta el objeto; construye un segundo. `older` y `original` son objetos distintos, y los records comparan por valor, así que no son iguales porque sus edades difieren.
-
-Puedes cambiar más de una propiedad en el mismo inicializador:
-
-```csharp
-var renamed = original with { Name = "Grace", Age = 37 };
-```
-
-Las propiedades que no nombras se copian sin cambios.
+La expresión `with` ya hace explícitas la copia y la actualización. Ejecuta el test otra vez; no hacen falta un ayudante ni una mutación.
 
 ## Repite con requisitos nuevos
 
@@ -118,7 +118,7 @@ Verde. El `with` interno crea una dirección nueva, y el `with` externo crea un 
 
 Si escribieras solo `customer with { Home = new Address("Paris") }`, reemplazarías la dirección completa. La forma anidada sirve cuando la dirección tiene más campos y quieres cambiar uno.
 
-## Refactor
+### Copias superficiales y propiedades mutables
 
 `with` hace una copia superficial. Copia los valores de las propiedades, y para una propiedad de tipo referencia el valor es la referencia. Si un record guarda una lista mutable, los dos records ven los cambios hechos a través de esa lista:
 

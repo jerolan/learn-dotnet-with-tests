@@ -5,7 +5,7 @@
 ## Active increment: Chapter section order
 
 ### Task 1: Align chapter pairs with the canonical template
-- [ ] Align Part 1 English/Spanish chapters with the section order in `fundamentals/TEMPLATE.md`.
+- [x] Align Part 1 English/Spanish chapters with the section order in `fundamentals/TEMPLATE.md`.
 - [ ] Align Part 2 and Part 3 pairs with the same order.
 - [ ] Align runnable Part 4 appendices where their sample supports the TDD flow; preserve the Phase 4 Q&A and explicit deferral exceptions.
 - [ ] Verify each slice has every required section in matching bilingual order, resolving links and passing solution tests.
@@ -86,6 +86,9 @@
 - Part 1 `using`: English and Spanish pairs now contain the required sections
   in order. `mise exec dotnet@10.0.402 -- dotnet test
   fundamentals/using/Using.sln -m:1` passed 4 tests.
+- Part 1 `with`: English and Spanish pairs now contain the required sections
+  in order. `mise exec dotnet@10.0.402 -- dotnet test
+  fundamentals/with/With.sln -m:1` passed 3 tests.
 
 ## Completed increment: Part 4 delivery references
 
