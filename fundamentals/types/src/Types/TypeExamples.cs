@@ -2,24 +2,25 @@ namespace Types;
 
 public static class TypeExamples
 {
-    public static int Add(int a, int b)
+    /// <summary>Adds two integers.</summary>
+    public static int Add(int x, int y)
     {
-        return a + b;
+        return x + y;
     }
 
-    public static bool IsEven(int value)
+    public static int Divide(int x, int y)
     {
-        return value % 2 == 0;
+        return x / y;
     }
 
-    public static string Describe(object value)
+    public static double Divide(double x, double y)
     {
-        return value switch
-        {
-            int i => string.Format("int:{0}", i),
-            double d => string.Format("double:{0}", d),
-            bool b => string.Format("bool:{0}", b),
-            _ => "unknown"
-        };
+        return x / y;
+    }
+
+    public static bool IsPositive(int value)
+    {
+        return value > 0;
     }
 }
+
