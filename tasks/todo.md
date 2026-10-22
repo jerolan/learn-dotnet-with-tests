@@ -2,7 +2,17 @@
 
 > The Phase 0 tasks below are historical and complete; see `SPEC-phase1.md`.
 
-## Active increment: Part 3 v15 SignalR
+## Active increment: Part 1 chapter order
+
+### Task 1: Move DI and mocking earlier in the reading flow
+- [x] Place Dependency Injection and Mocking directly after Classes in the Part 1 README index.
+- [x] Keep records, `with`, inheritance and composition after them; renumber the full index.
+- [x] Update English and Spanish next-chapter links to follow the same sequence.
+- Verify: all local README and Part 1 chapter links resolve; all 25 bilingual pairs remain linked.
+- Files: `README.md`, `SPEC-phase1.md`, `fundamentals/**` next-chapter links, `tasks/plan.md`, `tasks/todo.md`.
+- Dependency: none.
+
+## Completed increment: Part 3 v15 SignalR
 
 ### Task 1: Add the standalone SignalR version
 - [x] Copy the v14 solution into `build-an-app/v15-signalr` so it remains independent.

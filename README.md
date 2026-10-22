@@ -34,19 +34,19 @@ This cycle encourages developers to write only the code necessary to pass tests,
 6. 🟢 [Control Flow](fundamentals/control-flow/control-flow.md) ([ES](fundamentals/control-flow/control-flow.es.md)) - Use `for`, `while`, `if` and a switch expression to drive behavior.
 7. 🟢 [Exceptions](fundamentals/exceptions/exceptions.md) ([ES](fundamentals/exceptions/exceptions.es.md)) - Make the error path part of the contract with a domain exception.
 
-### Object-Oriented Programming
+### Objects, dependencies and boundaries
 
 8. 🟢 [Properties and Methods](fundamentals/methods/methods.md) ([ES](fundamentals/methods/methods.es.md)) - Define methods, properties, optional parameters and named arguments.
 9. 🟢 [Classes and Objects](fundamentals/classes/classes.md) ([ES](fundamentals/classes/classes.es.md)) - Model state with a constructor, a private setter and an invariant.
-10. 🟢 [Structs and Records](fundamentals/records/records.md) ([ES](fundamentals/records/records.es.md)) - Compare value copying in structs with value equality in records.
-11. 🟢 [`with` Keyword](fundamentals/with/with.md) ([ES](fundamentals/with/with.es.md)) - Create changed copies of records without mutating the original.
-12. 🟢 [Inheritance and Interfaces](fundamentals/inheritance/inheritance.md) ([ES](fundamentals/inheritance/inheritance.es.md)) - Share state with a base class and behavior with an interface.
-13. 🟢 [Composition over Inheritance](fundamentals/composition/composition.md) ([ES](fundamentals/composition/composition.es.md)) - Assemble behavior from small parts instead of multiplying subclasses.
+10. 🟢 [Dependency Injection](fundamentals/dependency-injection/dependency-injection.md) ([ES](fundamentals/dependency-injection/dependency-injection.es.md)) - Receive dependencies through the constructor and keep the composition root at the edge.
+11. 🟢 [Mocking](fundamentals/mock/mock.md) ([ES](fundamentals/mock/mock.es.md)) - Use Moq at an I/O boundary and verify the interactions that are part of the contract.
+12. 🟢 [Structs and Records](fundamentals/records/records.md) ([ES](fundamentals/records/records.es.md)) - Compare value copying in structs with value equality in records.
+13. 🟢 [`with` Keyword](fundamentals/with/with.md) ([ES](fundamentals/with/with.es.md)) - Create changed copies of records without mutating the original.
+14. 🟢 [Inheritance and Interfaces](fundamentals/inheritance/inheritance.md) ([ES](fundamentals/inheritance/inheritance.es.md)) - Share state with a base class and behavior with an interface.
+15. 🟢 [Composition over Inheritance](fundamentals/composition/composition.md) ([ES](fundamentals/composition/composition.es.md)) - Assemble behavior from small parts instead of multiplying subclasses.
 
-### Advanced Topics
+### Collections, LINQ and Runtime
 
-14. 🟢 [Dependency Injection](fundamentals/dependency-injection/dependency-injection.md) ([ES](fundamentals/dependency-injection/dependency-injection.es.md)) - Receive dependencies through the constructor and keep the composition root at the edge.
-15. 🟢 [Mocking](fundamentals/mock/mock.md) ([ES](fundamentals/mock/mock.es.md)) - Use Moq at an I/O boundary and verify the interactions that are part of the contract.
 16. 🟢 [Collections](fundamentals/collections/collections.md) ([ES](fundamentals/collections/collections.es.md)) - Choose between arrays, lists, dictionaries and sets with a word counter.
 17. 🟢 [Generics](fundamentals/generics/generics.md) ([ES](fundamentals/generics/generics.es.md)) - Write a repository once and use it with several entity types.
 18. 🟢 [IEnumerable](fundamentals/enumerable/enumerable.md) ([ES](fundamentals/enumerable/enumerable.es.md)) - Build lazy sequences with `yield` and understand deferred execution.

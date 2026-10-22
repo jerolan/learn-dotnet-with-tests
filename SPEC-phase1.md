@@ -13,10 +13,14 @@ Derived from goal-objective.md, no new questions.
 
 ## Chapter order from goal Phase 1
 - install, hello-world, types, decimal, declarations, control-flow, exceptions
-- methods, classes, records, with, inheritance, composition
-- dependency-injection, mock
-- collections, enumerable, queriable, linq, generics, ref
+- methods, classes, dependency-injection, mock
+- records, with, inheritance, composition
+- collections, generics, enumerable, linq, queriable, ref
 - tasks, async, io, using
+
+Dependency Injection and mocking follow the first class-based chapters, before the
+remaining object-oriented topics and collections, matching the requested early
+placement in Learn Go with Tests.
 
 ## Success Criteria
 - Every fundamentals chapter folder has runnable solution with passing dotnet test.

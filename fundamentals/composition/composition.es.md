@@ -204,5 +204,5 @@ Lo que cubrimos:
 
 El capítulo se apoya en la sección de interfaces de [Structs, Methods and Interfaces en Learn Go with Tests](https://quii.gitbook.io/learn-go-with-tests/structs-methods-and-interfaces): un contrato pequeño deja que piezas independientes encajen. El pipeline es la versión por composición de la jerarquía de figuras del capítulo anterior.
 
-Siguiente: [Inyección de dependencias](../dependency-injection/dependency-injection.es.md).
+Siguiente: [Colecciones](../collections/collections.es.md).
 

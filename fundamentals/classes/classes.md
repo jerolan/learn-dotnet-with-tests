@@ -204,5 +204,5 @@ What we have covered:
 
 The chapter follows the type-and-method progression of [Structs, Methods and Interfaces in Learn Go with Tests](https://quii.gitbook.io/learn-go-with-tests/structs-methods-and-interfaces), with the reference behavior from [Pointers in Learn Go with Tests](https://quii.gitbook.io/learn-go-with-tests/pointers-and-errors). .NET makes the reference semantics explicit with classes and value semantics explicit with structs and records.
 
-Next: [Structs and Records](../records/records.md).
+Next: [Dependency Injection](../dependency-injection/dependency-injection.md).
 

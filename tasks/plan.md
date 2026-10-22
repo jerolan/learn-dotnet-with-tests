@@ -44,7 +44,7 @@ Turn the flat root into the book skeleton with moves only. Foundations first, th
 - Same six questions as SPEC-phase0.md; human approval on flat layout, template path, CI SDK, README scope, commit split, placeholders.
 - Tasks tracked here in tasks/todo.md (default target, no external tracker designated).
 
-## Current Increment: Part 3 v15 SignalR
+## Completed Increment: Part 3 v15 SignalR
 
 ### Overview
 Extend the TaskTracker from v14 with SignalR delivery for the task events
@@ -77,3 +77,25 @@ runnable and preserve the existing MSTest, Moq and net6.0 stack.
 ### Risk
 The standalone snapshot necessarily adds the prior solution's source files.
 Keep the copy self-contained and limit behavioral changes to SignalR.
+
+## Current Increment: Part 1 chapter order
+
+### Overview
+Move Dependency Injection and mocking immediately after classes in the Part 1
+reading order. Keep records, `with`, inheritance and composition after them, then
+continue into collections and the remaining language topics.
+
+### Decisions
+- Follow the ordering in `SPEC-phase1.md`, which derives from the user's goal.
+- Update the English index and the English/Spanish next-chapter links together.
+- Leave chapter content and solution code unchanged; only navigation order changes.
+
+### Tasks
+- Update the Part 1 index ordering and renumber entries.
+- Repoint both language versions' next-chapter links around the reordered topics.
+- Check local links and verify the tree remains clean after one atomic commit.
+
+### Checkpoint
+- Dependency Injection and mocking are directly after classes in the index and
+  navigation flow.
+- All Part 1 links resolve in both languages.
