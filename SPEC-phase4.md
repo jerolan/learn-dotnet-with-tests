@@ -43,7 +43,7 @@ Close the roadmap with LGWT-style Q&A chapters and the 🟠 appendices. Every ro
 | Cloud | Appendix `cloud` | planned |
 | Streaming | Appendix `streaming` | planned |
 | NoSQL | Appendix `nosql` | planned |
-| gRPC | Appendix `grpc` | planned |
+| gRPC | Appendix `grpc` | covered |
 | GraphQL | Appendix `graphql` | planned |
 | DevOps/IaC | Appendix `devops-iac` | planned |
 | General development skills | README preface and Q&A | covered |

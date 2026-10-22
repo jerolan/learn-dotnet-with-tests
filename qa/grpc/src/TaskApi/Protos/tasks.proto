@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+option csharp_namespace = "TaskApi.Grpc";
+
+package tasks;
+
+service TaskService {
+  rpc Create (CreateTaskRequest) returns (TaskReply);
+  rpc Get (GetTaskRequest) returns (TaskReply);
+}
+
+message CreateTaskRequest {
+  string title = 1;
+}
+
+message GetTaskRequest {
+  string id = 1;
+}
+
+message TaskReply {
+  string id = 1;
+  string title = 2;
+}

@@ -21,7 +21,7 @@ Esta parte cierra el roadmap. Los capítulos de preguntas responden dudas que no
 - 🟠 Despliegue en la nube. *Planeado.*
 - 🟠 Streaming. *Planeado.*
 - 🟠 NoSQL. *Planeado.*
-- 🟠 gRPC. *Planeado.*
+- 🟠 [gRPC](grpc/grpc.es.md) ([EN](grpc/grpc.md)) - Define un contrato proto, genera el servicio y el cliente, y llámalo a través de TestServer.
 - 🟠 GraphQL. *Planeado.*
 - 🟠 [Actualizaciones en tiempo real con SignalR](signalr/signalr.es.md) ([EN](signalr/signalr.md)) - Empuja una tarea creada a un cliente conectado y prueba el hub a través de TestServer.
 - 🟠 AsyncAPI. *Planeado.*
@@ -51,6 +51,6 @@ Esta parte cierra el roadmap. Los capítulos de preguntas responden dudas que no
 | SignalR | [Actualizaciones en tiempo real con SignalR](signalr/signalr.es.md) | cubierto |
 | Snapshot, E2E, rendimiento | [Snapshot](snapshot-verify/snapshot-verify.es.md), [NBomber](performance-nbomber/performance-nbomber.es.md), apéndice de Playwright | snapshot y rendimiento cubiertos; E2E planeado |
 | Contenedores, CI/CD, monitoreo, nube, DevOps | [Contenedores](containers/containers.es.md), [CI/CD](ci-cd/ci-cd.es.md), [Monitoreo](monitoring-telemetry/monitoring-telemetry.es.md), apéndices de nube y DevOps | contenedores, CI/CD y monitoreo cubiertos; nube y DevOps planeados |
-| Streaming, NoSQL, gRPC, GraphQL | Apéndices de protocolos y almacenamiento | planeado |
+| Streaming, NoSQL, gRPC, GraphQL | [gRPC](grpc/grpc.es.md), más apéndices de streaming, NoSQL y GraphQL | gRPC cubierto; el resto planeado |
 | Habilidades generales de desarrollo | Prefacio del README y preguntas de testing | cubierto |
 

@@ -21,7 +21,7 @@ This part closes the roadmap. The Q&A chapters answer the questions that do not 
 - 🟠 Cloud deployment. *Planned.*
 - 🟠 Streaming. *Planned.*
 - 🟠 NoSQL. *Planned.*
-- 🟠 gRPC. *Planned.*
+- 🟠 [gRPC](grpc/grpc.md) ([ES](grpc/grpc.es.md)) - Define a proto contract, generate the service and client, and call it through TestServer.
 - 🟠 GraphQL. *Planned.*
 - 🟠 [Real-time updates with SignalR](signalr/signalr.md) ([ES](signalr/signalr.es.md)) - Push a created task to a connected client and test the hub through TestServer.
 - 🟠 AsyncAPI. *Planned.*
@@ -51,6 +51,6 @@ This part closes the roadmap. The Q&A chapters answer the questions that do not 
 | SignalR | [Real-time updates with SignalR](signalr/signalr.md) | covered |
 | Snapshot, E2E, performance | [Snapshot](snapshot-verify/snapshot-verify.md), [NBomber](performance-nbomber/performance-nbomber.md), Playwright appendix | snapshot and performance covered; E2E planned |
 | Containers, CI/CD, monitoring, cloud, DevOps | [Containers](containers/containers.md), [CI/CD](ci-cd/ci-cd.md), [Monitoring](monitoring-telemetry/monitoring-telemetry.md), cloud and DevOps appendices | containers, CI/CD and monitoring covered; cloud and DevOps planned |
-| Streaming, NoSQL, gRPC, GraphQL | Protocol and storage appendices | planned |
+| Streaming, NoSQL, gRPC, GraphQL | [gRPC](grpc/grpc.md), plus streaming, NoSQL and GraphQL appendices | gRPC covered; the rest planned |
 | General development skills | README preface and testing Q&A | covered |
 

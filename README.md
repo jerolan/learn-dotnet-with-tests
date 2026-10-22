@@ -102,3 +102,4 @@ The closing part answers the questions that do not need a new project and maps t
 - 🟠 [Test Data with Bogus](qa/test-data-bogus/test-data-bogus.md) ([ES](qa/test-data-bogus/test-data-bogus.es.md)) - Generate valid orders from seeded rules and keep literal values for the edges.
 - 🟠 [CI/CD beyond the test job](qa/ci-cd/ci-cd.md) ([ES](qa/ci-cd/ci-cd.es.md)) - Cache packages, keep test results and publish the API as an artifact.
 - 🟠 [Real-Time Updates with SignalR](qa/signalr/signalr.md) ([ES](qa/signalr/signalr.es.md)) - Push a created task to a connected client and test the hub through TestServer.
+- 🟠 [gRPC](qa/grpc/grpc.md) ([ES](qa/grpc/grpc.es.md)) - Define a proto contract, generate the service and client, and call it through TestServer.
