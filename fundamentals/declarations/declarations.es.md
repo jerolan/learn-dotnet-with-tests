@@ -2,9 +2,24 @@
 
 [Encuentras todo el código de este capítulo aquí](https://github.com/jerolan/learn-dotnet-with-tests/tree/main/fundamentals/declarations)
 
-Una declaración le da un nombre a un valor. Puedes escribir el tipo tú mismo, dejar que el compilador lo infiera con `var`, o prometer que el valor nunca cambia con `const`. Las tres opciones parecen pequeñas y deciden cuánto puede comprobar el compilador por ti.
+Una compra de 100m con 16 por ciento de IVA debe sumar 116m. Multiplicar por `1.16m` da ese resultado, pero esconde la tasa dentro del cálculo.
 
-Vamos a aprenderlas construyendo una calculadora de precios. Recibe un precio y devuelve el precio más el IVA. La solución terminada está en `fundamentals/declarations`; si la estás armando desde cero, prepárala como en los capítulos anteriores: una biblioteca de clases en `src/Declarations`, un proyecto de MSTest en `tests/Declarations.Tests`, una solución y una referencia entre proyectos.
+La primera llamada no compila porque `PriceCalculator` no existe:
+
+```csharp
+var calculator = new PriceCalculator();
+var total = calculator.TotalWithVat(100m);
+```
+
+Al ejecutar `dotnet test`, aparece `error CS0246: The type or namespace name 'PriceCalculator' could not be found`. Daremos nombre a la tasa y decidiremos si pertenece al tipo o a cada calculadora. La solución terminada está en `fundamentals/declarations`; si la estás armando desde cero, prepárala como en los capítulos anteriores: una biblioteca de clases en `src/Declarations`, un proyecto de MSTest en `tests/Declarations.Tests`, una solución y una referencia entre proyectos.
+
+## Cómo funciona
+
+En `var calculator = new PriceCalculator()`, el compilador infiere que la variable local es de tipo `PriceCalculator`. El tipo queda fijo en compilación. `TotalWithVat` recibirá un precio `decimal` y devolverá un total `decimal`; `decimal` mantiene este cálculo de dinero en aritmética decimal.
+
+## Cómo probarlo
+
+La calculadora solo transforma un valor en otro. No lee archivos, llama a servicios ni depende de la hora actual, así que el test puede llamar a `TotalWithVat` y comparar directamente el importe devuelto.
 
 ## Escribe primero el test
 

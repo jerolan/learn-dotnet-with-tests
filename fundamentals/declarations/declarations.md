@@ -2,9 +2,24 @@
 
 [You can find all the code for this chapter here](https://github.com/jerolan/learn-dotnet-with-tests/tree/main/fundamentals/declarations)
 
-A declaration gives a name to a value. You can write the type yourself, let the compiler infer it with `var`, or promise that the value never changes with `const`. The three choices look small and decide how much the compiler can check for you.
+A 100m purchase with 16 percent VAT should total 116m. Multiplying by `1.16m` gives that result, but it hides the rate inside the calculation.
 
-Let's learn them by building a price calculator. It takes a price and returns the price plus VAT. The finished solution is in `fundamentals/declarations`; if you are building it from scratch, set it up like the previous chapters: a class library in `src/Declarations`, an MSTest project in `tests/Declarations.Tests`, a solution and a project reference.
+The first call cannot compile because `PriceCalculator` does not exist:
+
+```csharp
+var calculator = new PriceCalculator();
+var total = calculator.TotalWithVat(100m);
+```
+
+Running `dotnet test` reports `error CS0246: The type or namespace name 'PriceCalculator' could not be found`. We will name the rate and decide whether it belongs to the type or to each calculator. The finished solution is in `fundamentals/declarations`; if you are building it from scratch, set it up like the previous chapters: a class library in `src/Declarations`, an MSTest project in `tests/Declarations.Tests`, a solution and a project reference.
+
+## How it works
+
+In `var calculator = new PriceCalculator()`, the compiler infers that the local variable has type `PriceCalculator`. The type is fixed at compile time. `TotalWithVat` will take a `decimal` price and return a `decimal` total; `decimal` keeps this money calculation in decimal arithmetic.
+
+## How to test
+
+The calculator only transforms one value into another. It does not read a file, call a service or depend on the current time, so the test can call `TotalWithVat` and compare the returned amount directly.
 
 ## Write the test first
 
