@@ -182,5 +182,5 @@ Lo que cubrimos:
 - Valores por defecto desde `appsettings.json` y un test de borde.
 - Validación y elección de tiempo de vida para las opciones.
 
-Siguiente: v4: EF Core, un modelo code-first y una migración.
+Siguiente: [v4: EF Core, un modelo code-first y una migración](../v4-ef-core/v4-ef-core.es.md).
 

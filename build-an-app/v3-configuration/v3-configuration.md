@@ -182,5 +182,5 @@ What we have covered:
 - Defaults from `appsettings.json` and a boundary test.
 - Validation and lifetime choices for options.
 
-Next: v4: EF Core, a code-first model and a migration.
+Next: [v4: EF Core, a code-first model and a migration](../v4-ef-core/v4-ef-core.md).
 
