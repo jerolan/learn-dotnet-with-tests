@@ -105,6 +105,10 @@
   required sections in order, and the chapter records its green starting
   point. `mise exec dotnet@10.0.402 -- dotnet test
   testing/refactoring-checklist/RefactoringChecklist.sln -m:1` passed 3 tests.
+- Part 3 `v1-intro`: English and Spanish pairs now contain the required
+  sections in order, with the test host and per-test factory explained before
+  the first scenario. `mise exec dotnet@10.0.402 -- dotnet test
+  build-an-app/v1-intro/TaskTracker.sln -m:1` passed 4 tests.
 
 ## Completed increment: Part 4 delivery references
 

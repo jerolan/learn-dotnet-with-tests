@@ -6,6 +6,33 @@ This part builds one application: `TaskTracker`, a task API. Each version adds o
 
 The finished solution is in `build-an-app/v1-intro`. Run it with `dotnet run --project src/TaskTracker.Api` and test it with `dotnet test`.
 
+## How it works
+
+Minimal API handlers bind a JSON request to a record and resolve the store from dependency injection. `Results.Created` returns 201 with a `Location` header; the constrained GET route only matches an integer id.
+
+## How to test
+
+`WebApplicationFactory<Program>` starts the app in memory. Each `Api` owns a factory and client, so each test gets a fresh store and can exercise the public HTTP boundary.
+
+```csharp
+private sealed class Api : IDisposable
+{
+    private readonly WebApplicationFactory<Program> _factory = new();
+
+    public Api()
+    {
+        Client = _factory.CreateClient();
+    }
+
+    public HttpClient Client { get; }
+
+    public void Dispose()
+    {
+        _factory.Dispose();
+    }
+}
+```
+
 ## Write the test first
 
 Create the web project and the test project, wire the test host package and the reference, and add the first acceptance test:
@@ -126,11 +153,16 @@ app.MapGet("/tasks/{id:int}", (int id, InMemoryTaskStore store) =>
 
 Green. The test creates a task, reads the id from the response and fetches it back.
 
-## How it works
+## Refactor
 
-`MapPost` binds the JSON body to `CreateTaskRequest` and the last parameter from DI, which is the singleton store. `Results.Created` sets a 201 status and the `Location` header. `MapGet("/tasks/{id:int}")` adds a route constraint: the id segment must be an integer, so `/tasks/abc` does not match this endpoint.
+The API is small, and the acceptance test does not depend on how tasks are stored. Keep the request, response and storage responsibilities separate as later versions add new concerns.
 
-The test uses `WebApplicationFactory<Program>`. The factory starts the app in memory and `CreateClient()` returns an `HttpClient` that talks to it. Each `Api` creates a fresh factory, so each test starts with an empty store.
+### Keep the boundaries clear
+
+- `CreateTaskRequest` is the input shape; `TaskItem` is the output shape and the domain value. They can diverge in later versions without changing every caller.
+- `InMemoryTaskStore` is the storage boundary. Version 4 replaces it with EF Core and the endpoints keep their shape.
+
+The in-memory store is not thread-safe. That is acceptable for a single-request tutorial version; a real store needs a lock, a concurrent collection or a database transaction. Version 4 moves the state into SQLite.
 
 ## Repeat for new requirements
 
@@ -200,21 +232,12 @@ public async Task BlankTitle_ReturnsBadRequest()
 
 It passes with the guard in the POST endpoint. The title is trimmed before it reaches the store, so a title with surrounding spaces is stored cleanly.
 
-## Refactor
-
-The API is small, but two boundaries are already in place:
-
-- `CreateTaskRequest` is the input shape; `TaskItem` is the output shape and the domain value. They can diverge in later versions without changing every caller.
-- `InMemoryTaskStore` is the storage boundary. Version 4 replaces it with EF Core and the endpoints keep their shape.
-
-The in-memory store is not thread-safe. That is acceptable for a single-request tutorial version; a real store needs a lock, a concurrent collection or a database transaction. Version 4 moves the state into SQLite.
-
 ## Wrapping up
 
 What we have covered:
 
 - A minimal API with POST, GET by id and GET list.
-- A singleton in-memory store behind a small interface.
+- A singleton in-memory store.
 - Request and response records.
 - Route constraints, 201 Created with a Location header, 400 and 404.
 - Acceptance tests with `WebApplicationFactory` and a per-test factory.

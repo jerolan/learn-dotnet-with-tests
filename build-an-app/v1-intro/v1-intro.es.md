@@ -6,6 +6,33 @@ Esta parte construye una aplicación: `TaskTracker`, una API de tareas. Cada ver
 
 La solución terminada está en `build-an-app/v1-intro`. Ejecútala con `dotnet run --project src/TaskTracker.Api` y pruébala con `dotnet test`.
 
+## Cómo funciona
+
+Los handlers de Minimal API enlazan un request JSON con un record y resuelven el store desde dependency injection. `Results.Created` devuelve 201 con una cabecera `Location`; la ruta GET restringida solo coincide con un id entero.
+
+## Cómo probarlo
+
+`WebApplicationFactory<Program>` arranca la app en memoria. Cada `Api` tiene su propia factory y cliente, así cada test recibe un store nuevo y prueba el borde HTTP público.
+
+```csharp
+private sealed class Api : IDisposable
+{
+    private readonly WebApplicationFactory<Program> _factory = new();
+
+    public Api()
+    {
+        Client = _factory.CreateClient();
+    }
+
+    public HttpClient Client { get; }
+
+    public void Dispose()
+    {
+        _factory.Dispose();
+    }
+}
+```
+
 ## Escribe primero el test
 
 Crea el proyecto web y el proyecto de tests, conecta el paquete del host de tests y la referencia, y agrega el primer test de aceptación:
@@ -126,11 +153,16 @@ app.MapGet("/tasks/{id:int}", (int id, InMemoryTaskStore store) =>
 
 Verde. El test crea una tarea, lee el id de la respuesta y la busca de vuelta.
 
-## Cómo funciona
+## Refactor
 
-`MapPost` enlaza el cuerpo JSON con `CreateTaskRequest` y el último parámetro desde DI, que es el store singleton. `Results.Created` pone un estado 201 y la cabecera `Location`. `MapGet("/tasks/{id:int}")` agrega una restricción de ruta: el segmento del id debe ser entero, así `/tasks/abc` no matchea este endpoint.
+La API es pequeña y el test de aceptación no depende de cómo se guardan las tareas. Mantén separadas las responsabilidades de request, respuesta y almacenamiento mientras las siguientes versiones agregan nuevas preocupaciones.
 
-El test usa `WebApplicationFactory<Program>`. La factory arranca la app en memoria y `CreateClient()` devuelve un `HttpClient` que habla con ella. Cada `Api` crea una factory nueva, así cada test empieza con un store vacío.
+### Mantener claros los bordes
+
+- `CreateTaskRequest` es la forma de entrada; `TaskItem` es la forma de salida y el valor de dominio. Pueden separarse más adelante sin cambiar a todos los llamadores.
+- `InMemoryTaskStore` es el borde de almacenamiento. La versión 4 lo reemplaza por EF Core y los endpoints conservan su forma.
+
+El store en memoria no es thread-safe. Es aceptable para una versión tutorial de una petición a la vez; un store real necesita un lock, una colección concurrente o una transacción de base de datos. La versión 4 mueve el estado a SQLite.
 
 ## Repite con requisitos nuevos
 
@@ -200,21 +232,12 @@ public async Task BlankTitle_ReturnsBadRequest()
 
 Pasa con el guard del POST. El título se recorta antes de llegar al store, así un título con espacios alrededor se guarda limpio.
 
-## Refactor
-
-La API es pequeña, pero ya hay dos bordes:
-
-- `CreateTaskRequest` es la forma de entrada; `TaskItem` es la forma de salida y el valor de dominio. Pueden separarse más en versiones posteriores sin cambiar a todos los llamadores.
-- `InMemoryTaskStore` es el borde de almacenamiento. La versión 4 lo reemplaza por EF Core y los endpoints conservan su forma.
-
-El store en memoria no es thread-safe. Es aceptable para una versión tutorial de una petición a la vez; un store real necesita un lock, una colección concurrente o una transacción de base de datos. La versión 4 mueve el estado a SQLite.
-
 ## Para cerrar
 
 Lo que cubrimos:
 
 - Una API mínima con POST, GET por id y GET de lista.
-- Un store en memoria singleton detrás de una interfaz pequeña.
+- Un store en memoria singleton.
 - Records de entrada y salida.
 - Restricciones de ruta, 201 Created con cabecera Location, 400 y 404.
 - Tests de aceptación con `WebApplicationFactory` y una factory por test.
