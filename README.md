@@ -85,3 +85,10 @@ One API, grown version by version. Each version is a standalone solution with it
 12. 🟢 [v12: OpenAPI](build-an-app/v12-openapi/v12-openapi.md) ([ES](build-an-app/v12-openapi/v12-openapi.es.md)) - Generate the API document, declare Bearer auth and test the contract.
 13. 🟢 [v13: Resilience](build-an-app/v13-resilience/v13-resilience.md) ([ES](build-an-app/v13-resilience/v13-resilience.es.md)) - Retry transient notifier failures with a bounded Polly policy.
 14. 🟢 [v14: CQRS with MediatR](build-an-app/v14-cqrs/v14-cqrs.md) ([ES](build-an-app/v14-cqrs/v14-cqrs.es.md)) - Move use cases into command and query handlers while keeping HTTP at the edge.
+
+## Part 4: Q&A and appendices
+
+The closing part answers the questions that do not need a new project and maps the remaining roadmap sections to their appendices.
+
+- 🟠 [Part 4 index](qa/README.md) ([ES](qa/README.es.md)) - The coverage map and the appendix list.
+- 🟠 [Testing Questions](qa/testing-questions.md) ([ES](qa/testing-questions.es.md)) - Unit, integration and acceptance tests, fakes, async tests, isolation and coverage.
