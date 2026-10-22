@@ -25,7 +25,7 @@ Esta parte cierra el roadmap. Los capítulos de preguntas responden dudas que no
 - 🟠 [GraphQL](graphql/graphql.es.md) ([EN](graphql/graphql.md)) - Publica una query y una mutation sobre un endpoint y prueba los documentos por HTTP.
 - 🟠 [Actualizaciones en tiempo real con SignalR](signalr/signalr.es.md) ([EN](signalr/signalr.md)) - Empuja una tarea creada a un cliente conectado y prueba el hub a través de TestServer.
 - 🟠 AsyncAPI. *Planeado.*
-- 🟠 Bibliotecas SDK. *Planeado.*
+- 🟠 [Bibliotecas SDK](sdk-libraries/sdk-libraries.es.md) ([EN](sdk-libraries/sdk-libraries.md)) - Construye un cliente HTTP tipado, pruébalo con un stub handler y empaquétalo como paquete NuGet.
 - 🟠 DevOps e infraestructura como código. *Planeado.*
 
 ## Cobertura del roadmap
@@ -47,7 +47,7 @@ Esta parte cierra el roadmap. Los capítulos de preguntas responden dudas que no
 | Caché | [v10](../build-an-app/v10-caching/v10-caching.es.md) | cubierto |
 | Mensajería | [v11](../build-an-app/v11-messaging-scheduling/v11-messaging-scheduling.es.md) | cubierto |
 | Scheduling de tareas | [v11](../build-an-app/v11-messaging-scheduling/v11-messaging-scheduling.es.md) | cubierto |
-| Bibliotecas .NET | Apéndice de bibliotecas SDK | planeado |
+| Bibliotecas .NET | [Bibliotecas SDK](sdk-libraries/sdk-libraries.es.md) | cubierto |
 | SignalR | [Actualizaciones en tiempo real con SignalR](signalr/signalr.es.md) | cubierto |
 | Snapshot, E2E, rendimiento | [Snapshot](snapshot-verify/snapshot-verify.es.md), [NBomber](performance-nbomber/performance-nbomber.es.md), apéndice de Playwright | snapshot y rendimiento cubiertos; E2E planeado |
 | Contenedores, CI/CD, monitoreo, nube, DevOps | [Contenedores](containers/containers.es.md), [CI/CD](ci-cd/ci-cd.es.md), [Monitoreo](monitoring-telemetry/monitoring-telemetry.es.md), apéndices de nube y DevOps | contenedores, CI/CD y monitoreo cubiertos; nube y DevOps planeados |

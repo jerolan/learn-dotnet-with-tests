@@ -104,3 +104,4 @@ The closing part answers the questions that do not need a new project and maps t
 - 🟠 [Real-Time Updates with SignalR](qa/signalr/signalr.md) ([ES](qa/signalr/signalr.es.md)) - Push a created task to a connected client and test the hub through TestServer.
 - 🟠 [gRPC](qa/grpc/grpc.md) ([ES](qa/grpc/grpc.es.md)) - Define a proto contract, generate the service and client, and call it through TestServer.
 - 🟠 [GraphQL](qa/graphql/graphql.md) ([ES](qa/graphql/graphql.es.md)) - Publish a query and a mutation over one endpoint and test the documents over HTTP.
+- 🟠 [SDK Libraries](qa/sdk-libraries/sdk-libraries.md) ([ES](qa/sdk-libraries/sdk-libraries.es.md)) - Build a typed HTTP client, test it with a stub handler and pack it as a NuGet package.

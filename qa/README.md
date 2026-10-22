@@ -25,7 +25,7 @@ This part closes the roadmap. The Q&A chapters answer the questions that do not 
 - 🟠 [GraphQL](graphql/graphql.md) ([ES](graphql/graphql.es.md)) - Publish a query and a mutation over one endpoint and test the documents over HTTP.
 - 🟠 [Real-time updates with SignalR](signalr/signalr.md) ([ES](signalr/signalr.es.md)) - Push a created task to a connected client and test the hub through TestServer.
 - 🟠 AsyncAPI. *Planned.*
-- 🟠 SDK libraries. *Planned.*
+- 🟠 [SDK libraries](sdk-libraries/sdk-libraries.md) ([ES](sdk-libraries/sdk-libraries.es.md)) - Build a typed HTTP client, test it with a stub handler and pack it as a NuGet package.
 - 🟠 DevOps and infrastructure as code. *Planned.*
 
 ## Roadmap coverage
@@ -47,7 +47,7 @@ This part closes the roadmap. The Q&A chapters answer the questions that do not 
 | Caching | [v10](../build-an-app/v10-caching/v10-caching.md) | covered |
 | Messaging | [v11](../build-an-app/v11-messaging-scheduling/v11-messaging-scheduling.md) | covered |
 | Task scheduling | [v11](../build-an-app/v11-messaging-scheduling/v11-messaging-scheduling.md) | covered |
-| .NET libraries | SDK libraries appendix | planned |
+| .NET libraries | [SDK libraries](sdk-libraries/sdk-libraries.md) | covered |
 | SignalR | [Real-time updates with SignalR](signalr/signalr.md) | covered |
 | Snapshot, E2E, performance | [Snapshot](snapshot-verify/snapshot-verify.md), [NBomber](performance-nbomber/performance-nbomber.md), Playwright appendix | snapshot and performance covered; E2E planned |
 | Containers, CI/CD, monitoring, cloud, DevOps | [Containers](containers/containers.md), [CI/CD](ci-cd/ci-cd.md), [Monitoring](monitoring-telemetry/monitoring-telemetry.md), cloud and DevOps appendices | containers, CI/CD and monitoring covered; cloud and DevOps planned |
