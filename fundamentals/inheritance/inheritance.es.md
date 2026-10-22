@@ -268,5 +268,5 @@ Lo que cubrimos:
 
 El capítulo sigue la sección de interfaces de [Structs, Methods and Interfaces en Learn Go with Tests](https://quii.gitbook.io/learn-go-with-tests/structs-methods-and-interfaces): define el comportamiento que necesitas y deja que cada tipo lo provea. .NET agrega la herencia de clases sobre el contrato de la interfaz.
 
-Siguiente: [Composición sobre herencia](../composition.md).
+Siguiente: [Composición sobre herencia](../composition/composition.es.md).
 

@@ -268,5 +268,5 @@ What we have covered:
 
 The chapter follows the interface section of [Structs, Methods and Interfaces in Learn Go with Tests](https://quii.gitbook.io/learn-go-with-tests/structs-methods-and-interfaces): define the behavior you need, then let each type provide it. .NET adds class inheritance on top of the interface contract.
 
-Next: [Composition over Inheritance](../composition.md).
+Next: [Composition over Inheritance](../composition/composition.md).
 
