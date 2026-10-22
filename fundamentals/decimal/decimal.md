@@ -184,5 +184,5 @@ What we have covered:
 
 The [Maths chapter of Learn Go with Tests](https://quii.gitbook.io/learn-go-with-tests/maths) starts from a concrete problem and lets the tests drive the design. This chapter does the same with a smaller problem: money that has to add up.
 
-Next: [Declarations, const and var](../declarations.md).
+Next: [Declarations, const and var](../declarations/declarations.md).
 

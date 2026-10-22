@@ -184,5 +184,5 @@ Lo que cubrimos:
 
 El [capítulo Maths de Learn Go with Tests](https://quii.gitbook.io/learn-go-with-tests/maths) arranca desde un problema concreto y deja que los tests dirijan el diseño. Este capítulo hace lo mismo con un problema más pequeño: dinero que tiene que sumar bien.
 
-Siguiente: [Declaraciones, const y var](../declarations.md).
+Siguiente: [Declaraciones, const y var](../declarations/declarations.es.md).
 
