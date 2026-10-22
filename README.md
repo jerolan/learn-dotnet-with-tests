@@ -84,3 +84,4 @@ One API, grown version by version. Each version is a standalone solution with it
 11. 🟢 [v11: Messaging and scheduling](build-an-app/v11-messaging-scheduling/v11-messaging-scheduling.md) ([ES](build-an-app/v11-messaging-scheduling/v11-messaging-scheduling.es.md)) - Publish events to a channel, consume them in a hosted service and schedule cleanup.
 12. 🟢 [v12: OpenAPI](build-an-app/v12-openapi/v12-openapi.md) ([ES](build-an-app/v12-openapi/v12-openapi.es.md)) - Generate the API document, declare Bearer auth and test the contract.
 13. 🟢 [v13: Resilience](build-an-app/v13-resilience/v13-resilience.md) ([ES](build-an-app/v13-resilience/v13-resilience.es.md)) - Retry transient notifier failures with a bounded Polly policy.
+14. 🟢 [v14: CQRS with MediatR](build-an-app/v14-cqrs/v14-cqrs.md) ([ES](build-an-app/v14-cqrs/v14-cqrs.es.md)) - Move use cases into command and query handlers while keeping HTTP at the edge.

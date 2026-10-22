@@ -173,5 +173,5 @@ Lo que cubrimos:
 - Tests de recuperación, agotamiento y camino exitoso.
 - Idempotencia, backoff, timeout, circuit breaker y observabilidad como siguientes pasos.
 
-Siguiente: v14: CQRS con MediatR.
+Siguiente: [v14: CQRS con MediatR](../v14-cqrs/v14-cqrs.es.md).
 
