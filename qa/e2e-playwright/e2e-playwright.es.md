@@ -6,7 +6,11 @@ Los tests de integración llaman a la API y reciben el JSON correcto. La página
 
 Este apéndice construye un tablero de tareas pequeño, lo maneja con Playwright y comprueba que una tarea agregada por el formulario sobrevive un reload. El test arranca su propio proceso Kestrel porque un navegador no puede conectarse al servidor en memoria de `WebApplicationFactory`.
 
-## La página
+## Cómo funciona
+
+El navegador prueba la página, el JavaScript y la API como un solo recorrido. El test arranca un proceso Kestrel real porque Playwright no puede conectarse al servidor en memoria de `WebApplicationFactory`.
+
+### La página
 
 `src/TaskBoard/wwwroot/index.html`:
 
@@ -46,7 +50,7 @@ form.addEventListener("submit", async (event) => {
 
 La API guarda tareas en un `ConcurrentDictionary`, expone `GET /api/tasks`, `POST /api/tasks` y `GET /health`, y sirve los archivos estáticos con `UseDefaultFiles` y `UseStaticFiles`.
 
-## Arranca la app en un puerto real
+### Arranca la app en un puerto real
 
 Playwright habla HTTP, así que la app necesita un socket. El test busca un puerto libre, arranca el DLL compilado y espera al endpoint de salud:
 
@@ -73,7 +77,21 @@ await WaitForHealthAsync();
 
 La raíz se encuentra subiendo desde `AppContext.BaseDirectory` hasta que aparece `E2E.sln`. Eso evita una ruta absoluta que solo funciona en una máquina.
 
+## Cómo probarlo
+
+Compila la solución, instala Chromium con el script generado por Playwright y habilita la suite de navegador:
+
+```sh
+dotnet build E2E.sln
+pwsh tests/TaskBoard.Tests/bin/Debug/net6.0/playwright.ps1 install --with-deps chromium
+RUN_E2E=1 dotnet test E2E.sln
+```
+
+Sin `RUN_E2E=1`, la ejecución normal de la solución salta el test de navegador. El workflow dedicado instala Chromium y ejecuta la suite con la variable habilitada.
+
 ## Escribe primero el test
+
+La página y la API ya existen; este test va primero para el recorrido de navegador, que verifica que el formulario llegue a la API y que el resultado sobreviva un reload.
 
 ```csharp
 [TestMethod]
@@ -94,38 +112,35 @@ public async Task AddingATaskShowsItInTheListAndAfterAReload()
 
 `WaitForSelectorAsync` espera a que el navegador pinte el elemento nuevo. El reload demuestra que el elemento vino de la API, no de un nodo del DOM que el script dejó atrás.
 
-Corre con la variable de entorno que habilita la suite:
+## Intenta ejecutar el test
+
+Ejecuta la suite normal sin habilitar el navegador. El test de navegador aparece como saltado:
 
 ```sh
-RUN_E2E=1 dotnet test E2E.sln
+dotnet test E2E.sln
 ```
-
-```text
-Passed!  - Failed:     0, Passed:     1, Skipped:     0, Total:     1, Duration: 2 s
-```
-
-## Por qué la suite está condicionada
-
-El job principal de CI corre todas las soluciones con `dotnet test`. Un test de navegador necesita Chromium y las librerías del sistema a las que enlaza, así que el job normal fallaría en un runner que no tiene ninguna de las dos.
-
-Sin la variable, el test se reporta como saltado:
 
 ```text
 Skipped! - Failed:     0, Passed:     0, Skipped:     1, Total:     1, Duration: 44 ms
 ```
 
-`.github/workflows/e2e.yml` corre solo cuando cambia `qa/e2e-playwright` o el workflow. Compila la solución, instala Chromium con el script de Playwright y corre el test con `RUN_E2E=1`:
+El salto solo significa que el job normal no corrió el navegador. Después de instalar Chromium, usa el comando `RUN_E2E=1` de Cómo probarlo para ejecutar el recorrido.
 
-```yaml
-- name: Install Chromium
-  run: pwsh tests/TaskBoard.Tests/bin/Debug/net6.0/playwright.ps1 install --with-deps chromium
-- name: Run the browser test
-  run: dotnet test E2E.sln --no-build --nologo
+## Escribe el código mínimo para que el test compile y mira la salida
+
+El fixture arranca Kestrel en un puerto libre, espera `/health` y después crea un contexto de navegador. Esas piezas permiten que el test llegue a la página; la aserción de UI detecta un envío ausente o incorrecto.
+
+## Escribe el código suficiente para que pase
+
+El handler de la página envía el título a `/api/tasks`, limpia el input y recarga la lista. El test vuelve a cargar el navegador y comprueba que la API aún devuelve la tarea nueva. Con Chromium instalado, `RUN_E2E=1 dotnet test E2E.sln` pasa el test de navegador.
+
+```text
+Passed!  - Failed:     0, Passed:     1, Skipped:     0, Total:     1, Duration: 2 s
 ```
 
-La descarga del navegador se cachea en `~/.cache/ms-playwright`. `--with-deps` igual instala los paquetes apt la primera vez.
+## Refactor
 
-## Mantén estable el test
+### Mantén estable el test
 
 - Espera una condición, no un tiempo. `WaitForSelectorAsync`, `WaitForURLAsync` y las acciones con auto-wait cubren la mayoría de los casos.
 - Prefiere locators por rol y etiqueta para flujos de usuario: `GetByRoleAsync("button", new() { Name = "Add" })`. Fallan cuando cambia el nombre accesible, que suele ser el bug que quieres atrapar.
@@ -133,11 +148,15 @@ La descarga del navegador se cachea en `~/.cache/ms-playwright`. `--with-deps` i
 - Usa un título único por test cuando la app guarda estado entre tests. El store en memoria de aquí sobrevive un reload a propósito.
 - Captura un trace o una screenshot cuando falla. Una corrida verde local no ayuda cuando CI falla en una máquina más lenta.
 
-## Qué pertenece a E2E
+### Qué pertenece a E2E
 
 Prueba los recorridos que importan: iniciar sesión, crear la entidad principal, completarla, verla después de un reload. Deja los mensajes de validación, los bordes y las ramas de error a los tests unitarios y de integración, donde corren en milisegundos y señalan la clase que falló.
 
 Una suite E2E que intenta cubrir cada rama se vuelve lenta e inestable, y el equipo empieza a repetirla hasta que pasa.
+
+## Repite con requisitos nuevos
+
+Mantén este ejemplo enfocado en un recorrido de alto valor. Agrega otro test de navegador solo cuando pruebe un flujo visible distinto; usa tests unitarios y de integración para ramas de validación y error.
 
 ## Lo que queda diferido
 

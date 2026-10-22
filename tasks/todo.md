@@ -192,6 +192,9 @@
 - Part 4 `signalr` companion appendix now follows the runnable flow in both
   languages. `mise exec dotnet@10.0.402 -- dotnet test
   qa/signalr/SignalR.sln -m:1` passed 2 tests.
+- Part 4 `e2e-playwright` now follows the runnable appendix flow in both
+  languages. `RUN_E2E=1 mise exec dotnet@10.0.402 -- dotnet test
+  qa/e2e-playwright/E2E.sln -m:1` passed 1 browser test.
 
 ## Completed increment: Part 4 delivery references
 

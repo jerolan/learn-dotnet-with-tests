@@ -6,7 +6,11 @@ Integration tests call the API and get the right JSON. The page can still be bro
 
 This appendix builds a small task board, drives it with Playwright, and checks that a task added through the form survives a reload. The test starts its own Kestrel process because a browser cannot connect to `WebApplicationFactory`'s in-memory server.
 
-## The page
+## How it works
+
+The browser exercises the page, JavaScript and API as one journey. The test starts a real Kestrel process because Playwright cannot connect to `WebApplicationFactory`'s in-memory server.
+
+### The page
 
 `src/TaskBoard/wwwroot/index.html`:
 
@@ -46,7 +50,7 @@ form.addEventListener("submit", async (event) => {
 
 The API keeps tasks in a `ConcurrentDictionary`, exposes `GET /api/tasks`, `POST /api/tasks` and `GET /health`, and serves the static files with `UseDefaultFiles` and `UseStaticFiles`.
 
-## Start the app on a real port
+### Start the app on a real port
 
 Playwright talks HTTP, so the app needs a socket. The test finds a free port, starts the built DLL, and waits for the health endpoint:
 
@@ -73,7 +77,21 @@ await WaitForHealthAsync();
 
 The root is found by walking up from `AppContext.BaseDirectory` until `E2E.sln` appears. That avoids hard-coding an absolute path that only works on one machine.
 
+## How to test
+
+Build the solution, install Chromium with the generated Playwright script, then enable the gated browser suite:
+
+```sh
+dotnet build E2E.sln
+pwsh tests/TaskBoard.Tests/bin/Debug/net6.0/playwright.ps1 install --with-deps chromium
+RUN_E2E=1 dotnet test E2E.sln
+```
+
+Without `RUN_E2E=1`, the regular solution run skips the browser test. The dedicated workflow installs Chromium and runs the suite with the variable enabled.
+
 ## Write the test first
+
+The page and API already exist; this test comes first for the browser journey, which verifies that the form submission reaches the API and the result survives a reload.
 
 ```csharp
 [TestMethod]
@@ -94,38 +112,35 @@ public async Task AddingATaskShowsItInTheListAndAfterAReload()
 
 `WaitForSelectorAsync` waits for the browser to paint the new item. The reload proves the item came from the API, not from a DOM node that the script left behind.
 
-Run it with the environment variable that enables the suite:
+## Try to run the test
+
+Run the normal suite without the browser gate. It reports the browser test as skipped:
 
 ```sh
-RUN_E2E=1 dotnet test E2E.sln
+dotnet test E2E.sln
 ```
-
-```text
-Passed!  - Failed:     0, Passed:     1, Skipped:     0, Total:     1, Duration: 2 s
-```
-
-## Why the suite is gated
-
-The main CI job runs every solution with `dotnet test`. A browser test needs Chromium and the system libraries it links against, so the regular job would fail on a runner that has neither.
-
-Without the variable, the test reports itself as skipped:
 
 ```text
 Skipped! - Failed:     0, Passed:     0, Skipped:     1, Total:     1, Duration: 44 ms
 ```
 
-`.github/workflows/e2e.yml` runs only when `qa/e2e-playwright` or the workflow changes. It builds the solution, installs Chromium with the Playwright script, and runs the test with `RUN_E2E=1`:
+The skip only means the regular job did not run the browser. After installing Chromium, use the `RUN_E2E=1` command from How to test to execute the journey.
 
-```yaml
-- name: Install Chromium
-  run: pwsh tests/TaskBoard.Tests/bin/Debug/net6.0/playwright.ps1 install --with-deps chromium
-- name: Run the browser test
-  run: dotnet test E2E.sln --no-build --nologo
+## Write the minimal amount of code for the test to run and check the failing test output
+
+The test fixture starts Kestrel on a free port, waits for `/health`, then creates a browser context. Those pieces let the test reach the page; the UI assertion is what detects a missing or incorrect form submission.
+
+## Write enough code to make it pass
+
+The page handler posts the title to `/api/tasks`, clears the input and reloads the list. The test then reloads the browser and checks that the API still returns the new task. With Chromium installed, `RUN_E2E=1 dotnet test E2E.sln` passes the browser test.
+
+```text
+Passed!  - Failed:     0, Passed:     1, Skipped:     0, Total:     1, Duration: 2 s
 ```
 
-The browser download is cached under `~/.cache/ms-playwright`. `--with-deps` still installs the apt packages the first time.
+## Refactor
 
-## Keep the test stable
+### Keep the test stable
 
 - Wait for a condition, not for time. `WaitForSelectorAsync`, `WaitForURLAsync` and the auto-waiting actions cover most cases.
 - Prefer role and label locators for user-facing flows: `GetByRoleAsync("button", new() { Name = "Add" })`. They fail when the accessible name changes, which is usually the bug you want to catch.
@@ -133,11 +148,15 @@ The browser download is cached under `~/.cache/ms-playwright`. `--with-deps` sti
 - Use a unique title per test when the app keeps state between tests. The in-memory store here survives a reload by design.
 - Capture a trace or a screenshot on failure. A green local run does not help when CI fails on a slower machine.
 
-## What belongs in E2E
+### What belongs in E2E
 
 Test the journeys that pay the bills: sign in, create the main entity, complete it, see it after a reload. Leave validation messages, edge cases and error branches to unit and integration tests, where they run in milliseconds and point at the failing class.
 
 An E2E suite that tries to cover every branch becomes slow and flaky, and the team starts re-running it until it passes.
+
+## Repeat for new requirements
+
+Keep this sample focused on one high-value journey. Add another browser test only when it proves a separate user-visible workflow; use unit and integration tests for validation branches and error handling.
 
 ## What is deferred
 
