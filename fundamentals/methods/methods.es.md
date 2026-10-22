@@ -2,9 +2,34 @@
 
 [Encuentras todo el código de este capítulo aquí](https://github.com/jerolan/learn-dotnet-with-tests/tree/main/fundamentals/methods)
 
-Un método es comportamiento pegado a un tipo: recibe parámetros, hace algo y normalmente devuelve un valor. Una propiedad es dato con accesores. Juntos forman la superficie de una clase, y sus nombres y firmas deciden cómo se lee el tipo en el lugar de la llamada.
+Un envío de 2 kg con una tarifa de 5m por kilogramo debe costar 10m. La entrega exprés suma un recargo de 20m. Necesitamos una calculadora que exprese ambas reglas y permita configurar la tarifa.
 
-Vamos a construir una calculadora de envíos. Cobra una tarifa por kilogramo y suma un recargo por entrega exprés. La solución terminada está en `fundamentals/methods`; si la estás armando desde cero, usa la misma estructura que en los capítulos anteriores: una biblioteca de clases en `src/Methods`, un proyecto de MSTest en `tests/Methods.Tests`, una solución y una referencia entre proyectos.
+La primera llamada no compila porque `ShippingCalculator` todavía no existe:
+
+```csharp
+var cost = new ShippingCalculator().Cost(2m);
+```
+
+Al ejecutar `dotnet test`, aparece `error CS0246: The type or namespace name 'ShippingCalculator' could not be found`. Usaremos ese error para definir el tipo con un test que falla a la vez. La solución terminada está en `fundamentals/methods`; si la estás armando desde cero, usa la misma estructura que en los capítulos anteriores: una biblioteca de clases en `src/Methods`, un proyecto de MSTest en `tests/Methods.Tests`, una solución y una referencia entre proyectos.
+
+## Cómo funciona
+
+Un método recibe datos y devuelve un valor. Una propiedad guarda datos que quien llama puede configurar. La calculadora expondrá un método con esta forma:
+
+```csharp
+public decimal Cost(decimal weightKg)
+```
+
+- `public` permite que se use el método desde fuera de la clase.
+- `decimal` es el tipo de retorno.
+- `Cost` es el nombre del método.
+- `(decimal weightKg)` es un parámetro llamado `weightKg` de tipo `decimal`.
+
+Quien llama invoca el método en una instancia de la calculadora, como en `calculator.Cost(2m)`, y recibe un resultado `decimal`.
+
+## Cómo probarlo
+
+Este cálculo no depende de archivos, red ni reloj. Con un peso y una tarifa dados, el resultado siempre es el mismo, así que el test puede llamar al método directamente y comparar su resultado decimal. Usaremos MSTest para crear la calculadora y comprobar el costo esperado.
 
 ## Escribe primero el test
 
@@ -59,16 +84,11 @@ public decimal Cost(decimal weightKg)
 }
 ```
 
-Verde. Lee la firma del método de izquierda a derecha:
+Verde. El test pasa `2m` como argumento, y `Assert.AreEqual` compara el decimal devuelto con `10m`. La tarifa `5m` sigue dentro del método; el siguiente requisito le dará un nombre que quien llama pueda cambiar.
 
-- `public` es el modificador de acceso: quien llama desde fuera de la clase puede usarlo.
-- `decimal` es el tipo de retorno.
-- `Cost` es el nombre.
-- `(decimal weightKg)` es la lista de parámetros: un parámetro llamado `weightKg` de tipo `decimal`.
+## Refactor
 
-La llamada `calculator.Cost(2m)` pasa `2m` como argumento. El método devuelve un `decimal`, y `Assert.AreEqual` compara ese valor con `10m`.
-
-La tarifa `5m` es un número mágico dentro del método. El siguiente requisito le da un nombre que quien llama puede cambiar.
+No hay nada que extraer de una sola multiplicación. Mantener el método directo hace que el cálculo se lea mejor. Ejecuta el test otra vez: sigue en verde.
 
 ## Repite con requisitos nuevos
 
@@ -150,19 +170,11 @@ public decimal Cost(decimal weightKg, bool express = false)
 
 Verde, y el test original sigue pasando porque `express` vale `false` por defecto.
 
+`ExpressSurcharge` es privada, así que la constante tiene nombre sin convertirse en configuración para quien llama. `RatePerKg` sigue pública porque quien llama puede elegirla. El método modifica una variable local `cost` y devuelve una sola vez.
+
 La llamada `Cost(2m, express: true)` usa un argumento nombrado. La misma llamada podría escribirse `Cost(2m, true)`, pero el nombre dice qué significa el `true` en el lugar de la llamada. Los argumentos nombrados son más útiles cuando un método tiene varios parámetros del mismo tipo o un booleano que de otro modo sería un misterio.
 
 Un parámetro opcional es una forma de soportar dos formas de llamada. Otra es una sobrecarga: dos métodos con el mismo nombre y distintas listas de parámetros, como los métodos `Divide` del capítulo de tipos. Las sobrecargas son la herramienta correcta cuando cambian los tipos de los parámetros; un valor por defecto es más simple cuando una llamada es solo el caso común de la otra.
-
-## Refactor
-
-El código de producción es pequeño. El refactor aquí es hacer que las piezas se lean como una unidad:
-
-- `ExpressSurcharge` es una constante privada, así el número tiene nombre y quien llama no puede cambiarlo.
-- `RatePerKg` es pública porque es configuración.
-- El método calcula en una variable local y devuelve una sola vez, lo que mantiene la rama fácil de seguir.
-
-Ejecuta los tests después de la extracción. Verde, y la superficie pública ahora es una propiedad y un método.
 
 ## Para cerrar
 

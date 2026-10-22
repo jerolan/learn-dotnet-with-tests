@@ -11,7 +11,12 @@
 - [ ] Verify each slice has every required section in matching bilingual order, resolving links and passing solution tests.
 - Verify: required-section audit, full local-link audit and `dotnet test` for affected solutions.
 - Files: `fundamentals/**`, `testing/**`, `build-an-app/**`, runnable `qa/**`, phase specs and task artifacts.
-- Dependency: phases 1-4 already implemented.
+- Dependency: the chapter pairs and runnable solutions already exist.
+
+### Verified slices
+- Part 1 `methods`: English and Spanish pairs now contain the required sections
+  in order. `mise exec dotnet@10.0.402 -- dotnet test
+  fundamentals/methods/Methods.sln -m:1` passed 3 tests.
 
 ## Completed increment: Part 4 delivery references
 

@@ -2,9 +2,34 @@
 
 [You can find all the code for this chapter here](https://github.com/jerolan/learn-dotnet-with-tests/tree/main/fundamentals/methods)
 
-A method is behavior attached to a type: it takes parameters, does something, and usually returns a value. A property is data with accessors. Together they are the surface of a class, and their names and signatures decide how the type reads at the call site.
+A 2 kg shipment at a rate of 5m per kilogram should cost 10m. Express delivery adds a 20m surcharge. We need a calculator that can express both rules and let the caller set the rate.
 
-We will build a shipping calculator. It charges a rate per kilogram and adds a surcharge for express delivery. The finished solution is in `fundamentals/methods`; if you are building it from scratch, use the same layout as the previous chapters: a class library in `src/Methods`, an MSTest project in `tests/Methods.Tests`, a solution and a project reference.
+The first call cannot compile because `ShippingCalculator` does not exist:
+
+```csharp
+var cost = new ShippingCalculator().Cost(2m);
+```
+
+Running `dotnet test` reports `error CS0246: The type or namespace name 'ShippingCalculator' could not be found`. We will use that error to shape the type one failing test at a time. The finished solution is in `fundamentals/methods`; if you are building it from scratch, use the same layout as the previous chapters: a class library in `src/Methods`, an MSTest project in `tests/Methods.Tests`, a solution and a project reference.
+
+## How it works
+
+A method takes input and returns a value. A property stores data that callers can configure. The calculator will expose a method with this shape:
+
+```csharp
+public decimal Cost(decimal weightKg)
+```
+
+- `public` lets callers outside the class use the method.
+- `decimal` is the return type.
+- `Cost` is the method name.
+- `(decimal weightKg)` is one parameter named `weightKg` with type `decimal`.
+
+The caller invokes the method on a calculator instance, as in `calculator.Cost(2m)`, and receives a `decimal` result.
+
+## How to test
+
+This calculation has no file, network or clock dependency. Given a weight and rate, the result is always the same, so the test can call the method directly and compare its decimal result. We will use MSTest to create the calculator and assert the expected cost.
 
 ## Write the test first
 
@@ -59,16 +84,11 @@ public decimal Cost(decimal weightKg)
 }
 ```
 
-Green. Read the method signature from left to right:
+Green. The test passes `2m` as the argument, and `Assert.AreEqual` compares the returned decimal with `10m`. The rate `5m` is still inside the method; the next requirement gives it a name the caller can change.
 
-- `public` is the access modifier: callers outside the class can use it.
-- `decimal` is the return type.
-- `Cost` is the name.
-- `(decimal weightKg)` is the parameter list: one parameter named `weightKg` of type `decimal`.
+## Refactor
 
-The call `calculator.Cost(2m)` passes `2m` as the argument. The method returns a `decimal`, and `Assert.AreEqual` compares that value with `10m`.
-
-The rate `5m` is a magic number inside the method. The next requirement gives it a name the caller can change.
+There is nothing to extract from a single multiplication. Keeping the method direct makes the calculation easier to read. Run the test again; it remains green.
 
 ## Repeat for new requirements
 
@@ -150,19 +170,11 @@ public decimal Cost(decimal weightKg, bool express = false)
 
 Green, and the original test still passes because `express` defaults to `false`.
 
+`ExpressSurcharge` is private, so the constant has a name without becoming caller configuration. `RatePerKg` stays public because the caller can choose it. The method updates one local `cost` and returns once.
+
 The call `Cost(2m, express: true)` uses a named argument. The same call could be written `Cost(2m, true)`, but the name says what the `true` means at the call site. Named arguments are most useful when a method has several parameters of the same type or a boolean that would otherwise be a mystery.
 
 An optional parameter is one way to support two shapes of a call. Another is an overload: two methods with the same name and different parameter lists, like the `Divide` methods in the types chapter. Overloads are the right tool when the parameter types differ; a default value is simpler when one call is just the common case of the other.
-
-## Refactor
-
-The production code is small. The refactor here is to make the pieces read as a unit:
-
-- `ExpressSurcharge` is a private constant, so the number has a name and cannot be changed by a caller.
-- `RatePerKg` is public because it is configuration.
-- The method computes into a local variable and returns once, which keeps the branch easy to follow.
-
-Run the tests after the extraction. Green, and the public surface is now one property and one method.
 
 ## Wrapping up
 
