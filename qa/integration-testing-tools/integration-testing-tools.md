@@ -2,9 +2,15 @@
 
 [You can find all the code for this appendix here](https://github.com/jerolan/learn-dotnet-with-tests/tree/main/qa/integration-testing-tools)
 
-An integration test needs the real database engine, not an in-memory imitation. Two tools make that practical: Testcontainers starts a disposable database in Docker, and Respawn resets it between tests.
+An integration test needs the real database engine, not an in-memory imitation. This appendix starts a disposable PostgreSQL container with Testcontainers and resets its rows with Respawn.
 
-This appendix runs a real PostgreSQL container, creates a table and uses Respawn to keep the tests isolated.
+## How it works
+
+Testcontainers starts a pinned PostgreSQL image, waits until it accepts connections and supplies the connection string. Respawn reads the table graph and deletes rows in dependency order. The test class starts one container and resets the database before each test. `ClassCleanup` awaits `DisposeAsync` to remove the container when the class finishes.
+
+## How to test
+
+Run these integration tests on a machine with Docker. The tests use PostgreSQL and Npgsql directly; SQLite would not exercise PostgreSQL's dialect, constraints or transaction behavior.
 
 ## Write the test first
 
@@ -16,9 +22,15 @@ public async Task Reset_ClearsTheTableBetweenTests()
 }
 ```
 
-The test only makes sense if another test inserted a row first. The shared class state and the reset in `TestInitialize` are what make the assertion deterministic.
+This test checks that the test fixture starts each test with an empty table.
 
-## Start the container once per class
+## Try to run the test
+
+The method cannot compile yet because `_store` and its database fixture have not been added. It also needs a running PostgreSQL engine, which the test will provision through Docker.
+
+## Write the minimal amount of code for the test to run and check the failing test output
+
+Start one PostgreSQL container for the class, create the schema, then create the Respawner after the table exists:
 
 ```csharp
 [ClassInitialize]
@@ -44,9 +56,7 @@ public static async Task InitializeAsync(TestContext context)
 }
 ```
 
-The container starts once for the test class. Starting one per test would be simpler but much slower; the reset below gives the same isolation at a lower cost.
-
-## Reset between tests
+Reset before each test:
 
 ```csharp
 [TestInitialize]
@@ -59,11 +69,83 @@ public async Task ResetAsync()
 }
 ```
 
-Respawn discovers the tables and deletes their rows. It does not drop the schema, so the next test starts from an empty database with the same tables.
+The database fixture is in place, but `_store` still needs the schema and count operations used by the test.
 
-The schema is created before the `Respawner` is built because Respawn needs to see at least one table. In an EF Core project, the migration applied at startup does that work.
+## Write enough code to make it pass
 
-## The data access
+```csharp
+public sealed class WidgetStore
+{
+    private readonly string _connectionString;
+
+    public WidgetStore(string connectionString)
+    {
+        _connectionString = connectionString;
+    }
+
+    public async Task EnsureSchemaAsync()
+    {
+        await using var connection = new NpgsqlConnection(_connectionString);
+        await connection.OpenAsync();
+
+        await using var command = connection.CreateCommand();
+        command.CommandText = @"
+            CREATE TABLE IF NOT EXISTS widgets (
+                id serial primary key,
+                name text not null
+            );";
+
+        await command.ExecuteNonQueryAsync();
+    }
+
+    public async Task<int> CountAsync()
+    {
+        await using var connection = new NpgsqlConnection(_connectionString);
+        await connection.OpenAsync();
+
+        await using var command = connection.CreateCommand();
+        command.CommandText = "SELECT COUNT(*) FROM widgets;";
+
+        var result = await command.ExecuteScalarAsync();
+
+        return Convert.ToInt32(result);
+    }
+}
+```
+
+Run `dotnet test`. The reset test passes with an empty table.
+
+## Refactor
+
+The schema is created before `Respawner` is built because Respawn needs to see at least one table. In an EF Core project, a migration applied during startup can create it instead.
+
+A few choices keep the setup healthy:
+
+- Pin the image tag (`postgres:16-alpine`). `latest` makes a test change without a code change.
+- Start the container once per test class or collection, not once per test.
+- Keep schema creation in one place and let reset handle rows.
+- Add `TablesToIgnore` for migration history and any table owned by another service.
+- Expect the first run to pull the image. A CI runner needs Docker and the right permissions.
+- Do not skip the test when Docker is missing. Fail with a clear message or run the suite where Docker is available.
+
+For several services, Docker Compose or a Testcontainers network can start the API, database and broker together. Reset remains per test, while the container can live for the class.
+
+## Repeat for new requirements
+
+The next requirement is to store widgets. Write the test first:
+
+```csharp
+[TestMethod]
+public async Task Add_StoresTheWidget()
+{
+    await _store.AddAsync("first");
+    await _store.AddAsync("second");
+
+    Assert.AreEqual(2, await _store.CountAsync());
+}
+```
+
+The test fails to compile until `AddAsync` exists. Add it to `WidgetStore`:
 
 ```csharp
 public async Task AddAsync(string name)
@@ -79,33 +161,7 @@ public async Task AddAsync(string name)
 }
 ```
 
-The appendix uses Npgsql directly to keep the focus on the container and the reset. The same test shape works with EF Core or Dapper; only the store changes.
-
-## How it works
-
-Testcontainers talks to the Docker daemon, pulls the image if needed, starts a container, waits for the port and gives you a connection string. `DisposeAsync` in `ClassCleanup` stops and removes the container.
-
-Respawn connects to the database, reads the table graph from the catalog and generates delete statements in dependency order. It can ignore migration history tables or specific schemas when the defaults are not enough.
-
-The pair is the usual answer for a server database in tests:
-
-- Testcontainers provides the engine and its version.
-- Respawn provides fast isolation between tests.
-
-SQLite remains a good default for a chapter or a small service. A server database earns its place when the test depends on its SQL dialect, its constraints or its transaction behavior.
-
-## Refactor
-
-A few choices keep the setup healthy:
-
-- Pin the image tag (`postgres:16-alpine`). `latest` makes a test change without a code change.
-- Start the container once per test class or per collection, not once per test.
-- Keep the schema creation in one place and let the reset handle rows.
-- Add `TablesToIgnore` for migration history and any table owned by another service.
-- Expect the first run to pull the image. In CI, Docker is available on the standard Ubuntu runner; a self-hosted runner needs the daemon and permissions.
-- Do not hide a missing Docker daemon with a skipped test. Fail with a clear message or run the suite in an environment that has Docker.
-
-For a full environment with several services, Docker Compose or a Testcontainers network can start the API, the database and a broker together. The reset strategy is still per test class, not per test.
+Both tests pass. Respawn clears the database before each one, so their rows stay isolated.
 
 ## Wrapping up
 
@@ -118,4 +174,3 @@ What we have covered:
 - The trade-off between SQLite and a server database.
 
 Next: performance testing.
-

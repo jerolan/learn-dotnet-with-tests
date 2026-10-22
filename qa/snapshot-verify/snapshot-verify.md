@@ -6,6 +6,14 @@ A snapshot test writes the output of a function to a file, commits that file and
 
 This appendix uses [Verify](https://github.com/VerifyTests/Verify) with MSTest. The sample formats an order summary.
 
+## How it works
+
+Verify renders the value returned by a test and compares it with a reviewed `.verified` file. A difference fails the test and writes a `.received` file for inspection. The snapshot is an assertion over the whole formatted output.
+
+## How to test
+
+Format a small order summary and review the generated text as a whole. Keep field-level assertions for rules such as totals, and use the snapshot for the output's shape. The appendix's solution already contains the formatter and pinned Verify.MSTest package, so the test can focus on the review workflow.
+
 ## Write the test first
 
 ```csharp
@@ -28,9 +36,9 @@ public sealed class OrderFormatterTests : VerifyBase
 
 The class inherits `VerifyBase`. Verify.MSTest 16 is pinned because it works with MSTest 2.2.8; later Verify.MSTest versions require MSTest 3.x.
 
-## The first run
+## Try to run the test
 
-The test fails because there is no verified file yet. Verify writes a `.received.txt` next to the test:
+Run `dotnet test`. The test fails because no verified file exists yet. Verify writes a `.received.txt` file next to the test:
 
 ```text
 Keyboard x2 @ 49.95
@@ -38,27 +46,29 @@ Mouse x1 @ 19.95
 Total: 119.85
 ```
 
-Read the output. If it is what you want, rename the received file to `OrderFormatterTests.FormatsTheOrder.verified.txt` and commit it. Run the test again; it passes.
+## Write the minimal amount of code for the test to run and check the failing test output
+
+No formatter change is needed to make this test run: the sample already has a deterministic `OrderFormatter`. Read the `.received.txt` output and check that it represents the behavior you intend.
+
+## Write enough code to make it pass
+
+If the output is correct, rename the received file to `OrderFormatterTests.FormatsTheOrder.verified.txt` and commit it. Run the test again; it passes.
 
 That renaming is the approval step. A snapshot is not a magic assertion; it is a file you reviewed and accepted.
 
-## How it works
+## Refactor
 
-On each run, Verify renders the value and compares it with the verified file. A mismatch fails the test and writes the received file for inspection. The diff shows exactly which lines changed.
+A few settings keep snapshots maintainable:
 
-The verified file lives in source control. A change to the formatter that alters the output is a behavior change, and the test makes you look at it. If the new output is correct, update the verified file in the same commit as the code change.
+- Scrub unstable values. A GUID, a timestamp or a machine path changes on every run. Replace it with a stable placeholder before verifying, or the snapshot will fail forever.
+- Keep snapshots small. A hundred-line snapshot is rarely reviewed and often approved blindly.
+- Put verified files in source control and review their diffs like code.
+- Use a separate snapshot per scenario, not one huge file for the whole application.
+- Run the tests in CI. A missing verified file is a failure, not a skip.
 
-## A change to review
+The sample is deliberately deterministic: no clock, no random id, no paths. That is what makes the snapshot useful.
 
-Change the total label:
-
-```csharp
-rows.Add("Grand total: " + total.ToString("0.00"));
-```
-
-Run the test. It fails and the received file shows the new line. Read the diff, then approve it by replacing the verified file. The snapshot caught a change that a single `Assert.AreEqual` would have missed if it only checked the product line.
-
-## When a snapshot is the right tool
+### When a snapshot is the right tool
 
 Use a snapshot when:
 
@@ -68,17 +78,15 @@ Use a snapshot when:
 
 Do not use a snapshot as a substitute for a behavior test. A snapshot says "the output changed"; it does not say "the total is correct" unless you read the file. Keep a small number of focused assertions for the rules that matter and use the snapshot for the shape.
 
-## Refactor
+## Repeat for new requirements
 
-A few settings keep snapshots maintainable:
+Change the total label:
 
-- Scrub unstable values. A GUID, a timestamp or a machine path changes on every run. Replace it with a stable placeholder before verifying, or the snapshot will fail forever.
-- Keep snapshots small. A hundred-line snapshot is rarely reviewed and often approved blindly.
-- Put the verified files in source control and review their diffs like code.
-- Use a separate snapshot per scenario, not one huge file for the whole application.
-- Run the tests in CI. A missing verified file is a failure, not a skip.
+```csharp
+rows.Add("Grand total: " + total.ToString("0.00"));
+```
 
-The appendix's sample is deliberately deterministic: no clock, no random id, no paths. That is what makes the snapshot useful.
+Run the test. It fails and the received file shows the new line. Read the diff; if the new output is correct, approve it by replacing the verified file. The snapshot catches a change that an assertion checking only a product line could miss.
 
 ## Wrapping up
 
@@ -89,4 +97,3 @@ What we have covered:
 - Reviewing a diff when the output changes.
 - When a snapshot is a good fit and when a behavior assertion is clearer.
 - Scrubbers, file size and source control discipline.
-

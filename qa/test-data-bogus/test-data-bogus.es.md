@@ -6,7 +6,15 @@ Un validador de pedidos revisa un email y una fecha. Probar el camino feliz nece
 
 Bogus construye esos datos a partir de reglas. Este apéndice lo usa para el grueso de los casos válidos y deja valores explícitos para los bordes.
 
-## Prepara la solución
+## Cómo funciona
+
+Bogus construye cada pedido aplicando reglas a nombres, emails, totales y fechas generados. `UseSeed` hace reproducibles las decisiones aleatorias; una ventana de fechas fija también controla la parte que depende del reloj.
+
+## Cómo probarlo
+
+Usa datos generados para un conjunto amplio de pedidos válidos y valores literales para cada caso inválido. Mantén Bogus en el proyecto de tests para que el validador de producción no dependa de una librería de fixtures.
+
+### Prepara la solución
 
 Desde la carpeta del apéndice:
 
@@ -63,28 +71,30 @@ public sealed class OrderValidatorTests
 
 Las reglas describen los datos válidos una vez. `Generate(100)` las aplica cien veces y el loop pasa cada resultado por la misma aserción.
 
-## Intenta correr el test
+## Intenta ejecutar el test
+
+Ejecuta `dotnet test`. El compilador todavía no encuentra Bogus:
 
 ```text
 error CS0246: The type or namespace name 'Bogus' could not be found (are you missing a using directive or an assembly reference?)
 ```
 
-Bogus es una dependencia de test, así que agrégala al proyecto de tests y fija la versión:
+## Escribe el código mínimo para que el test compile y mira la salida
+
+Bogus solo pertenece al proyecto de tests, así que agrégalo y fija la versión:
 
 ```sh
 dotnet add tests/Shop.Tests/Shop.Tests.csproj package Bogus --version 34.0.1
 ```
 
-Corre otra vez:
+Ejecuta de nuevo. El generador ya está disponible; el compilador ahora pide los tipos de producción que describe el test:
 
 ```text
 error CS0246: The type or namespace name 'Order' could not be found (are you missing a using directive or an assembly reference?)
 error CS0246: The type or namespace name 'OrderValidator' could not be found (are you missing a using directive or an assembly reference?)
 ```
 
-Ahora el compilador pide los tipos que describe el test.
-
-## Escribe lo suficiente para compilar
+## Escribe el código suficiente para que pase
 
 `src/Shop/Order.cs`:
 
@@ -114,7 +124,7 @@ public sealed class OrderValidator
 
 Corre `dotnet test`. Verde, con un test. Desconfía de ese verde: el validador todavía no rechaza nada, así que el test solo demuestra que los datos generados llegan al loop.
 
-## Por qué CustomInstantiator
+### Por qué CustomInstantiator
 
 Bogus suele crear un objeto con su constructor sin parámetros y después llena las propiedades escribibles que nombra `RuleFor`. Un record posicional no tiene ninguna de las dos cosas. Si escribes el test con `RuleFor`:
 
@@ -124,6 +134,18 @@ Reason: No parameterless constructor defined.
 ```
 
 `CustomInstantiator` le entrega el faker a una fábrica que escribes tú, así el record conserva su constructor y cada campo se asigna una vez. Para una clase con propiedades escribibles, `RuleFor` sigue siendo la forma corta.
+
+## Refactor
+
+El primer test tiene un escenario de datos válidos generados. Todavía no hace falta extraer un helper; mantener las reglas junto a la aserción deja visible cómo se construye el fixture. Cuando otro test necesite los mismos datos, el requisito de la semilla de abajo da motivo para moverlos a un helper.
+
+### Cuándo usar Bogus
+
+- Genera el grueso de los datos válidos de un camino. Deja explícitos los bordes y los mensajes esperados.
+- Fija la semilla de todo faker que uses en un test. Un fallo que no se puede reproducir es un rumor.
+- Fija todo lo demás que la semilla no controla: fechas, identificadores, locale y estado externo.
+- No generes el valor esperado con las mismas reglas que generan la entrada. El generador no es un oráculo.
+- Un valor generado dentro de una aserción solo es seguro mientras la semilla y la versión de la librería estén fijas.
 
 ## Repite para los nuevos requisitos
 
@@ -191,7 +213,7 @@ if (order.PlacedAt > DateTime.UtcNow)
 
 Verde.
 
-## La semilla no congela el reloj
+### La semilla no congela el reloj
 
 Un fixture generado solo sirve si la misma semilla produce los mismos datos. Mueve la generación a un helper para que las dos llamadas usen las mismas reglas:
 
@@ -240,37 +262,7 @@ f.Date.Between(
 
 Corre otra vez. Verde. Si el validador comparara contra un reloj que no puedes fijar, inyectarías ese reloj en vez de leer `DateTime.UtcNow` dentro del validador.
 
-## Refactor
-
-Las reglas de generación viven ahora en un helper, y los dos tests que necesitan pedidos válidos lo llaman:
-
-```csharp
-private static List<Order> ValidOrders(int seed)
-{
-    return new Faker<Order>()
-        .UseSeed(seed)
-        .CustomInstantiator(f => new Order(
-            f.Name.FullName(),
-            f.Internet.Email(),
-            f.Random.Decimal(1m, 500m),
-            f.Date.Between(
-                new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc),
-                new DateTime(2024, 12, 31, 23, 59, 59, DateTimeKind.Utc))))
-        .Generate(100);
-}
-```
-
-`ValidGeneratedOrdersPass` conserva el loop y la aserción; solo se movió el fixture.
-
-## Cuándo usar Bogus
-
-- Genera el grueso de los datos válidos de un camino. Deja explícitos los bordes y los mensajes esperados.
-- Fija la semilla de todo faker que uses en un test. Un fallo que no se puede reproducir es un rumor.
-- Fija todo lo demás que la semilla no controla: fechas, identificadores, locale y estado externo.
-- No generes el valor esperado con las mismas reglas que generan la entrada. El generador no es un oráculo.
-- Un valor generado dentro de una aserción solo es seguro mientras la semilla y la versión de la librería estén fijas.
-
-## Verificación
+### Verificación
 
 ```text
 Passed!  - Failed:     0, Passed:     4, Skipped:     0, Total:     4, Duration: 98 ms

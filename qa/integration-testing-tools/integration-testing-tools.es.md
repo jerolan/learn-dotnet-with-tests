@@ -2,9 +2,15 @@
 
 [Encuentras todo el código de este apéndice aquí](https://github.com/jerolan/learn-dotnet-with-tests/tree/main/qa/integration-testing-tools)
 
-Un test de integración necesita el motor de base real, no una imitación en memoria. Dos herramientas lo hacen práctico: Testcontainers levanta una base desechable en Docker y Respawn la resetea entre tests.
+Un test de integración necesita el motor de base real, no una imitación en memoria. Este apéndice levanta un contenedor PostgreSQL desechable con Testcontainers y resetea sus filas con Respawn.
 
-Este apéndice corre un contenedor real de PostgreSQL, crea una tabla y usa Respawn para aislar los tests.
+## Cómo funciona
+
+Testcontainers inicia una imagen de PostgreSQL fijada, espera a que acepte conexiones y entrega la cadena de conexión. Respawn lee el grafo de tablas y borra filas en orden de dependencias. La clase de test inicia un contenedor y resetea la base antes de cada test. `ClassCleanup` espera `DisposeAsync` para eliminar el contenedor al terminar la clase.
+
+## Cómo probarlo
+
+Ejecuta estos tests de integración en una máquina con Docker. Usan PostgreSQL y Npgsql directamente; SQLite no ejercitaría el dialecto, las restricciones ni las transacciones de PostgreSQL.
 
 ## Escribe primero el test
 
@@ -16,9 +22,15 @@ public async Task Reset_ClearsTheTableBetweenTests()
 }
 ```
 
-El test solo tiene sentido si otro test insertó una fila antes. El estado compartido de la clase y el reset en `TestInitialize` son lo que hace determinista la aserción.
+Este test comprueba que el fixture deja la tabla vacía al comienzo de cada test.
 
-## Inicia el contenedor una vez por clase
+## Intenta ejecutar el test
+
+El método todavía no compila porque aún no existen `_store` ni su fixture de base. También necesita un motor PostgreSQL activo, que el test iniciará mediante Docker.
+
+## Escribe el código mínimo para que el test compile y mira la salida
+
+Inicia un contenedor PostgreSQL para la clase, crea el esquema y después crea `Respawner` cuando la tabla ya exista:
 
 ```csharp
 [ClassInitialize]
@@ -44,9 +56,7 @@ public static async Task InitializeAsync(TestContext context)
 }
 ```
 
-El contenedor arranca una vez por clase de test. Arrancar uno por test sería más simple pero mucho más lento; el reset de abajo da el mismo aislamiento a menor costo.
-
-## Resetea entre tests
+Resetea antes de cada test:
 
 ```csharp
 [TestInitialize]
@@ -59,11 +69,83 @@ public async Task ResetAsync()
 }
 ```
 
-Respawn descubre las tablas y borra sus filas. No elimina el esquema, así el siguiente test empieza con una base vacía y las mismas tablas.
+El fixture de base ya está, pero a `_store` todavía le faltan las operaciones de esquema y conteo que usa el test.
 
-El esquema se crea antes de construir el `Respawner` porque Respawn necesita ver al menos una tabla. En un proyecto con EF Core, la migración que corre al arrancar hace ese trabajo.
+## Escribe el código suficiente para que pase
 
-## El acceso a datos
+```csharp
+public sealed class WidgetStore
+{
+    private readonly string _connectionString;
+
+    public WidgetStore(string connectionString)
+    {
+        _connectionString = connectionString;
+    }
+
+    public async Task EnsureSchemaAsync()
+    {
+        await using var connection = new NpgsqlConnection(_connectionString);
+        await connection.OpenAsync();
+
+        await using var command = connection.CreateCommand();
+        command.CommandText = @"
+            CREATE TABLE IF NOT EXISTS widgets (
+                id serial primary key,
+                name text not null
+            );";
+
+        await command.ExecuteNonQueryAsync();
+    }
+
+    public async Task<int> CountAsync()
+    {
+        await using var connection = new NpgsqlConnection(_connectionString);
+        await connection.OpenAsync();
+
+        await using var command = connection.CreateCommand();
+        command.CommandText = "SELECT COUNT(*) FROM widgets;";
+
+        var result = await command.ExecuteScalarAsync();
+
+        return Convert.ToInt32(result);
+    }
+}
+```
+
+Ejecuta `dotnet test`. El test de reset pasa con la tabla vacía.
+
+## Refactor
+
+El esquema se crea antes de construir `Respawner` porque Respawn necesita ver al menos una tabla. En un proyecto con EF Core, una migración aplicada al arrancar puede crearla.
+
+Algunas decisiones mantienen sano el setup:
+
+- Fija el tag de la imagen (`postgres:16-alpine`). `latest` hace que un test cambie sin un cambio de código.
+- Arranca el contenedor una vez por clase o colección, no una vez por test.
+- Mantén la creación del esquema en un solo lugar y deja que el reset maneje las filas.
+- Agrega `TablesToIgnore` para el historial de migraciones y cualquier tabla de otro servicio.
+- La primera corrida descarga la imagen. El runner de CI necesita Docker y los permisos correctos.
+- No omitas el test cuando falte Docker. Falla con un mensaje claro o corre la suite donde Docker esté disponible.
+
+Para varios servicios, Docker Compose o una red de Testcontainers pueden levantar la API, la base y un broker juntos. El reset sigue siendo por test, mientras el contenedor puede vivir toda la clase.
+
+## Repite con requisitos nuevos
+
+El siguiente requisito es guardar widgets. Primero escribe el test:
+
+```csharp
+[TestMethod]
+public async Task Add_StoresTheWidget()
+{
+    await _store.AddAsync("first");
+    await _store.AddAsync("second");
+
+    Assert.AreEqual(2, await _store.CountAsync());
+}
+```
+
+El test no compila hasta que exista `AddAsync`. Agrégalo a `WidgetStore`:
 
 ```csharp
 public async Task AddAsync(string name)
@@ -79,33 +161,7 @@ public async Task AddAsync(string name)
 }
 ```
 
-El apéndice usa Npgsql directamente para mantener el foco en el contenedor y el reset. La misma forma de test funciona con EF Core o Dapper; solo cambia el store.
-
-## Cómo funciona
-
-Testcontainers habla con el daemon de Docker, descarga la imagen si hace falta, arranca un contenedor, espera el puerto y te da una cadena de conexión. `DisposeAsync` en `ClassCleanup` detiene y elimina el contenedor.
-
-Respawn se conecta a la base, lee el grafo de tablas del catálogo y genera sentencias de borrado en orden de dependencias. Puede ignorar tablas de historial de migraciones o esquemas concretos cuando los valores por defecto no alcanzan.
-
-El par es la respuesta habitual para una base de servidor en tests:
-
-- Testcontainers provee el motor y su versión.
-- Respawn provee aislamiento rápido entre tests.
-
-SQLite sigue siendo un buen valor por defecto para un capítulo o un servicio pequeño. Una base de servidor se gana su lugar cuando el test depende de su dialecto SQL, sus restricciones o su comportamiento transaccional.
-
-## Refactor
-
-Algunas decisiones mantienen sano el setup:
-
-- Fija el tag de la imagen (`postgres:16-alpine`). `latest` hace que un test cambie sin un cambio de código.
-- Arranca el contenedor una vez por clase o colección, no una vez por test.
-- Mantén la creación del esquema en un solo lugar y deja que el reset maneje las filas.
-- Agrega `TablesToIgnore` para el historial de migraciones y cualquier tabla de otro servicio.
-- La primera corrida descarga la imagen. En CI, Docker está disponible en el runner Ubuntu estándar; un runner propio necesita el daemon y permisos.
-- No escondas un daemon de Docker ausente con un test skipeado. Falla con un mensaje claro o corre la suite en un entorno que tenga Docker.
-
-Para un entorno completo con varios servicios, Docker Compose o una red de Testcontainers pueden levantar la API, la base y un broker juntos. La estrategia de reset sigue siendo por clase, no por test.
+Los dos tests pasan. Respawn limpia la base antes de cada uno, así sus filas quedan aisladas.
 
 ## Para cerrar
 
@@ -114,8 +170,7 @@ Lo que cubrimos:
 - Un contenedor PostgreSQL arrancado con Testcontainers.
 - Un esquema real y un store pequeño con Npgsql.
 - Respawn reseteando filas entre tests.
-- Ciclo de vida del contenedor, fijado de imagen e historial de migraciones.
+- Ciclo de vida del contenedor, tag de imagen e historial de migraciones.
 - El intercambio entre SQLite y una base de servidor.
 
 Siguiente: tests de rendimiento.
-

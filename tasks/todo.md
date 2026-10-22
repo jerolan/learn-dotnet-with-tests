@@ -164,6 +164,13 @@
   dotnet test build-an-app/v14-cqrs/TaskTracker.sln -m:1` passed 32 tests.
 - Full Part 2/3 audit: all 19 bilingual pairs follow the required section
   order, and every local link in those chapters resolves.
+- Part 4 `test-data-bogus`, `integration-testing-tools` and `snapshot-verify`
+  now follow the runnable appendix flow in both languages. `mise exec
+  dotnet@10.0.402 -- dotnet test qa/test-data-bogus/TestDataBogus.sln -m:1`
+  passed 4 tests; `mise exec dotnet@10.0.402 -- dotnet test
+  qa/integration-testing-tools/IntegrationTestingTools.sln -m:1` passed 2;
+  `mise exec dotnet@10.0.402 -- dotnet test
+  qa/snapshot-verify/SnapshotVerify.sln -m:1` passed 1.
 
 ## Completed increment: Part 4 delivery references
 

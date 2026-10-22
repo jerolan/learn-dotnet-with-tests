@@ -6,7 +6,15 @@ An order validator checks an email and a placement date. Testing the happy path 
 
 Bogus builds that data from rules. This appendix uses it for the bulk of the valid cases and keeps explicit values for the edges.
 
-## Set up the solution
+## How it works
+
+Bogus builds each order by applying rules to generated names, email addresses, totals and dates. `UseSeed` makes random choices reproducible; a fixed date window also controls the clock-dependent part of the data.
+
+## How to test
+
+Use generated data for a broad set of valid orders, then literal inputs for individual invalid cases. Keep Bogus in the test project so the production validator has no dependency on a fixture library.
+
+### Set up the solution
 
 From the appendix folder:
 
@@ -65,26 +73,28 @@ The rules describe valid data once. `Generate(100)` applies them a hundred times
 
 ## Try to run the test
 
+Run `dotnet test`. The compiler cannot find Bogus yet:
+
 ```text
 error CS0246: The type or namespace name 'Bogus' could not be found (are you missing a using directive or an assembly reference?)
 ```
 
-Bogus is a test dependency, so add it to the test project and pin the version:
+## Write the minimal amount of code for the test to run and check the failing test output
+
+Bogus belongs only in the test project, so add and pin it:
 
 ```sh
 dotnet add tests/Shop.Tests/Shop.Tests.csproj package Bogus --version 34.0.1
 ```
 
-Run again:
+Run again. The generator is available; the compiler now asks for the production types the test describes:
 
 ```text
 error CS0246: The type or namespace name 'Order' could not be found (are you missing a using directive or an assembly reference?)
 error CS0246: The type or namespace name 'OrderValidator' could not be found (are you missing a using directive or an assembly reference?)
 ```
 
-Now the compiler is asking for the types the test describes.
-
-## Write enough code to compile
+## Write enough code to make it pass
 
 `src/Shop/Order.cs`:
 
@@ -114,7 +124,7 @@ public sealed class OrderValidator
 
 Run `dotnet test`. Green, with one test. Be suspicious of that green: the validator rejects nothing yet, so the test only proves that the generated data reaches the loop.
 
-## Why CustomInstantiator
+### Why CustomInstantiator
 
 Bogus usually creates an object with its parameterless constructor, then fills writable properties named by `RuleFor`. A positional record has neither. If you write the test with `RuleFor`:
 
@@ -124,6 +134,18 @@ Reason: No parameterless constructor defined.
 ```
 
 `CustomInstantiator` hands the faker to a factory you write, so the record keeps its constructor and every field is set once. For a class with settable properties, `RuleFor` remains the shorter form.
+
+## Refactor
+
+The first test has one generated valid-data scenario. No helper extraction is needed yet; keeping the rules beside the assertion makes the fixture easy to inspect. When another test needs the same data, the seed requirement below gives a reason to move it into a helper.
+
+### When to use Bogus
+
+- Generate the bulk of valid data for a path. Keep the edge cases and the expected messages explicit.
+- Seed every faker used in a test. A failure that cannot be reproduced is a rumour.
+- Fix everything else the seed does not control: dates, identifiers, locale, and external state.
+- Do not generate the expected value with the same rules that generate the input. The generator is not an oracle.
+- A generated value that appears in an assertion is fine only while the seed and the library version stay pinned.
 
 ## Repeat for new requirements
 
@@ -191,7 +213,7 @@ if (order.PlacedAt > DateTime.UtcNow)
 
 Green.
 
-## The seed does not freeze the clock
+### The seed does not freeze the clock
 
 A generated fixture is only useful if the same seed produces the same data. Move the generation into a helper so both calls use the same rules:
 
@@ -240,37 +262,7 @@ f.Date.Between(
 
 Run again. Green. If the validator compared against a clock you could not fix, you would inject that clock instead of reading `DateTime.UtcNow` inside the validator.
 
-## Refactor
-
-The generation rules now live in one helper, and both tests that need valid orders call it:
-
-```csharp
-private static List<Order> ValidOrders(int seed)
-{
-    return new Faker<Order>()
-        .UseSeed(seed)
-        .CustomInstantiator(f => new Order(
-            f.Name.FullName(),
-            f.Internet.Email(),
-            f.Random.Decimal(1m, 500m),
-            f.Date.Between(
-                new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc),
-                new DateTime(2024, 12, 31, 23, 59, 59, DateTimeKind.Utc))))
-        .Generate(100);
-}
-```
-
-`ValidGeneratedOrdersPass` keeps the loop and the assertion; only the fixture moved.
-
-## When to use Bogus
-
-- Generate the bulk of valid data for a path. Keep the edge cases and the expected messages explicit.
-- Seed every faker used in a test. A failure that cannot be reproduced is a rumour.
-- Fix everything else the seed does not control: dates, identifiers, locale, and external state.
-- Do not generate the expected value with the same rules that generate the input. The generator is not an oracle.
-- A generated value that appears in an assertion is fine only while the seed and the library version stay pinned.
-
-## Verification
+### Verification
 
 ```text
 Passed!  - Failed:     0, Passed:     4, Skipped:     0, Total:     4, Duration: 98 ms
