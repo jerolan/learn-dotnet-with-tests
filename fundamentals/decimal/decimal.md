@@ -2,9 +2,7 @@
 
 [You can find all the code for this chapter here](https://github.com/jerolan/learn-dotnet-with-tests/tree/main/fundamentals/decimal)
 
-A backend that handles prices, taxes or invoices has to total money exactly. `double` looks like it can, until you add a few amounts and get a result with a tail of digits. Let's start with the problem.
-
-## The problem
+An invoice total should add two tenths to exactly three tenths. With `double`, it does not:
 
 Write a test that adds two tenths:
 
@@ -26,13 +24,11 @@ Run it:
    Assert.AreEqual failed. Expected:<0.3>. Actual:<0.30000000000000004>.
 ```
 
-This is a test we want to fail. The literals `0.1`, `0.2` and `0.3` are `double` values, and `double` stores binary fractions. None of those three numbers has an exact binary representation, so each one is rounded to the nearest value the type can hold, and the sum carries the error.
+## How it works
 
-The error is tiny. Across a long invoice it is still money.
+The literals `0.1`, `0.2` and `0.3` are `double` values, and `double` stores binary fractions. None of those numbers has an exact binary representation, so each is rounded to the nearest value the type can hold and the sum carries the error. The error is tiny; across a long invoice it is still money.
 
-## The type for money
-
-C# has a second floating-point type: `decimal`. It stores base-10 fractions, which is what prices already are. The `m` suffix on a literal chooses it:
+C# also has `decimal`, which stores a base-10 significand and scale. The `m` suffix selects it, so these tenths can be represented exactly:
 
 ```csharp
 [TestMethod]
@@ -44,9 +40,11 @@ public void AddTwoTenthsWithDecimal()
 }
 ```
 
-Run it. Green. The only change is the suffix, and the arithmetic is now exact.
+Run it. Green. Only the suffix changed, and the arithmetic is now exact.
 
-The test suite should not keep a failing test around, but the double behavior is worth pinning so nobody "fixes" it by switching the type later. Turn the first test into documentation:
+## How to test
+
+These arithmetic examples need no I/O or timing. After confirming the failure above, keep passing tests that pin the difference between `double` and `decimal`:
 
 ```csharp
 [TestMethod]
@@ -62,13 +60,11 @@ public void DecimalTenthsAreExact()
 }
 ```
 
-Both pass, and together they say what the chapter is about: the same digits give different results depending on the type.
+Both pass, and together they say what the chapter is about: the same digits give different results depending on the type. The suite should not keep the failing test around; replace it with the `DoubleTenthsAreNotExact` assertion.
 
-## A type for amounts
+## Write the test first
 
-A raw `decimal` does not stop you from adding a quantity to a price or passing an amount where a count belongs. Let's give money a name and the operations it needs. The finished solution is in `fundamentals/decimal`; set up your project the same way as the previous chapters if you are following along from scratch.
-
-Write the test first:
+A raw `decimal` does not stop you from adding a quantity to a price or passing an amount where a count belongs. Give money a name and the operations it needs. The finished solution is in `fundamentals/decimal`; set up your project the same way as the previous chapters if you are following along from scratch.
 
 ```csharp
 [TestMethod]
@@ -80,13 +76,17 @@ public void AddTwoAmounts()
 }
 ```
 
+## Try to run the test
+
 Run `dotnet test`. The compiler says:
 
 ```text
 error CS0246: The type or namespace name 'Money' could not be found
 ```
 
-Write the smallest type that compiles:
+## Write the minimal amount of code for the test to run and check the failing test output
+
+Write the smallest type:
 
 ```csharp
 namespace Decimal;
@@ -94,11 +94,13 @@ namespace Decimal;
 public sealed record Money(decimal Amount);
 ```
 
-Run the tests again. The type exists, but `Add` does not:
+The test still cannot compile because `Add` does not exist:
 
 ```text
 error CS1061: 'Money' does not contain a definition for 'Add'
 ```
+
+## Write enough code to make it pass
 
 Add the method:
 
@@ -109,9 +111,15 @@ public sealed record Money(decimal Amount)
 }
 ```
 
-Green. A `record` gives us value equality for free, which is why `Assert.AreEqual(new Money(8.0m), total)` compares the amounts instead of the references. `new(Amount + other.Amount)` uses the target-typed `new` introduced in C# 9; the compiler knows the result is a `Money`.
+Run the tests. Green. A `record` gives us value equality for free, which is why `Assert.AreEqual(new Money(8.0m), total)` compares the amounts instead of the references. `new(Amount + other.Amount)` uses the target-typed `new` introduced in C# 9; the compiler knows the result is a `Money`.
 
-## Multiply an amount by a quantity
+## Refactor
+
+The immutable record and its `Add` method are already small and direct. Run the test again; it stays green. There is nothing to extract, so add the next operation as a separate requirement.
+
+## Repeat for new requirements
+
+### Multiply an amount by a quantity
 
 Write the next test:
 
@@ -133,7 +141,7 @@ public Money Multiply(int quantity) => new(Amount * quantity);
 
 Green. The quantity is an `int` because you buy a whole number of items; the amount stays a `decimal` because money is decimal.
 
-## Rounding
+### Rounding
 
 Money has one more decision that the type cannot make for you: what to do with a midpoint. Write a test that forces the question:
 
@@ -170,7 +178,7 @@ public Money Rounded(int places = 2) =>
     new(Math.Round(Amount, places, MidpointRounding.AwayFromZero));
 ```
 
-Run the tests. Green. `MidpointRounding.AwayFromZero` is the half-up rule most people expect when they say "round to cents", and now it is visible in code review instead of hiding in an overload default.
+Run the tests. Green. `MidpointRounding.AwayFromZero` makes the midpoint rule explicit: for this positive amount, `10.545` becomes `10.55`. The policy is visible in code review instead of hiding in an overload default.
 
 ## Wrapping up
 
