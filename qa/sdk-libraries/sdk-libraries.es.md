@@ -6,7 +6,11 @@ Tres aplicaciones llaman a la misma API de tareas. Cada una configura una base a
 
 Un cliente tipado empaquetado como biblioteca NuGet mueve esas decisiones a un solo lugar. Este apéndice construye `TaskTracker.Client`, lo prueba sin red y lo empaqueta en un `.nupkg`.
 
-## El proyecto
+## Cómo funciona
+
+El paquete envuelve un `HttpClient` que configura quien lo consume. La biblioteca concentra las rutas de la API, los nombres JSON y la conversión de errores; los metadatos del paquete controlan qué recibe el consumidor.
+
+### El proyecto
 
 `src/TaskTracker.Client/TaskTracker.Client.csproj`:
 
@@ -31,7 +35,7 @@ Un cliente tipado empaquetado como biblioteca NuGet mueve esas decisiones a un s
 
 `GenerateDocumentationFile` convierte los comentarios XML en un archivo que viaja con el ensamblado, así los tooltips del IDE funcionan para quien consume. `PackageReadmeFile` pone el README en la página del paquete. Ninguno cambia el código; los dos cambian lo que recibe el consumidor.
 
-## El cliente
+### El cliente
 
 `src/TaskTracker.Client/TaskClient.cs`:
 
@@ -96,7 +100,13 @@ public sealed class TaskClient
 
 El cliente recibe un `HttpClient` en vez de crearlo. El llamador es dueño de su tiempo de vida, su base address y su pipeline de handlers; la biblioteca es dueña de las URLs, las opciones de JSON y la forma del error.
 
+## Cómo probarlo
+
+Los tests reemplazan la red por un `StubHandler`, así que no necesitan servidor ni puerto abierto. Ejecuta `dotnet test SdkLibraries.sln` desde esta carpeta.
+
 ## Escribe primero el test
+
+El cliente actual es el punto de partida. El test precede al cambio de ruta porque la URL forma parte del contrato de la API.
 
 El test reemplaza la red por un handler que registra la petición:
 
@@ -144,7 +154,7 @@ protected override async Task<HttpResponseMessage> SendAsync(
 
 Sin servidor, sin puerto y sin red. El test igual revisa el método, la URL y la deserialización.
 
-## Intenta correrlo
+## Intenta ejecutar el test
 
 Apunta el cliente a `task` en vez de `tasks` y el test lo atrapa:
 
@@ -154,29 +164,27 @@ Assert.AreEqual failed. Expected:<https://api.test/tasks>. Actual:<https://api.t
 
 La URL es parte del contrato, así que va en una aserción. Un test que solo revisa el objeto devuelto pasaría contra un stub que ignora la ruta.
 
-## Repite para la escritura y el error
+## Escribe el código mínimo para que el test compile y mira la salida
 
-El segundo test devuelve `201 Created` y comprueba el POST:
-
-```csharp
-Assert.AreEqual(HttpMethod.Post, handler.Request!.Method);
-StringAssert.Contains(handler.RequestBody, "Write the chapter");
-Assert.AreEqual("application/json", handler.Request.Content!.Headers.ContentType!.MediaType);
-```
-
-El tercero devuelve `400 Bad Request` y espera la excepción tipada:
+El cliente puede deserializar la respuesta con esta línea, pero la URL está mal:
 
 ```csharp
-var error = await Assert.ThrowsExceptionAsync<TaskClientException>(
-    () => client.CreateTaskAsync(""));
-
-Assert.AreEqual(HttpStatusCode.BadRequest, error.StatusCode);
-StringAssert.Contains(error.Message, "title is required");
+using var response = await _http.GetAsync("task", cancellationToken);
 ```
 
-`TaskClientException` lleva el estado y el cuerpo. Un llamador puede mostrar el mensaje o mapear el estado sin parsear un string.
+## Escribe el código suficiente para que pase
 
-## Empaquétalo
+Usa la ruta plural que expone la API:
+
+```csharp
+using var response = await _http.GetAsync("tasks", cancellationToken);
+```
+
+Vuelve a ejecutar la solución; pasan los tests de lectura, escritura y error.
+
+## Refactor
+
+### Empaquétalo
 
 ```sh
 dotnet pack src/TaskTracker.Client/TaskTracker.Client.csproj -c Release -o /tmp/sdk-pack
@@ -205,13 +213,13 @@ El `.nuspec` se genera desde el archivo de proyecto:
 <description>Typed HTTP client for the TaskTracker API.</description>
 ```
 
-## Versiona la superficie pública
+### Versiona la superficie pública
 
 El id y la versión del paquete son parte del contrato. Quitar un método, cambiar un tipo de retorno o renombrar una propiedad de un record es un cambio incompatible; necesita una versión mayor. Agregar un parámetro opcional o un método nuevo es una versión menor.
 
 El archivo de documentación XML y el README viajan dentro del paquete, así el consumidor ve la misma descripción que escribiste aquí. Un paquete que solo contiene un DLL obliga a cada consumidor a leer el código.
 
-## Refactor para producción
+### Preocupaciones de producción
 
 - Usa `IHttpClientFactory` o un registro de cliente tipado en la app que consume. Crear un `HttpClient` nuevo por llamada agota los sockets.
 - Pon la autenticación en un `DelegatingHandler`, no en cada método. El refresh del token va ahí.
@@ -219,6 +227,28 @@ El archivo de documentación XML y el README viajan dentro del paquete, así el 
 - Genera Source Link y builds deterministas si el paquete se publica; el consumidor debería poder entrar al código fuente.
 - Corre `dotnet pack` en CI y guarda el `.nupkg` como artefacto. El paquete es el entregable, no un efecto secundario de un build local.
 - Agrega un chequeo de compatibilidad antes de un release, como `Microsoft.DotNet.ApiCompat`, para que un miembro público removido rompa el build.
+
+## Repite con requisitos nuevos
+
+Los siguientes requisitos son crear una tarea y mapear una respuesta de error. El segundo test devuelve `201 Created` y comprueba el POST:
+
+```csharp
+Assert.AreEqual(HttpMethod.Post, handler.Request!.Method);
+StringAssert.Contains(handler.RequestBody, "Write the chapter");
+Assert.AreEqual("application/json", handler.Request.Content!.Headers.ContentType!.MediaType);
+```
+
+El tercero devuelve `400 Bad Request` y espera la excepción tipada:
+
+```csharp
+var error = await Assert.ThrowsExceptionAsync<TaskClientException>(
+    () => client.CreateTaskAsync(""));
+
+Assert.AreEqual(HttpStatusCode.BadRequest, error.StatusCode);
+StringAssert.Contains(error.Message, "title is required");
+```
+
+`TaskClientException` lleva el estado y el cuerpo. Un llamador puede mostrar el mensaje o mapear el estado sin parsear un string.
 
 ## Lo que queda diferido
 

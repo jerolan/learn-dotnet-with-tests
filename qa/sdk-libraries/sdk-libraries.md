@@ -6,7 +6,11 @@ Three applications call the same task API. Each one sets a base address, chooses
 
 A typed client packaged as a NuGet library moves those decisions into one place. This appendix builds `TaskTracker.Client`, tests it without a network, and packs it into a `.nupkg`.
 
-## The project
+## How it works
+
+The package wraps an `HttpClient` that the caller configures. The library keeps the API routes, JSON names and error conversion in one place; package metadata controls what consumers receive.
+
+### The project
 
 `src/TaskTracker.Client/TaskTracker.Client.csproj`:
 
@@ -31,7 +35,7 @@ A typed client packaged as a NuGet library moves those decisions into one place.
 
 `GenerateDocumentationFile` turns the XML comments into a file that ships with the assembly, so IDE tooltips work for consumers. `PackageReadmeFile` puts the README on the package page. Neither changes the code; both change what a consumer receives.
 
-## The client
+### The client
 
 `src/TaskTracker.Client/TaskClient.cs`:
 
@@ -96,7 +100,13 @@ public sealed class TaskClient
 
 The client takes an `HttpClient` instead of creating one. The caller owns its lifetime, its base address and its handler pipeline; the library owns the URLs, the JSON options and the error shape.
 
+## How to test
+
+The tests replace the network with a `StubHandler`, so they need no server or open port. Run `dotnet test SdkLibraries.sln` from this appendix folder.
+
 ## Write the test first
+
+The current client is the starting point. The test comes first for the route change because the URL is part of the API contract.
 
 The test replaces the network with a handler that records the request:
 
@@ -144,7 +154,7 @@ protected override async Task<HttpResponseMessage> SendAsync(
 
 No server, no port and no network. The test still checks the method, the URL and the deserialization.
 
-## Try to run it
+## Try to run the test
 
 Point the client at `task` instead of `tasks` and the test catches it:
 
@@ -154,29 +164,27 @@ Assert.AreEqual failed. Expected:<https://api.test/tasks>. Actual:<https://api.t
 
 The URL is part of the contract, so it belongs in an assertion. A test that only checks the returned object would pass against a stub that ignores the path.
 
-## Repeat for the write and the error
+## Write the minimal amount of code for the test to run and check the failing test output
 
-The second test returns `201 Created` and asserts the POST:
-
-```csharp
-Assert.AreEqual(HttpMethod.Post, handler.Request!.Method);
-StringAssert.Contains(handler.RequestBody, "Write the chapter");
-Assert.AreEqual("application/json", handler.Request.Content!.Headers.ContentType!.MediaType);
-```
-
-The third returns `400 Bad Request` and expects the typed exception:
+The client can deserialize the response with this request line, but the URL is wrong:
 
 ```csharp
-var error = await Assert.ThrowsExceptionAsync<TaskClientException>(
-    () => client.CreateTaskAsync(""));
-
-Assert.AreEqual(HttpStatusCode.BadRequest, error.StatusCode);
-StringAssert.Contains(error.Message, "title is required");
+using var response = await _http.GetAsync("task", cancellationToken);
 ```
 
-`TaskClientException` carries the status and the body. A caller can show the message or map the status without parsing a string.
+## Write enough code to make it pass
 
-## Pack it
+Use the plural route the API exposes:
+
+```csharp
+using var response = await _http.GetAsync("tasks", cancellationToken);
+```
+
+Run the solution again; the read, write and error tests pass.
+
+## Refactor
+
+### Pack it
 
 ```sh
 dotnet pack src/TaskTracker.Client/TaskTracker.Client.csproj -c Release -o /tmp/sdk-pack
@@ -205,13 +213,13 @@ The `.nuspec` is generated from the project file:
 <description>Typed HTTP client for the TaskTracker API.</description>
 ```
 
-## Versioning the public surface
+### Versioning the public surface
 
 The package id and version are part of the contract. Removing a method, changing a return type or renaming a record property is a breaking change; it needs a major version. Adding an optional parameter or a new method is a minor version.
 
 The XML documentation file and the README ship inside the package, so a consumer sees the same description you wrote here. A package that only contains a DLL forces every consumer to read the source.
 
-## Refactor for production
+### Production concerns
 
 - Use `IHttpClientFactory` or a typed client registration in the consuming app. Creating a new `HttpClient` per call exhausts sockets.
 - Put authentication in a `DelegatingHandler`, not in every method. The token refresh belongs there.
@@ -219,6 +227,28 @@ The XML documentation file and the README ship inside the package, so a consumer
 - Generate Source Link and deterministic builds if the package is published; a consumer should be able to step into the source.
 - Run `dotnet pack` in CI and keep the `.nupkg` as an artifact. The package is the deliverable, not a side effect of a local build.
 - Add a compatibility check before a release, such as `Microsoft.DotNet.ApiCompat`, so a removed public member fails the build.
+
+## Repeat for new requirements
+
+The next requirements are creating a task and mapping an error response. The second test returns `201 Created` and asserts the POST:
+
+```csharp
+Assert.AreEqual(HttpMethod.Post, handler.Request!.Method);
+StringAssert.Contains(handler.RequestBody, "Write the chapter");
+Assert.AreEqual("application/json", handler.Request.Content!.Headers.ContentType!.MediaType);
+```
+
+The third returns `400 Bad Request` and expects the typed exception:
+
+```csharp
+var error = await Assert.ThrowsExceptionAsync<TaskClientException>(
+    () => client.CreateTaskAsync(""));
+
+Assert.AreEqual(HttpStatusCode.BadRequest, error.StatusCode);
+StringAssert.Contains(error.Message, "title is required");
+```
+
+`TaskClientException` carries the status and the body. A caller can show the message or map the status without parsing a string.
 
 ## What is deferred
 

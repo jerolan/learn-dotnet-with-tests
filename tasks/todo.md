@@ -183,6 +183,9 @@
 - Part 4 `nosql` now follows the runnable appendix flow in both languages.
   `mise exec dotnet@10.0.402 -- dotnet test qa/nosql/Nosql.sln -m:1` passed 5
   tests against the MongoDB container.
+- Part 4 `sdk-libraries` now follows the runnable appendix flow in both
+  languages. `mise exec dotnet@10.0.402 -- dotnet test
+  qa/sdk-libraries/SdkLibraries.sln -m:1` passed 3 tests.
 
 ## Completed increment: Part 4 delivery references
 
