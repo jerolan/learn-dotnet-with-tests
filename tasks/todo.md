@@ -150,6 +150,10 @@
   introduced after their failing tests. `mise exec dotnet@10.0.402 -- dotnet
   test build-an-app/v11-messaging-scheduling/TaskTracker.sln -m:1` passed 27
   tests.
+- Part 3 `v12-openapi`: English and Spanish pairs now contain the required
+  sections in order; the API-surface test leads to Swagger setup, then Bearer
+  security is added as a new requirement. `mise exec dotnet@10.0.402 -- dotnet
+  test build-an-app/v12-openapi/TaskTracker.sln -m:1` passed 28 tests.
 
 ## Completed increment: Part 4 delivery references
 

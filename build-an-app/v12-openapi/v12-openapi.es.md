@@ -6,6 +6,16 @@ La API ya es lo bastante grande como para que quien llama necesite un contrato: 
 
 La solución terminada está en `build-an-app/v12-openapi`.
 
+## Cómo funciona
+
+El explorador de API de ASP.NET Core describe las rutas de la API mínima. Swashbuckle lee esa metadata y genera un documento OpenAPI con rutas y esquemas. `UseSwagger` sirve el JSON; `UseSwaggerUI` sirve una página interactiva para explorarlo.
+
+La autenticación sigue a cargo del middleware de la aplicación. El esquema de seguridad de OpenAPI documenta cómo envía el token el cliente; no protege una ruta.
+
+## Cómo probarlo
+
+Solicita `/swagger/v1/swagger.json` por HTTP y analiza el JSON. Comprueba partes estables del contrato: nombres de rutas, nombres de esquemas y, en un test posterior, el esquema de seguridad Bearer. Así verificas el documento que reciben sus consumidores sin probar el formato de Swashbuckle ni depender de la UI.
+
 ## Escribe primero el test
 
 ```csharp
@@ -30,20 +40,16 @@ public async Task SwaggerDocument_ListsTheApiSurface()
 
     Assert.IsTrue(schemas.TryGetProperty("TaskItem", out _));
     Assert.IsTrue(schemas.TryGetProperty("CreateTaskRequest", out _));
-
-    var security = root
-        .GetProperty("components")
-        .GetProperty("securitySchemes")
-        .GetProperty("Bearer");
-
-    Assert.AreEqual("http", security.GetProperty("type").GetString());
-    Assert.AreEqual("bearer", security.GetProperty("scheme").GetString());
 }
 ```
 
-Contra v11 la ruta devuelve 404. El test lee el documento como JSON en vez de confiar en la UI.
+## Intenta ejecutar el test
 
-## Agrega Swashbuckle
+Contra v11, `GET /swagger/v1/swagger.json` devuelve 404 porque la aplicación no expone un documento OpenAPI. `GetStringAsync` falla ante esa respuesta no exitosa.
+
+## Escribe el código mínimo para que el test compile y mira la salida
+
+Instala Swashbuckle y registra el explorador de API y un documento con nombre:
 
 ```sh
 dotnet add src/TaskTracker.Api package Swashbuckle.AspNetCore --version 6.5.0
@@ -59,62 +65,87 @@ builder.Services.AddSwaggerGen(options =>
         Version = "v1",
         Description = "Task tracker used in the Learn .NET with Tests book."
     });
-
-    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-    {
-        Name = "Authorization",
-        Type = SecuritySchemeType.Http,
-        Scheme = "bearer",
-        BearerFormat = "JWT",
-        In = ParameterLocation.Header,
-        Description = "Paste the accessToken returned by POST /auth/token."
-    });
-
-    options.AddSecurityRequirement(new OpenApiSecurityRequirement
-    {
-        {
-            new OpenApiSecurityScheme
-            {
-                Reference = new OpenApiReference
-                {
-                    Type = ReferenceType.SecurityScheme,
-                    Id = "Bearer"
-                }
-            },
-            Array.Empty<string>()
-        }
-    });
 });
 ```
 
-y sírvelo:
+El test todavía recibe 404: el documento ya está configurado, pero falta agregar el middleware al pipeline de peticiones.
+
+## Escribe el código suficiente para que pase
+
+Expón el documento y la UI:
 
 ```csharp
 app.UseSwagger();
 app.UseSwaggerUI();
 ```
 
-Verde. El documento está en `/swagger/v1/swagger.json` y la UI en `/swagger`.
-
-## Cómo funciona
-
-Swashbuckle lee la metadata que ASP.NET Core construyó a partir de los handlers: la ruta, el método HTTP, el tipo del cuerpo y los tipos de respuesta. Escribe un documento OpenAPI con `paths`, `components/schemas` y `components/securitySchemes`.
-
-La definición y el requisito de seguridad son los que hacen que la UI muestre un botón Authorize y permiten pegar el JWT. El documento sigue listando los endpoints; el esquema de seguridad le dice al cliente cómo llamarlos.
-
-El test fija el contrato. Un renombre de ruta, un endpoint eliminado o un tipo de request cambiado rompe el test antes de que lo descubra un consumidor. Es un test de contrato, no un test del formato de Swashbuckle.
+El test de la superficie de la API ya pasa: el JSON contiene las rutas y los esquemas esperados.
 
 ## Refactor
 
-Un documento generado solo sirve si se mantiene exacto:
+Un documento generado solo sirve mientras se mantenga exacto:
 
-- Agrega documentación XML y ejemplos cuando un campo necesite explicación humana. Activa `GenerateDocumentationFile` e incluye el archivo en `AddSwaggerGen`.
+- Agrega documentación XML y ejemplos cuando un campo necesite una explicación humana. Activa `GenerateDocumentationFile` e incluye el archivo en `AddSwaggerGen`.
 - Versiona el documento cuando la API cambie de forma incompatible. `SwaggerDoc("v2", ...)` y un plan de rutas versionadas son más baratos que sorprender a los clientes.
-- Esconde endpoints internos. Una ruta de diagnóstico con ids de proceso sirve en desarrollo y no debería estar en un documento público; usa metadata o un documento separado.
+- Oculta endpoints internos. Una ruta de diagnóstico con ids de proceso sirve en desarrollo y no debería estar en un documento público; usa metadata de endpoint o un documento separado.
 - Prueba el documento en CI, como hace este capítulo. La UI es una comodidad; el JSON es el contrato.
-- En .NET 9 y posteriores, el generador de OpenAPI integrado reemplaza la generación de documentos de Swashbuckle; el libro sigue con Swashbuckle porque el proyecto apunta a .NET 6.
+- ASP.NET Core incluye generación OpenAPI integrada desde .NET 9, pero no incluye una UI interactiva de forma predeterminada. Este libro usa Swashbuckle para su solución .NET 6 ([documentación de Microsoft](https://learn.microsoft.com/en-us/aspnet/core/fundamentals/openapi/aspnetcore-openapi?view=aspnetcore-10.0)).
 
-El documento también expone el flujo de auth: un cliente llama a `/auth/token` sin token y después manda `Authorization: Bearer ...` a las rutas de tareas. El esquema de seguridad documenta ese flujo, no reemplaza al middleware.
+## Repite con requisitos nuevos
+
+### Describe la autenticación Bearer
+
+Escribe un test para las instrucciones de autenticación del documento:
+
+```csharp
+[TestMethod]
+public async Task SwaggerDocument_DescribesBearerAuthentication()
+{
+    using var api = new Api();
+
+    var json = await api.Client.GetStringAsync("/swagger/v1/swagger.json");
+
+    using var document = JsonDocument.Parse(json);
+    var security = document.RootElement
+        .GetProperty("components")
+        .GetProperty("securitySchemes")
+        .GetProperty("Bearer");
+
+    Assert.AreEqual("http", security.GetProperty("type").GetString());
+    Assert.AreEqual("bearer", security.GetProperty("scheme").GetString());
+}
+```
+
+Falla porque el documento generado no tiene un esquema de seguridad Bearer. Agrega la definición y el requisito dentro del bloque de opciones de `AddSwaggerGen` que ya existe:
+
+```csharp
+options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+{
+    Name = "Authorization",
+    Type = SecuritySchemeType.Http,
+    Scheme = "bearer",
+    BearerFormat = "JWT",
+    In = ParameterLocation.Header,
+    Description = "Paste the accessToken returned by POST /auth/token."
+});
+
+options.AddSecurityRequirement(new OpenApiSecurityRequirement
+{
+    {
+        new OpenApiSecurityScheme
+        {
+            Reference = new OpenApiReference
+            {
+                Type = ReferenceType.SecurityScheme,
+                Id = "Bearer"
+            }
+        },
+        Array.Empty<string>()
+    }
+});
+```
+
+El test pasa. Un cliente llama a `/auth/token` sin token y después envía `Authorization: Bearer ...` a las rutas de tareas. El esquema documenta ese flujo; el middleware de autenticación sigue haciéndolo cumplir.
 
 ## Para cerrar
 
@@ -127,4 +158,3 @@ Lo que cubrimos:
 - Mantener el documento exacto con ejemplos, versionado y rutas internas ocultas.
 
 Siguiente: [v13: resiliencia con Polly](../v13-resilience/v13-resilience.es.md).
-
