@@ -57,3 +57,12 @@ This cycle encourages developers to write only the code necessary to pass tests,
 23. 🟢 [Async/Await](fundamentals/async/async.md) ([ES](fundamentals/async/async.es.md)) - Write asynchronous methods, propagate exceptions and honor cancellation.
 24. 🟢 [Files and I/O](fundamentals/io/io.md) ([ES](fundamentals/io/io.es.md)) - Read and write through `TextReader` and `TextWriter` without touching the disk in tests.
 25. 🟢 [`using` Keyword](fundamentals/using/using.md) ([ES](fundamentals/using/using.es.md)) - Release resources deterministically with `IDisposable` and `using`.
+
+## Part 2: Testing fundamentals
+
+These chapters turn the testing habits from Part 1 on the test suite itself. They are the bridge to the application in Part 3.
+
+1. 🟢 [Acceptance Tests](testing/acceptance-tests/acceptance-tests.md) ([ES](testing/acceptance-tests/acceptance-tests.es.md)) - Test a feature through HTTP with WebApplicationFactory and keep the test at the user-visible boundary.
+2. 🟢 [Scaling Acceptance Tests](testing/scaling-acceptance-tests/scaling-acceptance-tests.md) ([ES](testing/scaling-acceptance-tests/scaling-acceptance-tests.es.md)) - Keep many scenarios readable with a test driver, builders and isolated factories.
+3. 🟢 [Working Without Mocks](testing/working-without-mocks/working-without-mocks.md) ([ES](testing/working-without-mocks/working-without-mocks.es.md)) - Replace interaction mocks with a small in-memory fake when the collaborator is yours.
+4. 🟢 [Refactoring Checklist](testing/refactoring-checklist/refactoring-checklist.md) ([ES](testing/refactoring-checklist/refactoring-checklist.es.md)) - Change structure with the tests green and a repeatable list of checks.
