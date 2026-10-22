@@ -2,9 +2,23 @@
 
 [You can find all the code for this chapter here](https://github.com/jerolan/learn-dotnet-with-tests/tree/main/fundamentals/composition)
 
-Inheritance models an "is a" relationship: a rectangle is a shape. Composition models "uses a": a report uses a set of text transforms. The second relationship is often the one you want, because it lets you assemble behavior without creating a class for every combination.
+Trimming `"  hello  "` should produce `"hello"`. Later, the same text pipeline should uppercase and prefix text in the order its steps are supplied.
 
-We will build a text pipeline from small transforms. The finished solution is in `fundamentals/composition`; if you are building it from scratch, use the same layout as the previous chapters: a class library in `src/Composition`, an MSTest project in `tests/Composition.Tests`, a solution and a project reference.
+The first call cannot compile because `Trim` does not exist:
+
+```csharp
+var result = new Trim().Apply("  hello  ");
+```
+
+Running `dotnet test` reports `error CS0246: The type or namespace name 'Trim' could not be found`. We will add one transform, then compose several without creating a class for every combination. The finished solution is in `fundamentals/composition`; if you are building it from scratch, use the same layout as the previous chapters: a class library in `src/Composition`, an MSTest project in `tests/Composition.Tests`, a solution and a project reference.
+
+## How it works
+
+Inheritance models an "is a" relationship, such as a rectangle being a shape. Composition models "uses a": a pipeline uses a list of text transforms. An `ITextTransform` interface gives each step the same `Apply` method, and the pipeline passes the output of one step to the next.
+
+## How to test
+
+Each transform converts one string to another without external side effects. The tests can call the pipeline directly and assert its output. A multi-step test will also verify that the order of the transforms is part of the behavior.
 
 ## Write the test first
 
@@ -63,6 +77,10 @@ public string Apply(string input)
 ```
 
 Green. `ITextTransform` is the seam: a small contract with one method. Any step that can turn a string into a string can implement it.
+
+## Refactor
+
+`Trim.Apply` is one call to the framework, so there is nothing to extract yet. Run the test again; it remains green. The next requirements will show how to combine independent transforms.
 
 ## Repeat for new requirements
 
@@ -175,7 +193,7 @@ public void Apply_WithNoSteps_ReturnsTheInput()
 
 It passes. An empty list means the loop never runs and the input comes back unchanged. That is a useful default for a pipeline built from configuration.
 
-## Refactor
+### Refactor the pipeline
 
 The code is already small. The design lesson is what did not get created. An inheritance design would need a class for each combination:
 

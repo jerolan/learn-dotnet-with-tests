@@ -2,9 +2,23 @@
 
 [Encuentras todo el código de este capítulo aquí](https://github.com/jerolan/learn-dotnet-with-tests/tree/main/fundamentals/composition)
 
-La herencia modela una relación "es un": un rectángulo es una figura. La composición modela "usa un": un reporte usa un conjunto de transformaciones de texto. La segunda relación suele ser la que quieres, porque te deja armar comportamiento sin crear una clase por cada combinación.
+Quitar los espacios de `"  hello  "` debe producir `"hello"`. Más adelante, el mismo pipeline de texto debe poner el texto en mayúsculas y agregarle un prefijo en el orden de sus pasos.
 
-Vamos a construir un pipeline de texto con transformaciones pequeñas. La solución terminada está en `fundamentals/composition`; si la estás armando desde cero, usa la misma estructura que en los capítulos anteriores: una biblioteca de clases en `src/Composition`, un proyecto de MSTest en `tests/Composition.Tests`, una solución y una referencia entre proyectos.
+La primera llamada no compila porque `Trim` no existe:
+
+```csharp
+var result = new Trim().Apply("  hello  ");
+```
+
+Al ejecutar `dotnet test`, aparece `error CS0246: The type or namespace name 'Trim' could not be found`. Agregaremos una transformación y luego combinaremos varias sin crear una clase por cada combinación. La solución terminada está en `fundamentals/composition`; si la estás armando desde cero, usa la misma estructura que en los capítulos anteriores: una biblioteca de clases en `src/Composition`, un proyecto de MSTest en `tests/Composition.Tests`, una solución y una referencia entre proyectos.
+
+## Cómo funciona
+
+La herencia modela una relación "es un", como un rectángulo que es una figura. La composición modela "usa un": un pipeline usa una lista de transformaciones de texto. Una interfaz `ITextTransform` da a cada paso el mismo método `Apply`, y el pipeline pasa la salida de un paso al siguiente.
+
+## Cómo probarlo
+
+Cada transformación convierte una cadena en otra sin efectos externos. Los tests pueden llamar al pipeline directamente y comprobar su resultado. Un test con varios pasos también verificará que el orden de las transformaciones es parte del comportamiento.
 
 ## Escribe primero el test
 
@@ -63,6 +77,10 @@ public string Apply(string input)
 ```
 
 Verde. `ITextTransform` es la costura: un contrato pequeño con un método. Cualquier paso que pueda convertir una cadena en otra puede implementarlo.
+
+## Refactor
+
+`Trim.Apply` es una llamada al framework, así que todavía no hay nada que extraer. Ejecuta el test otra vez: sigue en verde. Los siguientes requisitos mostrarán cómo combinar transformaciones independientes.
 
 ## Repite con requisitos nuevos
 
@@ -175,7 +193,7 @@ public void Apply_WithNoSteps_ReturnsTheInput()
 
 Pasa. Una lista vacía significa que el bucle nunca corre y la entrada vuelve sin cambios. Es un valor por defecto útil para un pipeline armado desde configuración.
 
-## Refactor
+### Refactorizar el pipeline
 
 El código ya es pequeño. La lección de diseño es lo que no se creó. Un diseño con herencia necesitaría una clase por cada combinación:
 
