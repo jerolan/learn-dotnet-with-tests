@@ -6,6 +6,24 @@ Algunos objetos son dueños de un recurso que debe liberarse: un manejador de ar
 
 Vamos a construir una sesión pequeña que registra cuándo se abre y se cierra. La solución terminada está en `fundamentals/using`; si la estás armando desde cero, usa la misma estructura que en los capítulos anteriores: una biblioteca de clases en `src/UsingKeyword`, un proyecto de MSTest en `tests/UsingKeyword.Tests`, una solución y una referencia entre proyectos.
 
+## Cómo funciona
+
+`IDisposable` expone `Dispose()` para liberar los recursos de un objeto. Un ámbito `using` se convierte en un `try`/`finally`, así la limpieza ocurre al salir normalmente o por una excepción. `using var` dura hasta el final del bloque que lo contiene; la forma con paréntesis permite elegir un ámbito menor. La recolección de basura administra memoria, mientras `Dispose()` libera recursos como manejadores de archivo y sockets.
+
+```csharp
+using (var session = new Session(log))
+{
+    // la sesión se libera aquí
+}
+
+using var other = new Session(log);
+// other se libera al final del bloque que lo contiene
+```
+
+## Cómo probarlo
+
+Entrega al objeto descartable un log que registre la apertura y la liberación. Comprueba que se liberó y que la limpieza ocurrió en el momento esperado. Una excepción y la liberación repetida son casos distintos del ciclo de vida.
+
 ## Escribe primero el test
 
 ```csharp
@@ -84,25 +102,9 @@ public static void Run(List<string> log, Action<Session> action)
 
 Verde. Al final de `Run`, el compilador inserta un bloque `finally` que llama a `session.Dispose()`. El cuerpo puede lanzar, retornar o terminar normalmente; el bloque finally igual corre.
 
-## Cómo funciona
+## Refactor
 
-`IDisposable` tiene un método, `Dispose()`, y la convención es que libere lo que el objeto posee. La sentencia `using` reconoce esa interfaz y construye un `try`/`finally` alrededor del ámbito.
-
-Hay dos formas:
-
-```csharp
-using (var session = new Session(log))
-{
-    // la sesión se libera aquí
-}
-
-using var other = new Session(log);
-// other se libera al final del bloque que lo contiene
-```
-
-`using var` es una declaración: la variable vive hasta el final del bloque actual, y ahí se libera. La forma con paréntesis hace explícito el ámbito y sirve cuando la variable debe liberarse antes.
-
-Liberar no es lo mismo que la recolección de basura. El GC reclama memoria administrada cuando le toca. `Dispose()` libera recursos que el GC no maneja: manejadores de archivo, sockets, conexiones a base de datos, bloqueos del sistema operativo. Por eso importa el momento.
+La declaración `using var` hace explícita la vida de la sesión, y el test cubre el comportamiento visible para quien llama. Ejecuta el test otra vez; no hace falta otro ayudante de limpieza.
 
 ## Repite con requisitos nuevos
 
@@ -183,7 +185,7 @@ public void Dispose()
 
 Verde. Una segunda llamada a `Dispose()` es inofensiva. La convención es que liberar pueda ocurrir más de una vez, sobre todo cuando un bloque `using` y un finalizador u otro dueño liberan el mismo recurso.
 
-## Refactor
+### Mantener clara la propiedad del recurso
 
 Algunas reglas mantienen clara la propiedad:
 

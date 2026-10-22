@@ -6,6 +6,24 @@ Some objects own a resource that must be released: a file handle, a socket, a da
 
 We will build a small session that records when it opens and closes. The finished solution is in `fundamentals/using`; if you are building it from scratch, use the same layout as the previous chapters: a class library in `src/UsingKeyword`, an MSTest project in `tests/UsingKeyword.Tests`, a solution and a project reference.
 
+## How it works
+
+`IDisposable` exposes `Dispose()` for releasing an object's resources. A `using` scope becomes a `try`/`finally`, so cleanup runs on normal exit and exceptions. `using var` lasts to the end of its enclosing block; the parenthesized form lets you choose a smaller scope. Garbage collection manages memory, while `Dispose()` releases resources such as file handles and sockets.
+
+```csharp
+using (var session = new Session(log))
+{
+    // session is disposed here
+}
+
+using var other = new Session(log);
+// other is disposed at the end of the enclosing block
+```
+
+## How to test
+
+Give a disposable object a log that records opening and disposal. Assert both that the object is disposed and that cleanup happened at the right point. A thrown exception and repeated disposal are separate lifecycle cases.
+
 ## Write the test first
 
 ```csharp
@@ -84,25 +102,9 @@ public static void Run(List<string> log, Action<Session> action)
 
 Green. At the end of `Run`, the compiler inserts a `finally` block that calls `session.Dispose()`. The method body can throw, return or fall through; the finally block still runs.
 
-## How it works
+## Refactor
 
-`IDisposable` has one method, `Dispose()`, and the convention is that it releases whatever the object owns. The `using` statement recognizes that interface and builds a `try`/`finally` around the scope.
-
-There are two spellings:
-
-```csharp
-using (var session = new Session(log))
-{
-    // session is disposed here
-}
-
-using var other = new Session(log);
-// other is disposed at the end of the enclosing block
-```
-
-`using var` is a declaration: the variable lives until the end of the current block, and that is where it is disposed. The parentheses form makes the scope explicit and is useful when the variable should be released earlier.
-
-Disposal is not the same as garbage collection. The GC reclaims managed memory when it gets around to it. `Dispose()` releases resources the GC does not manage: file handles, sockets, database connections, operating-system locks. That is why the timing matters.
+The `using var` declaration makes the session lifetime explicit, and the test covers the caller-visible behavior. Run the test again; no extra cleanup helper is needed.
 
 ## Repeat for new requirements
 
@@ -183,7 +185,7 @@ public void Dispose()
 
 Green. A second `Dispose()` call is harmless. The convention is that disposal can happen more than once, especially when a `using` block and a finalizer or another owner both release the resource.
 
-## Refactor
+### Keep resource ownership clear
 
 A few rules keep ownership clear:
 
