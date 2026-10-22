@@ -2,8 +2,15 @@ namespace HelloWorld;
 
 public class Greeter
 {
-    public string SayHello()
+    private const string EnglishHelloPrefix = "Hello, ";
+
+    public string SayHello(string name)
     {
-        return "Hello, World!";
+        if (string.IsNullOrEmpty(name))
+        {
+            name = "World";
+        }
+
+        return EnglishHelloPrefix + name;
     }
 }
