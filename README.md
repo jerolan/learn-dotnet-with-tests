@@ -22,7 +22,7 @@ This cycle encourages developers to write only the code necessary to pass tests,
 - **Enhance Your Design Skills**: TDD encourages you to think about the design of your application upfront, leading to more modular and flexible code.
 - **Become More Efficient**: While it might seem slower at first, TDD can save time by catching bugs early and reducing the need for debugging.
 
-## What Will You Learn?
+## Part 1: C# and .NET fundamentals
 
 ### C# fundamentals
 
