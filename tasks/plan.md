@@ -1,5 +1,8 @@
 # Implementation Plan: Phase 0 Scaffold
 
+> Phase 0 is complete. Its plan and verification notes remain below as history.
+> The active increment is Part 3 v15 SignalR.
+
 ## Overview
 Turn the flat root into the book skeleton with moves only. Foundations first, then moves, then README, then CI, then verification. Each task leaves the tree working. No chapter prose changes and no per-chapter solutions in this phase.
 
@@ -40,3 +43,37 @@ Turn the flat root into the book skeleton with moves only. Foundations first, th
 ## Open Questions
 - Same six questions as SPEC-phase0.md; human approval on flat layout, template path, CI SDK, README scope, commit split, placeholders.
 - Tasks tracked here in tasks/todo.md (default target, no external tracker designated).
+
+## Current Increment: Part 3 v15 SignalR
+
+### Overview
+Extend the TaskTracker from v14 with SignalR delivery for the task events
+already processed by its in-process queue. Keep the version independently
+runnable and preserve the existing MSTest, Moq and net6.0 stack.
+
+### Architecture Decisions
+- Copy v14 into `build-an-app/v15-signalr`; a project reference to another
+  chapter would violate the standalone-solution contract.
+- Broadcast from `TaskEventProcessor` through `IHubContext<TaskUpdatesHub>` so
+  the existing queue remains the single source of task events.
+- Require authentication on `/hubs/tasks`, matching the v14 task API.
+- Use the .NET SignalR client with TestServer long polling for an end-to-end
+  test of the event contract.
+- Keep the Part 4 SignalR sample as optional companion material on connection
+  lifecycle and delivery limits; v15 is the primary SignalR chapter.
+
+### Task List
+- Task 1: Create the standalone v15 solution and add authenticated event
+  broadcasting with owner-boundary tests.
+- Task 2: Write the bilingual v15 chapter and clarify the companion appendix.
+- Task 3: Add v15 to both indexes, point Part 4 coverage to v15, and publish
+  v15 from CI.
+
+### Checkpoint: Complete
+- The v15 focused tests pass.
+- Every solution passes `dotnet test`; chapter links and bilingual section
+  order resolve; CI uses v15 as its published API.
+
+### Risk
+The standalone snapshot necessarily adds the prior solution's source files.
+Keep the copy self-contained and limit behavioral changes to SignalR.

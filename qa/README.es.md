@@ -23,7 +23,7 @@ Esta parte cierra el roadmap. Los capítulos de preguntas responden dudas que no
 - 🟠 [NoSQL con MongoDB](nosql/nosql.es.md) ([EN](nosql/nosql.md)) - Guarda documentos en MongoDB, levántalo con Testcontainers y corrige un orden sensible a mayúsculas con una collation.
 - 🟠 [gRPC](grpc/grpc.es.md) ([EN](grpc/grpc.md)) - Define un contrato proto, genera el servicio y el cliente, y llámalo a través de TestServer.
 - 🟠 [GraphQL](graphql/graphql.es.md) ([EN](graphql/graphql.md)) - Publica una query y una mutation sobre un endpoint y prueba los documentos por HTTP.
-- 🟠 [Actualizaciones en tiempo real con SignalR](signalr/signalr.es.md) ([EN](signalr/signalr.md)) - Empuja una tarea creada a un cliente conectado y prueba el hub a través de TestServer.
+- 🟠 [Ciclo de vida y límites de entrega de SignalR](signalr/signalr.es.md) ([EN](signalr/signalr.md)) - Complementa la v15 de la Parte 3 y se enfoca en el ciclo de vida de la conexión y los límites de entrega.
 - 🟠 [AsyncAPI](asyncapi/asyncapi.es.md) ([EN](asyncapi/asyncapi.md)) - Describe el evento TaskCreated como contrato y valídalo con la CLI oficial.
 - 🟠 [Bibliotecas SDK](sdk-libraries/sdk-libraries.es.md) ([EN](sdk-libraries/sdk-libraries.md)) - Construye un cliente HTTP tipado, pruébalo con un stub handler y empaquétalo como paquete NuGet.
 - 🟠 [DevOps e infraestructura como código](devops-iac/devops-iac.es.md) ([EN](devops-iac/devops-iac.md)) - Compila una plantilla Bicep, dale una identidad a la app y lee secretos desde un vault.
@@ -39,7 +39,7 @@ Esta parte cierra el roadmap. Los capítulos de preguntas responden dudas que no
 | Unit testing: Bogus | [Datos de test con Bogus](test-data-bogus/test-data-bogus.es.md) | cubierto |
 | Integration testing: WebApplicationFactory, TestServer | [Tests de aceptación](../testing/acceptance-tests/acceptance-tests.es.md), [v4](../build-an-app/v4-ef-core/v4-ef-core.es.md) | cubierto |
 | Integration testing: Respawn, Testcontainers, Docker | [Herramientas de integración](integration-testing-tools/integration-testing-tools.es.md) | cubierto |
-| ASP.NET Core básico | [v1](../build-an-app/v1-intro/v1-intro.es.md) a [v14](../build-an-app/v14-cqrs/v14-cqrs.es.md) | cubierto |
+| ASP.NET Core básico | [v1](../build-an-app/v1-intro/v1-intro.es.md) a [v15](../build-an-app/v15-signalr/v15-signalr.es.md) | cubierto |
 | RDBMS, SQL, EF Core, Dapper | [v4](../build-an-app/v4-ef-core/v4-ef-core.es.md), [v5](../build-an-app/v5-dapper/v5-dapper.es.md) | cubierto |
 | APIs REST, OpenAPI/Swagger | [v2](../build-an-app/v2-json-routing/v2-json-routing.es.md), [v12](../build-an-app/v12-openapi/v12-openapi.es.md) | cubierto |
 | AsyncAPI | [AsyncAPI](asyncapi/asyncapi.es.md) | cubierto |
@@ -48,7 +48,7 @@ Esta parte cierra el roadmap. Los capítulos de preguntas responden dudas que no
 | Mensajería | [v11](../build-an-app/v11-messaging-scheduling/v11-messaging-scheduling.es.md) | cubierto |
 | Scheduling de tareas | [v11](../build-an-app/v11-messaging-scheduling/v11-messaging-scheduling.es.md) | cubierto |
 | Bibliotecas .NET | [Bibliotecas SDK](sdk-libraries/sdk-libraries.es.md) | cubierto |
-| SignalR | [Actualizaciones en tiempo real con SignalR](signalr/signalr.es.md) | cubierto |
+| SignalR | [Integración principal: v15](../build-an-app/v15-signalr/v15-signalr.es.md); el [apéndice complementario](signalr/signalr.es.md) cubre el ciclo de vida del hub y los límites de entrega | cubierto |
 | Snapshot, E2E, rendimiento | [Snapshot](snapshot-verify/snapshot-verify.es.md), [Playwright](e2e-playwright/e2e-playwright.es.md), [NBomber](performance-nbomber/performance-nbomber.es.md) | cubierto |
 | Contenedores, CI/CD, monitoreo, nube, DevOps | [Contenedores](containers/containers.es.md), [CI/CD](ci-cd/ci-cd.es.md), [Monitoreo](monitoring-telemetry/monitoring-telemetry.es.md), [Nube](cloud/cloud.es.md), [DevOps](devops-iac/devops-iac.es.md) | cubierto |
 | Streaming, NoSQL, gRPC, GraphQL | [gRPC](grpc/grpc.es.md), [GraphQL](graphql/graphql.es.md), [NoSQL](nosql/nosql.es.md), [Streaming](streaming/streaming.es.md) | cubierto |

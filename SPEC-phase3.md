@@ -31,12 +31,21 @@
 | 12 | `v12-openapi` | Swashbuckle, XML comments, examples and a generated OpenAPI document | A test reads the document and finds the task paths and schemas |
 | 13 | `v13-resilience` | Polly retry and timeout around an outbound notifier | A fake handler proves retries and a bounded failure |
 | 14 | `v14-cqrs` | MediatR commands and queries with handlers | Tests cover handlers directly and through the API |
+| 15 | `v15-signalr` | SignalR broadcasts task events already processed by the app's event queue | An authenticated SignalR client receives a created task; unauthenticated negotiation is rejected |
+
+## v15 SignalR integration
+
+- Keep v14's API, storage, authentication and event queue as the starting point.
+- Map an authenticated `/hubs/tasks` endpoint.
+- Have `TaskEventProcessor` send processed task events through `IHubContext<TaskUpdatesHub>`; do not publish a second event directly from the HTTP endpoint.
+- Verify the push with the .NET SignalR client through `WebApplicationFactory` and TestServer's long-polling transport.
+- Keep the existing Part 4 SignalR sample as a companion appendix about hub lifecycle and delivery limits; Part 3 v15 is the book's primary SignalR path.
 
 ## Completion
 
-- All 14 versions build and pass `dotnet test` on their own.
+- All 15 versions build and pass `dotnet test` on their own.
 - Every version has the bilingual pair and is indexed in the README.
-- The v14 app runs end to end.
+- The v15 app runs end to end, including an authenticated SignalR client receiving a task event.
 - CI is green on the full tree.
 
 ## Deliberate simplifications
@@ -44,4 +53,5 @@
 - SQLite is the database for the book. The SQL chapter uses the same file so the examples stay runnable without a server.
 - The JWT uses a symmetric key from configuration for teaching. A production deployment would use an identity provider and key rotation.
 - The message queue is in process. A production deployment would use a broker; the channel keeps the lesson deterministic and testable.
+- SignalR uses the in-process event consumer and one server instance. The companion appendix explains delivery and scaling limits.
 

@@ -24,7 +24,7 @@ Close the roadmap with LGWT-style Q&A chapters and the 🟠 appendices. Every ro
 | Unit Testing: Bogus | Appendix `test-data-bogus` | covered |
 | Integration Testing: WebApplicationFactory/TestServer | Part 2 and `v4-ef-core` | covered |
 | Integration Testing: Respawn, Testcontainers, Docker | Appendix `integration-testing-tools` | covered |
-| ASP.NET Core basics | Part 3, `v1` to `v14` | covered |
+| ASP.NET Core basics | Part 3, `v1` to `v15` | covered |
 | RDBMS, SQL, EF Core, Dapper | Part 3, `v4` and `v5` | covered |
 | REST APIs, OpenAPI/Swagger | Part 3, `v2` and `v12` | covered |
 | AsyncAPI | Appendix `asyncapi` | covered |
@@ -33,7 +33,7 @@ Close the roadmap with LGWT-style Q&A chapters and the 🟠 appendices. Every ro
 | Messaging | Part 3, `v11` | covered |
 | Task scheduling | Part 3, `v11` | covered |
 | .NET libraries | Appendix `sdk-libraries` | covered |
-| SignalR | Appendix `signalr` | covered |
+| SignalR | Part 3 `v15-signalr`; companion appendix `signalr` for hub lifecycle and delivery limits | covered |
 | Snapshot testing (Verify) | Appendix `snapshot-verify` | covered |
 | E2E (Playwright) | Appendix `e2e-playwright` | covered |
 | Performance (K6/NBomber) | Appendix `performance-nbomber` | covered |
@@ -60,7 +60,7 @@ The appendices are grouped by concern, not by difficulty:
 
 - Testing tools: `test-data-bogus`, `integration-testing-tools`, `snapshot-verify`, `e2e-playwright`, `performance-nbomber`.
 - Delivery: `containers`, `ci-cd`, `monitoring-telemetry`, `cloud`, `devops-iac`.
-- Protocols and storage: `grpc`, `graphql`, `signalr`, `asyncapi`, `streaming`, `nosql`.
+- Protocols and storage: `grpc`, `graphql`, `asyncapi`, `streaming`, `nosql`; the SignalR appendix supplements the Part 3 integration chapter.
 - Libraries: `sdk-libraries`.
 
 ## Completion

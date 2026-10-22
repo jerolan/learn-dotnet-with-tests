@@ -85,6 +85,7 @@ One API, grown version by version. Each version is a standalone solution with it
 12. 🟢 [v12: OpenAPI](build-an-app/v12-openapi/v12-openapi.md) ([ES](build-an-app/v12-openapi/v12-openapi.es.md)) - Generate the API document, declare Bearer auth and test the contract.
 13. 🟢 [v13: Resilience](build-an-app/v13-resilience/v13-resilience.md) ([ES](build-an-app/v13-resilience/v13-resilience.es.md)) - Retry transient notifier failures with a bounded Polly policy.
 14. 🟢 [v14: CQRS with MediatR](build-an-app/v14-cqrs/v14-cqrs.md) ([ES](build-an-app/v14-cqrs/v14-cqrs.es.md)) - Move use cases into command and query handlers while keeping HTTP at the edge.
+15. 🟢 [v15: Real-time updates with SignalR](build-an-app/v15-signalr/v15-signalr.md) ([ES](build-an-app/v15-signalr/v15-signalr.es.md)) - Broadcast queued task events through an authenticated hub and test delivery with the .NET client.
 
 ## Part 4: Q&A and appendices
 
@@ -101,7 +102,7 @@ The closing part answers the questions that do not need a new project and maps t
 - 🟠 [Containers for the TaskTracker API](qa/containers/containers.md) ([ES](qa/containers/containers.es.md)) - Build a multi-stage image, persist SQLite on a volume and check OpenAPI from outside.
 - 🟠 [Test Data with Bogus](qa/test-data-bogus/test-data-bogus.md) ([ES](qa/test-data-bogus/test-data-bogus.es.md)) - Generate valid orders from seeded rules and keep literal values for the edges.
 - 🟠 [CI/CD beyond the test job](qa/ci-cd/ci-cd.md) ([ES](qa/ci-cd/ci-cd.es.md)) - Cache packages, keep test results and publish the API as an artifact.
-- 🟠 [Real-Time Updates with SignalR](qa/signalr/signalr.md) ([ES](qa/signalr/signalr.es.md)) - Push a created task to a connected client and test the hub through TestServer.
+- 🟠 [SignalR Hub Lifecycle and Delivery Limits](qa/signalr/signalr.md) ([ES](qa/signalr/signalr.es.md)) - Companion to Part 3 v15, focused on connection lifecycle and delivery limits.
 - 🟠 [gRPC](qa/grpc/grpc.md) ([ES](qa/grpc/grpc.es.md)) - Define a proto contract, generate the service and client, and call it through TestServer.
 - 🟠 [GraphQL](qa/graphql/graphql.md) ([ES](qa/graphql/graphql.es.md)) - Publish a query and a mutation over one endpoint and test the documents over HTTP.
 - 🟠 [SDK Libraries](qa/sdk-libraries/sdk-libraries.md) ([ES](qa/sdk-libraries/sdk-libraries.es.md)) - Build a typed HTTP client, test it with a stub handler and pack it as a NuGet package.

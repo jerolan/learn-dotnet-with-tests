@@ -1,4 +1,32 @@
-# Todo: Phase 0 Scaffold
+# Todo: Book build and alignment
+
+> The Phase 0 tasks below are historical and complete; see `SPEC-phase1.md`.
+
+## Active increment: Part 3 v15 SignalR
+
+### Task 1: Add the standalone SignalR version
+- [x] Copy the v14 solution into `build-an-app/v15-signalr` so it remains independent.
+- [x] Broadcast queued task events through an authenticated SignalR hub.
+- [x] Verify an authenticated client receives a created-task event and an anonymous client cannot negotiate the hub (34 tests pass).
+- Verify: `dotnet test build-an-app/v15-signalr/TaskTracker.sln`.
+- Files: `build-an-app/v15-signalr/**` (standalone snapshot plus SignalR changes).
+- Dependency: none.
+
+### Task 2: Write the chapter pair and clarify the companion appendix
+- [x] Add the English and Spanish v15 chapters in template order with the LGWT WebSockets rhythm.
+- [x] Distinguish the existing Part 4 SignalR sample as supplementary material.
+- Verify: section-order and bilingual-link checks.
+- Files: v15 chapter pair and `qa/signalr/signalr.md`, `qa/signalr/signalr.es.md`.
+- Dependency: Task 1.
+
+### Task 3: Align navigation and CI
+- [x] Index v15 as 🟢 and update Part 4 coverage in both languages.
+- [x] Publish the latest TaskTracker version from CI.
+- Verify: README link check and all-solution `dotnet test`.
+- Files: `README.md`, `qa/README.md`, `qa/README.es.md`, `.github/workflows/ci.yml`.
+- Dependency: Tasks 1-2.
+
+## Historical: Phase 0 Scaffold (complete)
 
 ## Task 1: Skeleton folders plus template
 Description: Create fundamentals, testing, build-an-app, qa folders with gitkeep placeholders and add the LGWT chapter template.

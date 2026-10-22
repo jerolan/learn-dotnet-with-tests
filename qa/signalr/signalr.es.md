@@ -4,6 +4,8 @@
 
 Un cliente que necesita saber cuándo aparece una tarea puede hacer polling a `GET /tasks` cada pocos segundos. La actualización llega tarde, casi todas las peticiones devuelven la misma lista y el servidor paga cada sondeo. SignalR mantiene una conexión abierta y deja que el servidor empuje el cambio.
 
+La v15 de la Parte 3 integra SignalR con la cola de eventos y la autenticación existentes de TaskTracker. Este apéndice complementa ese capítulo con una API más pequeña para enfocarse en el ciclo de vida del hub y los límites de entrega.
+
 Este apéndice agrega un hub a la API mínima, difunde una tarea creada a todos los clientes conectados y prueba el push con un `HubConnection` real contra `WebApplicationFactory`.
 
 ## El hub

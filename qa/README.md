@@ -23,7 +23,7 @@ This part closes the roadmap. The Q&A chapters answer the questions that do not 
 - 🟠 [NoSQL with MongoDB](nosql/nosql.md) ([ES](nosql/nosql.es.md)) - Store documents in MongoDB, start it with Testcontainers and fix a case-sensitive sort with a collation.
 - 🟠 [gRPC](grpc/grpc.md) ([ES](grpc/grpc.es.md)) - Define a proto contract, generate the service and client, and call it through TestServer.
 - 🟠 [GraphQL](graphql/graphql.md) ([ES](graphql/graphql.es.md)) - Publish a query and a mutation over one endpoint and test the documents over HTTP.
-- 🟠 [Real-time updates with SignalR](signalr/signalr.md) ([ES](signalr/signalr.es.md)) - Push a created task to a connected client and test the hub through TestServer.
+- 🟠 [SignalR hub lifecycle and delivery limits](signalr/signalr.md) ([ES](signalr/signalr.es.md)) - Companion to Part 3 v15, focused on connection lifecycle and delivery limits.
 - 🟠 [AsyncAPI](asyncapi/asyncapi.md) ([ES](asyncapi/asyncapi.es.md)) - Describe the TaskCreated event as a contract and validate it with the official CLI.
 - 🟠 [SDK libraries](sdk-libraries/sdk-libraries.md) ([ES](sdk-libraries/sdk-libraries.es.md)) - Build a typed HTTP client, test it with a stub handler and pack it as a NuGet package.
 - 🟠 [DevOps and infrastructure as code](devops-iac/devops-iac.md) ([ES](devops-iac/devops-iac.es.md)) - Compile a Bicep template, give the app an identity and read secrets from a vault.
@@ -39,7 +39,7 @@ This part closes the roadmap. The Q&A chapters answer the questions that do not 
 | Unit Testing: Bogus | [Test data with Bogus](test-data-bogus/test-data-bogus.md) | covered |
 | Integration Testing: WebApplicationFactory, TestServer | [Acceptance Tests](../testing/acceptance-tests/acceptance-tests.md), [v4](../build-an-app/v4-ef-core/v4-ef-core.md) | covered |
 | Integration Testing: Respawn, Testcontainers, Docker | [Integration tools](integration-testing-tools/integration-testing-tools.md) | covered |
-| ASP.NET Core basics | [v1](../build-an-app/v1-intro/v1-intro.md) to [v14](../build-an-app/v14-cqrs/v14-cqrs.md) | covered |
+| ASP.NET Core basics | [v1](../build-an-app/v1-intro/v1-intro.md) to [v15](../build-an-app/v15-signalr/v15-signalr.md) | covered |
 | RDBMS, SQL, EF Core, Dapper | [v4](../build-an-app/v4-ef-core/v4-ef-core.md), [v5](../build-an-app/v5-dapper/v5-dapper.md) | covered |
 | REST APIs, OpenAPI/Swagger | [v2](../build-an-app/v2-json-routing/v2-json-routing.md), [v12](../build-an-app/v12-openapi/v12-openapi.md) | covered |
 | AsyncAPI | [AsyncAPI](asyncapi/asyncapi.md) | covered |
@@ -48,7 +48,7 @@ This part closes the roadmap. The Q&A chapters answer the questions that do not 
 | Messaging | [v11](../build-an-app/v11-messaging-scheduling/v11-messaging-scheduling.md) | covered |
 | Task scheduling | [v11](../build-an-app/v11-messaging-scheduling/v11-messaging-scheduling.md) | covered |
 | .NET libraries | [SDK libraries](sdk-libraries/sdk-libraries.md) | covered |
-| SignalR | [Real-time updates with SignalR](signalr/signalr.md) | covered |
+| SignalR | [Primary integration: v15](../build-an-app/v15-signalr/v15-signalr.md); [companion appendix](signalr/signalr.md) covers hub lifecycle and delivery limits | covered |
 | Snapshot, E2E, performance | [Snapshot](snapshot-verify/snapshot-verify.md), [Playwright](e2e-playwright/e2e-playwright.md), [NBomber](performance-nbomber/performance-nbomber.md) | covered |
 | Containers, CI/CD, monitoring, cloud, DevOps | [Containers](containers/containers.md), [CI/CD](ci-cd/ci-cd.md), [Monitoring](monitoring-telemetry/monitoring-telemetry.md), [Cloud](cloud/cloud.md), [DevOps](devops-iac/devops-iac.md) | covered |
 | Streaming, NoSQL, gRPC, GraphQL | [gRPC](grpc/grpc.md), [GraphQL](graphql/graphql.md), [NoSQL](nosql/nosql.md), [Streaming](streaming/streaming.md) | covered |
