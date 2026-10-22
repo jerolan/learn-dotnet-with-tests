@@ -6,7 +6,9 @@ A JSON endpoint is easy to call from a browser and easy to read in a log. For a 
 
 gRPC starts from a `.proto` file. The tooling generates a server base class and a client from that file, and the messages travel as binary over HTTP/2. This appendix defines a small task service, calls it through `WebApplicationFactory`, and checks both the success path and the not-found status.
 
-## The contract
+## How it works
+
+The `.proto` file is the shared wire contract. Field numbers identify values on the wire; the generated C# names make those values convenient to use from a typed client.
 
 `src/TaskApi/Protos/tasks.proto`:
 
@@ -38,7 +40,7 @@ message TaskReply {
 
 The numbers are the wire format. A client and a server agree on field `1` meaning `id`; the names are for the generated code and the logs. Never renumber a field that has shipped, and never reuse a number for a different meaning. Remove a field by reserving its number.
 
-## Generate the code
+### Generate the code
 
 The server project references `Grpc.AspNetCore` and includes the proto:
 
@@ -54,7 +56,7 @@ The server project references `Grpc.AspNetCore` and includes the proto:
 
 `GrpcServices="Both"` generates the server base class and the client in the same assembly, which keeps this appendix to one project. A real system puts the messages and the client in a contracts package, so the server and its callers version that package together.
 
-## The service
+### The service
 
 `src/TaskApi/TaskGrpcService.cs`:
 
@@ -91,7 +93,7 @@ public sealed class TaskGrpcService : TaskService.TaskServiceBase
 
 `RpcException` with a `StatusCode` becomes the gRPC status the client sees. It is not an HTTP 404 in the response body; the status travels in the HTTP/2 trailers.
 
-## The server
+### The server
 
 `src/TaskApi/Program.cs`:
 
@@ -99,12 +101,10 @@ public sealed class TaskGrpcService : TaskService.TaskServiceBase
 using TaskApi;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddGrpc();
 builder.Services.AddSingleton<TaskGrpcService>();
 
 var app = builder.Build();
 
-app.MapGrpcService<TaskGrpcService>();
 app.MapGet("/", () => Results.Text("gRPC endpoint: use a gRPC client."));
 
 app.Run();
@@ -116,7 +116,15 @@ public partial class Program
 
 The singleton registration is what makes the dictionary survive between calls. Without it, the service is created per call and each request starts with an empty dictionary. A real service would keep its data in a database; the lifetime still matters for any dependency it holds.
 
+At the first test checkpoint, the service is registered but gRPC and its route are not configured yet.
+
+## How to test
+
+`WebApplicationFactory` supplies an in-memory server, and the gRPC channel routes through its `TestServer` handler. No port or external service is needed. Run `dotnet test Grpc.sln` from this appendix folder.
+
 ## Write the test first
+
+The contract and service are already in place; this first test proves that a generated client can create a task and read it back.
 
 `tests/TaskApi.Tests/TaskGrpcTests.cs`:
 
@@ -146,7 +154,7 @@ _client = new TaskService.TaskServiceClient(_channel);
 
 `CreateHandler` routes the channel through `TestServer`; no port is opened. gRPC needs HTTP/2, and the in-memory handler supports it.
 
-## Try to run it
+## Try to run the test
 
 With the proto generated but the service not mapped, both calls fail:
 
@@ -154,7 +162,20 @@ With the proto generated but the service not mapped, both calls fail:
 Grpc.Core.RpcException: Status(StatusCode="Unimplemented", Detail="Bad gRPC response. HTTP status code: 404")
 ```
 
-The client speaks gRPC; the server has no gRPC endpoint, so the request falls through to a 404 and the client reports `Unimplemented`. Add `app.MapGrpcService<TaskGrpcService>()`; the missing `AddGrpc()` fails earlier, when the service cannot be constructed.
+The client speaks gRPC; the server has no gRPC endpoint, so the request falls through to a 404 and the client reports `Unimplemented`.
+
+## Write the minimal amount of code for the test to run and check the failing test output
+
+Register gRPC and map the existing service:
+
+```csharp
+builder.Services.AddGrpc();
+app.MapGrpcService<TaskGrpcService>();
+```
+
+Without `AddGrpc()`, the service cannot be constructed. With both registrations, the test reaches the implementation.
+
+## Write enough code to make it pass
 
 Run the tests:
 
@@ -162,9 +183,9 @@ Run the tests:
 Passed!  - Failed:     0, Passed:     2, Skipped:     0, Total:     2, Duration: 387 ms
 ```
 
-The second test asks for a random id and expects `StatusCode.NotFound` from the `RpcException`.
+## Refactor
 
-## What the contract buys
+### What the contract buys
 
 - The generated client has typed methods and messages. A missing field is a compile error, not a `null` discovered in production.
 - The payload is binary and smaller than the equivalent JSON, and HTTP/2 multiplexes calls over one connection.
@@ -173,7 +194,7 @@ The second test asks for a random id and expects `StatusCode.NotFound` from the 
 
 The same proto also describes streaming: server streaming, client streaming and bidirectional streams. This appendix sticks to unary calls because they map cleanly onto the request and response the reader already knows.
 
-## Refactor for production
+### Production concerns
 
 - Move the proto and the client into a versioned contracts package. Do not let every consumer generate its own copy from a file in the server repository.
 - Add a deadline to every client call, and pass `context.CancellationToken` into database work.
@@ -182,6 +203,23 @@ The same proto also describes streaming: server streaming, client streaming and 
 - Run over TLS. HTTP/2 without TLS is not supported by browsers and is not a safe default between hosts.
 - Set maximum message sizes deliberately; the default is a limit, not a suggestion.
 - Health checks and load balancing belong to the hosting platform; a gRPC service behind a plain L7 proxy may need HTTP/2 end to end.
+
+## Repeat for new requirements
+
+The next requirement is to return the protocol's not-found status for an unknown id:
+
+```csharp
+[TestMethod]
+public async Task MissingTaskReturnsNotFound()
+{
+    var error = await Assert.ThrowsExceptionAsync<RpcException>(async () =>
+        await _client.GetAsync(new GetTaskRequest { Id = Guid.NewGuid().ToString() }));
+
+    Assert.AreEqual(StatusCode.NotFound, error.StatusCode);
+}
+```
+
+The service already maps a missing id to `StatusCode.NotFound`, so the new test passes without changing the transport contract.
 
 ## What is deferred
 
