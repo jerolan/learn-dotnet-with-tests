@@ -14,7 +14,7 @@ This part closes the roadmap. The Q&A chapters answer the questions that do not 
 - 🟠 End-to-end testing with Playwright. *Planned.*
 - 🟠 Performance testing with NBomber or K6. *Planned.*
 - 🟠 Test data with Bogus. *Planned.*
-- 🟠 Integration testing tools: Respawn, Testcontainers and Docker. *Planned.*
+- 🟠 [Integration testing tools: Respawn, Testcontainers and Docker](integration-testing-tools/integration-testing-tools.md) ([ES](integration-testing-tools/integration-testing-tools.es.md)) - Start PostgreSQL in Docker and reset it between tests.
 - 🟠 Containers for the TaskTracker API. *Planned.*
 - 🟠 CI/CD beyond the single test job. *Planned.*
 - 🟠 [Monitoring and telemetry](monitoring-telemetry/monitoring-telemetry.md) ([ES](monitoring-telemetry/monitoring-telemetry.es.md)) - Record a tagged counter and capture it with a MeterListener.
@@ -38,7 +38,7 @@ This part closes the roadmap. The Q&A chapters answer the questions that do not 
 | Unit Testing: MSTest, Moq | [Mocking](../fundamentals/mock/mock.md), [Part 2](../testing/acceptance-tests/acceptance-tests.md) | covered |
 | Unit Testing: Bogus | Bogus appendix | planned |
 | Integration Testing: WebApplicationFactory, TestServer | [Acceptance Tests](../testing/acceptance-tests/acceptance-tests.md), [v4](../build-an-app/v4-ef-core/v4-ef-core.md) | covered |
-| Integration Testing: Respawn, Testcontainers, Docker | Integration tools appendix | planned |
+| Integration Testing: Respawn, Testcontainers, Docker | [Integration tools](integration-testing-tools/integration-testing-tools.md) | covered |
 | ASP.NET Core basics | [v1](../build-an-app/v1-intro/v1-intro.md) to [v14](../build-an-app/v14-cqrs/v14-cqrs.md) | covered |
 | RDBMS, SQL, EF Core, Dapper | [v4](../build-an-app/v4-ef-core/v4-ef-core.md), [v5](../build-an-app/v5-dapper/v5-dapper.md) | covered |
 | REST APIs, OpenAPI/Swagger | [v2](../build-an-app/v2-json-routing/v2-json-routing.md), [v12](../build-an-app/v12-openapi/v12-openapi.md) | covered |

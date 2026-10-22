@@ -14,7 +14,7 @@ Esta parte cierra el roadmap. Los capítulos de preguntas responden dudas que no
 - 🟠 Tests end-to-end con Playwright. *Planeado.*
 - 🟠 Tests de rendimiento con NBomber o K6. *Planeado.*
 - 🟠 Datos de test con Bogus. *Planeado.*
-- 🟠 Herramientas de integración: Respawn, Testcontainers y Docker. *Planeado.*
+- 🟠 [Herramientas de integración: Respawn, Testcontainers y Docker](integration-testing-tools/integration-testing-tools.es.md) ([EN](integration-testing-tools/integration-testing-tools.md)) - Levanta PostgreSQL en Docker y resetea entre tests.
 - 🟠 Contenedores para la API TaskTracker. *Planeado.*
 - 🟠 CI/CD más allá del job único de tests. *Planeado.*
 - 🟠 [Monitoreo y telemetría](monitoring-telemetry/monitoring-telemetry.es.md) ([EN](monitoring-telemetry/monitoring-telemetry.md)) - Registra un contador con tags y captúralo con un MeterListener.
@@ -38,7 +38,7 @@ Esta parte cierra el roadmap. Los capítulos de preguntas responden dudas que no
 | Unit testing: MSTest, Moq | [Mocking](../fundamentals/mock/mock.es.md), [Parte 2](../testing/acceptance-tests/acceptance-tests.es.md) | cubierto |
 | Unit testing: Bogus | Apéndice de Bogus | planeado |
 | Integration testing: WebApplicationFactory, TestServer | [Tests de aceptación](../testing/acceptance-tests/acceptance-tests.es.md), [v4](../build-an-app/v4-ef-core/v4-ef-core.es.md) | cubierto |
-| Integration testing: Respawn, Testcontainers, Docker | Apéndice de herramientas de integración | planeado |
+| Integration testing: Respawn, Testcontainers, Docker | [Herramientas de integración](integration-testing-tools/integration-testing-tools.es.md) | cubierto |
 | ASP.NET Core básico | [v1](../build-an-app/v1-intro/v1-intro.es.md) a [v14](../build-an-app/v14-cqrs/v14-cqrs.es.md) | cubierto |
 | RDBMS, SQL, EF Core, Dapper | [v4](../build-an-app/v4-ef-core/v4-ef-core.es.md), [v5](../build-an-app/v5-dapper/v5-dapper.es.md) | cubierto |
 | APIs REST, OpenAPI/Swagger | [v2](../build-an-app/v2-json-routing/v2-json-routing.es.md), [v12](../build-an-app/v12-openapi/v12-openapi.es.md) | cubierto |
