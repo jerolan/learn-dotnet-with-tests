@@ -243,5 +243,5 @@ What we have covered:
 - A restart test that proves persistence across app instances.
 - Scoped contexts, `AsNoTracking()` and a design-time factory.
 
-Next: v5: Dapper read queries.
+Next: [v5: Dapper read queries](../v5-dapper/v5-dapper.md).
 

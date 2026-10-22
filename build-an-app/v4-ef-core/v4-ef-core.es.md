@@ -243,5 +243,5 @@ Lo que cubrimos:
 - Un test de reinicio que prueba la persistencia entre instancias.
 - Contextos scoped, `AsNoTracking()` y una factory de diseño.
 
-Siguiente: v5: consultas de lectura con Dapper.
+Siguiente: [v5: consultas de lectura con Dapper](../v5-dapper/v5-dapper.es.md).
 
