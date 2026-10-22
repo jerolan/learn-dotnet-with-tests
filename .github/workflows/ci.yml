@@ -15,4 +15,8 @@ jobs:
           dotnet-version: 6.0.x
       - name: Restore and test
         run: |
-          for sln in $(find . -name "*.sln"); do echo Testing $sln; dotnet test "$sln"; done
+          set -euo pipefail
+          for sln in $(find . -name "*.sln" -print); do
+            echo "Testing $sln"
+            dotnet test "$sln" --nologo
+          done
