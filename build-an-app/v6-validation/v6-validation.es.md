@@ -146,5 +146,5 @@ Lo que cubrimos:
 - Un mapa `errors` estándar que los clientes pueden consumir.
 - Sacar la validación del handler sin perder el comportamiento testeado.
 
-Siguiente: v7: autenticación con JWT.
+Siguiente: [v7: autenticación con JWT](../v7-auth/v7-auth.es.md).
 

@@ -146,5 +146,5 @@ What we have covered:
 - A standard `errors` map that clients can consume.
 - Moving validation out of the handler without losing the tested behavior.
 
-Next: v7: JWT authentication.
+Next: [v7: JWT authentication](../v7-auth/v7-auth.md).
 
