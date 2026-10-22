@@ -74,6 +74,9 @@
 - Part 1 `mock`: English and Spanish pairs now contain the required sections
   in order. `mise exec dotnet@10.0.402 -- dotnet test
   fundamentals/mock/Mock.sln -m:1` passed 2 tests.
+- Part 1 `queriable`: English and Spanish pairs now contain the required
+  sections in order. `mise exec dotnet@10.0.402 -- dotnet test
+  fundamentals/queriable/Queriable.sln -m:1` passed 3 tests.
 
 ## Completed increment: Part 4 delivery references
 

@@ -2,9 +2,17 @@
 
 [You can find all the code for this chapter here](https://github.com/jerolan/learn-dotnet-with-tests/tree/main/fundamentals/queriable)
 
-`IQueryable<T>` extends `IEnumerable<T>` with two members that matter: `Expression` and `Provider`. A LINQ query over an `IQueryable` is built as an expression tree, and the provider decides how to execute it. With Entity Framework Core, the provider translates the tree to SQL.
+`IQueryable<T>` exposes an expression tree, an element type and a provider. A LINQ query over it describes work as data, and the provider decides how to execute it. With Entity Framework Core, the provider translates the tree to SQL.
 
 We will build a repository that returns `IQueryable<Order>` and a service that composes a filter. The finished solution is in `fundamentals/queriable`; if you are building it from scratch, use the same layout as the previous chapters: a class library in `src/Queriable`, an MSTest project in `tests/Queriable.Tests`, a solution and a project reference.
+
+## How it works
+
+`IQueryable<T>` adds `Expression`, `ElementType` and `Provider` to the enumerable interface. `Queryable.Where` stores its lambda in an expression tree instead of compiling it to a delegate. A provider can inspect that tree and translate it; `AsQueryable()` over a list still runs in memory through LINQ to Objects.
+
+## How to test
+
+Use an in-memory sequence with `AsQueryable()` to test query behavior and inspect its expression tree. Enumerate only when the test needs results, so it can also verify that the source stays deferred.
 
 ## Write the test first
 
@@ -100,17 +108,9 @@ public static class OrderService
 
 Green. `AsQueryable()` wraps the sequence in an `EnumerableQuery<Order>`, the provider for LINQ to Objects. The service calls `Where` on the queryable; the result is another queryable.
 
-## How it works
+## Refactor
 
-`IQueryable<T>` has three members beyond `IEnumerable<T>`:
-
-- `Expression` is the expression tree that describes the query.
-- `Provider` is the object that knows how to execute that tree.
-- `ElementType` is the type of the elements.
-
-When you call `Where` on an `IQueryable<T>`, the compiler binds to `Queryable.Where` instead of `Enumerable.Where`. The lambda becomes part of an expression tree, not a compiled delegate. That is why a provider can inspect it, translate it to SQL, and send it to a database.
-
-With `AsQueryable()` over a list, the provider is still LINQ to Objects. The expression is executed in memory. The type is the same one EF Core exposes through `DbSet<T>`; the provider is what changes.
+The service composes one filter and returns the queryable so its provider can execute it. Run the test again; there is no extra layer to remove.
 
 ## Repeat for new requirements
 
@@ -187,7 +187,7 @@ public OrderRepository(IEnumerable<Order> orders)
 
 Green. `Query()` returns a queryable without touching the source; the source is enumerated when the query is enumerated. That is the same deferred execution as `IEnumerable`, with the expression tree kept for the provider.
 
-## Refactor
+### Choosing the query boundary
 
 The code is small; the boundary is the interesting part.
 

@@ -2,9 +2,17 @@
 
 [Encuentras todo el código de este capítulo aquí](https://github.com/jerolan/learn-dotnet-with-tests/tree/main/fundamentals/queriable)
 
-`IQueryable<T>` extiende `IEnumerable<T>` con dos miembros que importan: `Expression` y `Provider`. Una consulta LINQ sobre un `IQueryable` se construye como un árbol de expresión, y el proveedor decide cómo ejecutarlo. Con Entity Framework Core, el proveedor traduce el árbol a SQL.
+`IQueryable<T>` expone un árbol de expresión, el tipo de los elementos y un proveedor. Una consulta LINQ sobre esta interfaz describe trabajo como datos, y el proveedor decide cómo ejecutarla. Con Entity Framework Core, el proveedor traduce el árbol a SQL.
 
 Vamos a construir un repositorio que devuelve `IQueryable<Order>` y un servicio que compone un filtro. La solución terminada está en `fundamentals/queriable`; si la estás armando desde cero, usa la misma estructura que en los capítulos anteriores: una biblioteca de clases en `src/Queriable`, un proyecto de MSTest en `tests/Queriable.Tests`, una solución y una referencia entre proyectos.
+
+## Cómo funciona
+
+`IQueryable<T>` agrega `Expression`, `ElementType` y `Provider` a la interfaz enumerable. `Queryable.Where` guarda su lambda en un árbol de expresión en vez de compilarla como delegado. Un proveedor puede inspeccionar ese árbol y traducirlo; `AsQueryable()` sobre una lista sigue ejecutándose en memoria con LINQ to Objects.
+
+## Cómo probarlo
+
+Usa una secuencia en memoria con `AsQueryable()` para probar el comportamiento y revisar el árbol de expresión. Enumera solo cuando el test necesite resultados, así también puede comprobar que la fuente queda diferida.
 
 ## Escribe primero el test
 
@@ -100,17 +108,9 @@ public static class OrderService
 
 Verde. `AsQueryable()` envuelve la secuencia en un `EnumerableQuery<Order>`, el proveedor de LINQ to Objects. El servicio llama a `Where` sobre el queryable; el resultado es otro queryable.
 
-## Cómo funciona
+## Refactor
 
-`IQueryable<T>` tiene tres miembros además de `IEnumerable<T>`:
-
-- `Expression` es el árbol de expresión que describe la consulta.
-- `Provider` es el objeto que sabe ejecutar ese árbol.
-- `ElementType` es el tipo de los elementos.
-
-Cuando llamas a `Where` sobre un `IQueryable<T>`, el compilador enlaza con `Queryable.Where` en vez de `Enumerable.Where`. La lambda pasa a formar parte de un árbol de expresión, no de un delegado compilado. Por eso un proveedor puede inspeccionarla, traducirla a SQL y mandarla a una base de datos.
-
-Con `AsQueryable()` sobre una lista, el proveedor sigue siendo LINQ to Objects. La expresión se ejecuta en memoria. El tipo es el mismo que EF Core expone a través de `DbSet<T>`; lo que cambia es el proveedor.
+El servicio compone un filtro y devuelve el queryable para que lo ejecute su proveedor. Ejecuta el test otra vez; no hay otra capa que quitar.
 
 ## Repite con requisitos nuevos
 
@@ -187,7 +187,7 @@ public OrderRepository(IEnumerable<Order> orders)
 
 Verde. `Query()` devuelve un queryable sin tocar la fuente; la fuente se enumera cuando se enumera la consulta. Es la misma ejecución diferida que `IEnumerable`, con el árbol de expresión guardado para el proveedor.
 
-## Refactor
+### Elegir el límite de la consulta
 
 El código es pequeño; el borde es la parte interesante.
 
