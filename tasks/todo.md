@@ -154,6 +154,10 @@
   sections in order; the API-surface test leads to Swagger setup, then Bearer
   security is added as a new requirement. `mise exec dotnet@10.0.402 -- dotnet
   test build-an-app/v12-openapi/TaskTracker.sln -m:1` passed 28 tests.
+- Part 3 `v13-resilience`: English and Spanish pairs now contain the required
+  sections in order, with retry recovery first and the bounded retry budget
+  added as a follow-up. `mise exec dotnet@10.0.402 -- dotnet test
+  build-an-app/v13-resilience/TaskTracker.sln -m:1` passed 31 tests.
 
 ## Completed increment: Part 4 delivery references
 

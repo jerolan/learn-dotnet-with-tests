@@ -6,6 +6,14 @@ An outbound dependency will fail sometimes. A retry can turn a transient 503 int
 
 The finished solution is in `build-an-app/v13-resilience`.
 
+## How it works
+
+The endpoint calls an `INotifier` adapter that sends an HTTP request. A decorator runs that call through a Polly policy, which decides which exceptions to retry and how many times. Keeping the policy outside `HttpNotifier` separates the HTTP request from the resilience choice.
+
+## How to test
+
+Drive the notification endpoint through HTTP and replace the outbound transport with a fake `HttpMessageHandler`. The handler returns a controlled sequence of `503` and `200` responses and counts attempts, so the test can assert both the endpoint response and the retry budget without a real service.
+
 ## Write the test first
 
 ```csharp
@@ -23,9 +31,51 @@ public async Task Notifications_RetryTransientFailures()
 }
 ```
 
-The test host replaces the notifier with one that uses a fake handler. The handler returns `503` for the first two calls and `200` afterwards; the assertion expects the endpoint to succeed after three calls.
+The test host uses a fake HTTP handler that returns `503` for the first two calls and `200` afterwards. It counts every attempt, including the first.
 
-## Add the notifier
+## Try to run the test
+
+The test does not compile yet: `NotificationRequest` is missing, and the test `Api` helper does not accept `notifierFailures` or expose `NotifierCalls`.
+
+## Write the minimal amount of code for the test to run and check the failing test output
+
+Add the request type and a fake handler to the test fixture. `Api(notifierFailures: 2)` configures this handler to fail twice and exposes its call count:
+
+```csharp
+public sealed record NotificationRequest(string Message);
+```
+
+```csharp
+private sealed class FlakyHandler : HttpMessageHandler
+{
+    private readonly int _failuresBeforeSuccess;
+
+    public FlakyHandler(int failuresBeforeSuccess)
+    {
+        _failuresBeforeSuccess = failuresBeforeSuccess;
+    }
+
+    public int Calls { get; private set; }
+
+    protected override Task<HttpResponseMessage> SendAsync(
+        HttpRequestMessage request,
+        CancellationToken cancellationToken)
+    {
+        Calls++;
+        var status = Calls <= _failuresBeforeSuccess
+            ? HttpStatusCode.ServiceUnavailable
+            : HttpStatusCode.OK;
+
+        return Task.FromResult(new HttpResponseMessage(status));
+    }
+}
+```
+
+The test now runs, but `/notifications` returns 404 because the application has no notification endpoint yet.
+
+## Write enough code to make it pass
+
+Install Polly and add an HTTP adapter for the outbound request:
 
 ```sh
 dotnet add src/TaskTracker.Api package Polly --version 7.2.4
@@ -54,9 +104,7 @@ public sealed class HttpNotifier : INotifier
 }
 ```
 
-`EnsureSuccessStatusCode` throws `HttpRequestException` for a 5xx, which is the signal the policy handles.
-
-## Wrap it in a policy
+`EnsureSuccessStatusCode` throws `HttpRequestException` for a 5xx. Wrap the adapter in a retry decorator:
 
 ```csharp
 public sealed class ResilientNotifier : INotifier
@@ -77,7 +125,7 @@ public sealed class ResilientNotifier : INotifier
 }
 ```
 
-Register the typed client and the decorator:
+Register the typed client and the decorator, then map the endpoint:
 
 ```csharp
 builder.Services.AddHttpClient<HttpNotifier>(client =>
@@ -86,10 +134,8 @@ builder.Services.AddHttpClient<HttpNotifier>(client =>
 builder.Services.AddScoped<INotifier>(services =>
     new ResilientNotifier(
         services.GetRequiredService<HttpNotifier>(),
-        Policy.Handle<HttpRequestException>().RetryAsync(2)));
+        Policy.Handle<HttpRequestException>().RetryAsync(3)));
 ```
-
-Add the endpoint:
 
 ```csharp
 app.MapPost("/notifications", async (NotificationRequest request, INotifier notifier) =>
@@ -100,15 +146,22 @@ app.MapPost("/notifications", async (NotificationRequest request, INotifier noti
 }).RequireAuthorization();
 ```
 
-Green. The policy retries twice, so the third call is the one that succeeds.
+The test host registers the same decorator with an `HttpClient` backed by `FlakyHandler` and starts with the same three-retry limit, so no live notifier is needed. The test passes: the first two attempts fail with `503`, and the third succeeds.
 
-## How it works
+## Refactor
 
-`Policy.Handle<HttpRequestException>()` says which failures are retryable. `RetryAsync(2)` runs the action again up to two times after the first failure. The handler counts every attempt, including the first.
+A fixed `RetryAsync` count is a teaching policy. Production needs more thought:
 
-The policy lives in the decorator, not in `HttpNotifier`. The HTTP client stays a plain adapter; the resilience decision is a separate concern and can change without touching the request code.
+- Use exponential backoff with jitter so a failing dependency is not hammered by every client at once.
+- Add a timeout per attempt. A retry around a call that hangs forever is not resilience.
+- Add a circuit breaker after repeated failures so the caller fails fast while the dependency recovers.
+- Retry only transient failures: timeouts, 5xx responses and connection errors. A 400 or a validation error will not improve on the second attempt.
+- Log the attempt number and the correlation id. A retry that nobody can see is hard to diagnose.
+- Use the typed `HttpClient` from the factory; do not create a new `HttpClient` per call.
 
-A retry is only safe when the operation is idempotent. Sending a notification twice may annoy a user; charging a card twice is unacceptable. For non-idempotent calls, use an idempotency key and a server-side deduplication contract before adding retries.
+A retry is only safe when the operation is idempotent. Sending a notification twice may annoy a user; charging a card twice is unacceptable. For non-idempotent calls, use an idempotency key and a server-side deduplication contract.
+
+Polly 8 replaces the v7 policy API with resilience strategies composed in a `ResiliencePipeline`. The v7 API remains available through the `Polly` package ([Polly migration guide](https://github.com/App-vNext/Polly/blob/main/docs/migration-v8.md)).
 
 ## Repeat for new requirements
 
@@ -129,7 +182,13 @@ public async Task Notifications_GiveUpAfterTheRetryBudget()
 }
 ```
 
-Green. The third failure escapes the policy and the endpoint returns 500. The test pins the attempt count: one initial call plus two retries, no more.
+With the current three-retry budget, the endpoint returns 500, but the handler records four calls and fails the count assertion. Reduce the retry count to two in both the production and test host registrations:
+
+```csharp
+Policy.Handle<HttpRequestException>().RetryAsync(2)
+```
+
+The test passes with one initial attempt plus two retries. Ten configured failures are more than the policy allows, so the third failure escapes and the endpoint returns 500.
 
 ### No retry on success
 
@@ -148,20 +207,7 @@ public async Task Notifications_DoNotRetrySuccess()
 }
 ```
 
-Green. The policy only observes failures; a successful call is returned immediately.
-
-## Refactor
-
-The hard-coded `RetryAsync(2)` is a teaching policy. Production needs more thought:
-
-- Use exponential backoff with jitter so a failing dependency is not hammered by every client at once.
-- Add a timeout per attempt. A retry around a call that hangs forever is not resilience.
-- Add a circuit breaker after repeated failures so the caller fails fast while the dependency recovers.
-- Retry only transient failures: timeouts, 5xx responses and connection errors. A 400 or a validation error will not improve on the second attempt.
-- Log the attempt number and the correlation id. A retry that nobody can see is hard to diagnose.
-- Use the typed `HttpClient` from the factory; do not create a new `HttpClient` per call.
-
-Polly 8 exposes the same ideas through `ResiliencePipeline`. The policy shape is the same: handle selected failures, retry a bounded number of times, add a timeout and a breaker, and keep the policy out of the adapter.
+This test also passes without a code change: the policy returns a successful call immediately.
 
 ## Wrapping up
 
@@ -174,4 +220,3 @@ What we have covered:
 - Idempotency, backoff, timeout, circuit breaker and observability as the next steps.
 
 Next: [v14: CQRS with MediatR](../v14-cqrs/v14-cqrs.md).
-
