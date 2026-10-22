@@ -66,3 +66,9 @@ These chapters turn the testing habits from Part 1 on the test suite itself. The
 2. 🟢 [Scaling Acceptance Tests](testing/scaling-acceptance-tests/scaling-acceptance-tests.md) ([ES](testing/scaling-acceptance-tests/scaling-acceptance-tests.es.md)) - Keep many scenarios readable with a test driver, builders and isolated factories.
 3. 🟢 [Working Without Mocks](testing/working-without-mocks/working-without-mocks.md) ([ES](testing/working-without-mocks/working-without-mocks.es.md)) - Replace interaction mocks with a small in-memory fake when the collaborator is yours.
 4. 🟢 [Refactoring Checklist](testing/refactoring-checklist/refactoring-checklist.md) ([ES](testing/refactoring-checklist/refactoring-checklist.es.md)) - Change structure with the tests green and a repeatable list of checks.
+
+## Part 3: Build an application
+
+One API, grown version by version. Each version is a standalone solution with its own tests.
+
+1. 🟢 [v1: The API and its first tests](build-an-app/v1-intro/v1-intro.md) ([ES](build-an-app/v1-intro/v1-intro.es.md)) - Create the TaskTracker API with a minimal endpoint set and its first acceptance tests.
