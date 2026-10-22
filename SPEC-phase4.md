@@ -23,7 +23,7 @@ Close the roadmap with LGWT-style Q&A chapters and the 🟠 appendices. Every ro
 | Unit Testing: MSTest, Moq | Part 1 and Part 2 | covered |
 | Unit Testing: Bogus | Appendix `test-data-bogus` | planned |
 | Integration Testing: WebApplicationFactory/TestServer | Part 2 and `v4-ef-core` | covered |
-| Integration Testing: Respawn, Testcontainers, Docker | Appendix `integration-testing-tools` | planned |
+| Integration Testing: Respawn, Testcontainers, Docker | Appendix `integration-testing-tools` | covered |
 | ASP.NET Core basics | Part 3, `v1` to `v14` | covered |
 | RDBMS, SQL, EF Core, Dapper | Part 3, `v4` and `v5` | covered |
 | REST APIs, OpenAPI/Swagger | Part 3, `v2` and `v12` | covered |
@@ -34,12 +34,12 @@ Close the roadmap with LGWT-style Q&A chapters and the 🟠 appendices. Every ro
 | Task scheduling | Part 3, `v11` | covered |
 | .NET libraries | Appendix `sdk-libraries` | planned |
 | SignalR | Appendix `signalr` | planned |
-| Snapshot testing (Verify) | Appendix `snapshot-verify` | planned |
+| Snapshot testing (Verify) | Appendix `snapshot-verify` | covered |
 | E2E (Playwright) | Appendix `e2e-playwright` | planned |
-| Performance (K6/NBomber) | Appendix `performance-nbomber` | planned |
-| Containers | Appendix `containers` | planned |
+| Performance (K6/NBomber) | Appendix `performance-nbomber` | covered |
+| Containers | Appendix `containers` | covered |
 | CI/CD | Appendix `ci-cd` | planned |
-| Monitoring/telemetry | Appendix `monitoring-telemetry` | planned |
+| Monitoring/telemetry | Appendix `monitoring-telemetry` | covered |
 | Cloud | Appendix `cloud` | planned |
 | Streaming | Appendix `streaming` | planned |
 | NoSQL | Appendix `nosql` | planned |

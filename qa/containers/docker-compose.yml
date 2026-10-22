@@ -1,0 +1,15 @@
+services:
+  api:
+    build:
+      context: ../..
+      dockerfile: qa/containers/Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+    volumes:
+      - taskdata:/data
+
+volumes:
+  taskdata:
+

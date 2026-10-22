@@ -15,7 +15,7 @@ Esta parte cierra el roadmap. Los capítulos de preguntas responden dudas que no
 - 🟠 [Tests de rendimiento con NBomber](performance-nbomber/performance-nbomber.es.md) ([EN](performance-nbomber/performance-nbomber.md)) - Corre una carga fija contra una API y lee throughput y percentiles.
 - 🟠 Datos de test con Bogus. *Planeado.*
 - 🟠 [Herramientas de integración: Respawn, Testcontainers y Docker](integration-testing-tools/integration-testing-tools.es.md) ([EN](integration-testing-tools/integration-testing-tools.md)) - Levanta PostgreSQL en Docker y resetea entre tests.
-- 🟠 Contenedores para la API TaskTracker. *Planeado.*
+- 🟠 [Contenedores para la API TaskTracker](containers/containers.es.md) ([EN](containers/containers.md)) - Construye una imagen multi-stage, ejecútala con SQLite sobre un volumen y comprueba OpenAPI desde fuera.
 - 🟠 CI/CD más allá del job único de tests. *Planeado.*
 - 🟠 [Monitoreo y telemetría](monitoring-telemetry/monitoring-telemetry.es.md) ([EN](monitoring-telemetry/monitoring-telemetry.md)) - Registra un contador con tags y captúralo con un MeterListener.
 - 🟠 Despliegue en la nube. *Planeado.*
@@ -50,7 +50,7 @@ Esta parte cierra el roadmap. Los capítulos de preguntas responden dudas que no
 | Bibliotecas .NET | Apéndice de bibliotecas SDK | planeado |
 | SignalR | Apéndice de SignalR | planeado |
 | Snapshot, E2E, rendimiento | [Snapshot](snapshot-verify/snapshot-verify.es.md), [NBomber](performance-nbomber/performance-nbomber.es.md), apéndice de Playwright | snapshot y rendimiento cubiertos; E2E planeado |
-| Contenedores, CI/CD, monitoreo, nube, DevOps | [Monitoreo](monitoring-telemetry/monitoring-telemetry.es.md), apéndices de contenedores, CI/CD, nube y DevOps | monitoreo cubierto; el resto planeado |
+| Contenedores, CI/CD, monitoreo, nube, DevOps | [Contenedores](containers/containers.es.md), [Monitoreo](monitoring-telemetry/monitoring-telemetry.es.md), apéndices de CI/CD, nube y DevOps | contenedores y monitoreo cubiertos; el resto planeado |
 | Streaming, NoSQL, gRPC, GraphQL | Apéndices de protocolos y almacenamiento | planeado |
 | Habilidades generales de desarrollo | Prefacio del README y preguntas de testing | cubierto |
 
