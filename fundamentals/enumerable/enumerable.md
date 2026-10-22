@@ -2,9 +2,25 @@
 
 [You can find all the code for this chapter here](https://github.com/jerolan/learn-dotnet-with-tests/tree/main/fundamentals/enumerable)
 
-`IEnumerable<T>` is the contract for a sequence: something a `foreach` can walk one item at a time. Arrays and lists implement it, and a method can produce one lazily with `yield return`. The lazy part is what makes infinite sequences possible.
+`Sequence.Naturals()` should produce `0`, `1`, `2`, and keep going. The caller must stop after collecting the values it needs.
 
-We will build three sequences: the natural numbers, the even numbers up to a limit, and a sequence that records when it runs. The finished solution is in `fundamentals/enumerable`; if you are building it from scratch, use the same layout as the previous chapters: a class library in `src/Enumerable`, an MSTest project in `tests/Enumerable.Tests`, a solution and a project reference.
+The first call cannot compile because `Sequence` does not exist:
+
+```csharp
+var numbers = Sequence.Naturals();
+```
+
+Running `dotnet test` reports `error CS0246: The type or namespace name 'Sequence' could not be found`. We will test an infinite sequence, a finite one and a sequence that records when its body runs. The finished solution is in `fundamentals/enumerable`; if you are building it from scratch, use the same layout as the previous chapters: a class library in `src/Enumerable`, an MSTest project in `tests/Enumerable.Tests`, a solution and a project reference.
+
+## How it works
+
+`IEnumerable<T>` is the contract for a sequence: something a `foreach` can walk one item at a time. Arrays and lists implement it, and a method can produce one lazily with `yield return`.
+
+`foreach` calls `GetEnumerator()`, then `MoveNext()` and `Current` until `MoveNext()` returns `false`, and finally disposes the enumerator. The compiler turns a method with `yield return` into a class that implements that protocol. The method body starts when enumeration begins, not when the method returns the sequence.
+
+## How to test
+
+An infinite sequence must not be collected without a stopping condition. The test will use `break` after three values. A finite sequence can be compared directly with its expected values, and a small log can show when deferred code runs.
 
 ## Write the test first
 
@@ -78,13 +94,11 @@ public static IEnumerable<int> Naturals()
 }
 ```
 
-Green. `yield return` produces one value and pauses the method; the next `MoveNext` resumes after it. The `while (true)` would run forever if the caller kept asking, but the `break` in the test stops after the third value.
+Green. `yield return` produces one value and pauses the method; the next `MoveNext` resumes after it. The `while (true)` would run forever if the caller kept asking, but the `break` in the test stops after the third value. Each call to `Naturals()` creates a fresh enumerable, and each `foreach` starts from the beginning.
 
-## How it works
+## Refactor
 
-`foreach` does not know about `yield`. It calls `GetEnumerator()` on the sequence, then `MoveNext()` and `Current` until `MoveNext()` returns `false`, and finally disposes the enumerator. The compiler turns the method with `yield return` into a class that implements that protocol.
-
-The method body does not run when you call `Sequence.Naturals()`. It runs when the enumeration starts. Each call to `Naturals()` creates a fresh enumerable; each `foreach` starts the sequence from the beginning.
+The method has one local value and yields it in order. Extracting more code would hide the sequence, so keep the loop direct and run the test again.
 
 ## Repeat for new requirements
 
@@ -171,7 +185,7 @@ Green. The first two assertions prove that creating the sequence and getting the
 
 If you enumerate `Tracked` twice, the log gets the entries again. The sequence is not a cached list; it is a recipe that runs each time.
 
-## Refactor
+### Keep the sequence contract clear
 
 The three methods return `IEnumerable<int>`, not a concrete collection. That is the smallest contract the caller needs: it can iterate, and it cannot assume indexing or mutation.
 

@@ -41,6 +41,9 @@
 - Part 1 `collections`: English and Spanish pairs now contain the required
   sections in order. `mise exec dotnet@10.0.402 -- dotnet test
   fundamentals/collections/Collections.sln -m:1` passed 5 tests.
+- Part 1 `enumerable`: English and Spanish pairs now contain the required
+  sections in order. `mise exec dotnet@10.0.402 -- dotnet test
+  fundamentals/enumerable/Enumerable.sln -m:1` passed 3 tests.
 
 ## Completed increment: Part 4 delivery references
 

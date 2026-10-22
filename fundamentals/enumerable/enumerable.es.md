@@ -2,9 +2,25 @@
 
 [Encuentras todo el código de este capítulo aquí](https://github.com/jerolan/learn-dotnet-with-tests/tree/main/fundamentals/enumerable)
 
-`IEnumerable<T>` es el contrato de una secuencia: algo que un `foreach` puede recorrer elemento por elemento. Los arreglos y las listas lo implementan, y un método puede producir una secuencia de forma perezosa con `yield return`. La parte perezosa es lo que hace posibles las secuencias infinitas.
+`Sequence.Naturals()` debe producir `0`, `1`, `2` y seguir. Quien la consume debe detenerse después de reunir los valores que necesita.
 
-Vamos a construir tres secuencias: los números naturales, los pares hasta un límite, y una secuencia que registra cuándo se ejecuta. La solución terminada está en `fundamentals/enumerable`; si la estás armando desde cero, usa la misma estructura que en los capítulos anteriores: una biblioteca de clases en `src/Enumerable`, un proyecto de MSTest en `tests/Enumerable.Tests`, una solución y una referencia entre proyectos.
+La primera llamada no compila porque `Sequence` no existe:
+
+```csharp
+var numbers = Sequence.Naturals();
+```
+
+Al ejecutar `dotnet test`, aparece `error CS0246: The type or namespace name 'Sequence' could not be found`. Probaremos una secuencia infinita, una finita y otra que registra cuándo se ejecuta su cuerpo. La solución terminada está en `fundamentals/enumerable`; si la estás armando desde cero, usa la misma estructura que en los capítulos anteriores: una biblioteca de clases en `src/Enumerable`, un proyecto de MSTest en `tests/Enumerable.Tests`, una solución y una referencia entre proyectos.
+
+## Cómo funciona
+
+`IEnumerable<T>` es el contrato de una secuencia: algo que un `foreach` puede recorrer elemento por elemento. Los arreglos y las listas lo implementan, y un método puede producir una secuencia de forma perezosa con `yield return`.
+
+`foreach` llama a `GetEnumerator()`, luego a `MoveNext()` y `Current` hasta que `MoveNext()` devuelve `false`, y al final libera el enumerador. El compilador convierte un método con `yield return` en una clase que implementa ese protocolo. El cuerpo del método empieza cuando inicia la enumeración, no cuando devuelve la secuencia.
+
+## Cómo probarlo
+
+No se debe reunir una secuencia infinita sin una condición para detenerla. El test usará `break` después de tres valores. Una secuencia finita se puede comparar directamente con sus valores esperados, y una lista pequeña permite ver cuándo se ejecuta el código diferido.
 
 ## Escribe primero el test
 
@@ -78,13 +94,11 @@ public static IEnumerable<int> Naturals()
 }
 ```
 
-Verde. `yield return` produce un valor y pausa el método; el siguiente `MoveNext` continúa después de esa línea. El `while (true)` correría para siempre si quien llama siguiera pidiendo, pero el `break` del test se detiene en el tercer valor.
+Verde. `yield return` produce un valor y pausa el método; el siguiente `MoveNext` continúa después de esa línea. El `while (true)` correría para siempre si quien llama siguiera pidiendo, pero el `break` del test se detiene en el tercer valor. Cada llamada a `Naturals()` crea un enumerable nuevo, y cada `foreach` empieza desde el principio.
 
-## Cómo funciona
+## Refactor
 
-`foreach` no sabe nada de `yield`. Llama a `GetEnumerator()` sobre la secuencia, después a `MoveNext()` y `Current` hasta que `MoveNext()` devuelve `false`, y al final libera el enumerador. El compilador convierte el método con `yield return` en una clase que implementa ese protocolo.
-
-El cuerpo del método no corre cuando llamas a `Sequence.Naturals()`. Corre cuando empieza la enumeración. Cada llamada a `Naturals()` crea un enumerable nuevo; cada `foreach` arranca la secuencia desde el principio.
+El método tiene un valor local y lo produce en orden. Extraer más código escondería la secuencia, así que mantenemos el bucle directo y ejecutamos el test otra vez.
 
 ## Repite con requisitos nuevos
 
@@ -171,7 +185,7 @@ Verde. Las dos primeras aserciones demuestran que crear la secuencia y obtener e
 
 Si enumeras `Tracked` dos veces, el log recibe las entradas otra vez. La secuencia no es una lista cacheada; es una receta que corre cada vez.
 
-## Refactor
+### Mantener claro el contrato de la secuencia
 
 Los tres métodos devuelven `IEnumerable<int>`, no una colección concreta. Ese es el contrato más pequeño que necesita quien llama: puede iterar, y no puede asumir índices ni mutación.
 
