@@ -159,5 +159,5 @@ Lo que cubrimos:
 
 El capítulo sigue la idea de E/S asíncrona del [capítulo Concurrency de Learn Go with Tests](https://quii.gitbook.io/learn-go-with-tests/concurrency): el trabajo corre por separado y quien llama espera un resultado. .NET lo convierte en `Task` y `await`.
 
-Siguiente: [Archivos e I/O](../io.md).
+Siguiente: [Archivos e I/O](../io/io.es.md).
 

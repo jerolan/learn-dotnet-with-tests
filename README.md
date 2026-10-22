@@ -53,7 +53,7 @@ This cycle encourages developers to write only the code necessary to pass tests,
 19. [Async/Await](fundamentals/async/async.md) ([ES](fundamentals/async/async.es.md)) - Dive into the async/await pattern for writing clean, efficient asynchronous code.
 20. [IQueryable](fundamentals/queriable/queriable.md) ([ES](fundamentals/queriable/queriable.es.md)) - Learn about IQueryable for efficient querying against data sources like databases.
 21. [IEnumerable](fundamentals/enumerable/enumerable.md) ([ES](fundamentals/enumerable/enumerable.es.md)) - Explore IEnumerable and its role in iterating over collections.
-22. [Files and I/O ](fundamentals/io.md) - Get to grips with reading from and writing to files and performing other I/O operations.
-23. [`using` Keyword](fundamentals/using.md) - Discover how to manage resources automatically with the using statement.
+22. [Files and I/O ](fundamentals/io/io.md) ([ES](fundamentals/io/io.es.md)) - Get to grips with reading from and writing to files and performing other I/O operations.
+23. [`using` Keyword](fundamentals/using/using.md) ([ES](fundamentals/using/using.es.md)) - Discover how to manage resources automatically with the using statement.
 24. [Dependency Injection](fundamentals/dependency-injection/dependency-injection.md) ([ES](fundamentals/dependency-injection/dependency-injection.es.md)) - Understand dependency injection for creating loosely coupled, maintainable applications.
 25. [Mocking](fundamentals/mock/mock.md) ([ES](fundamentals/mock/mock.es.md)) - Learn about mocking in unit testing to simulate behavior of real objects in tests.

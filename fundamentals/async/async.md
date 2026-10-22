@@ -159,5 +159,5 @@ What we have covered:
 
 The chapter follows the asynchronous I/O idea from the [Concurrency chapter of Learn Go with Tests](https://quii.gitbook.io/learn-go-with-tests/concurrency): work runs independently and the caller waits for a result. .NET turns that into `Task` and `await`.
 
-Next: [Files and I/O](../io.md).
+Next: [Files and I/O](../io/io.md).
 
