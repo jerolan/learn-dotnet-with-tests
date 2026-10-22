@@ -8,7 +8,9 @@ Close the roadmap with LGWT-style Q&A chapters and the 🟠 appendices. Every ro
 
 - Q&A chapters are prose, bilingual and link to the chapters where the runnable code lives. They do not repeat the code.
 - An appendix is prose plus a runnable sample when the topic can be demonstrated cheaply and deterministically. When it cannot, the appendix is still written and ends with an explicit deferral note: what is missing, why, and what a hands-on lab would need.
+- Runnable appendices follow the TDD section order in `fundamentals/TEMPLATE.md` where their sample supports that flow. Q&A chapters and appendices with explicit deferrals remain prose.
 - Appendices that ship code live in their own folder with their own solution. No appendix references another appendix's project.
+- Appendices that build or publish TaskTracker use the latest Part 3 version. Their Dockerfile, workflow examples and local commands agree with the CI publish path.
 - Every Q&A chapter and appendix has the `.md`/`.es.md` pair.
 - The Part 4 index in `qa/README.md` maps the roadmap sections to their landing spots one to one.
 - New packages stay on `net6.0`-compatible versions and are pinned in the appendix that introduces them.
@@ -23,7 +25,8 @@ Close the roadmap with LGWT-style Q&A chapters and the 🟠 appendices. Every ro
 | Unit Testing: MSTest, Moq | Part 1 and Part 2 | covered |
 | Unit Testing: Bogus | Appendix `test-data-bogus` | covered |
 | Integration Testing: WebApplicationFactory/TestServer | Part 2 and `v4-ef-core` | covered |
-| Integration Testing: Respawn, Testcontainers, Docker | Appendix `integration-testing-tools` | covered |
+| Integration Testing: Respawn | Appendix `integration-testing-tools` | covered |
+| Integration Testing: Testcontainers/Docker (roadmap image) | Appendix `integration-testing-tools` | covered |
 | ASP.NET Core basics | Part 3, `v1` to `v15` | covered |
 | RDBMS, SQL, EF Core, Dapper | Part 3, `v4` and `v5` | covered |
 | REST APIs, OpenAPI/Swagger | Part 3, `v2` and `v12` | covered |
@@ -48,6 +51,15 @@ Close the roadmap with LGWT-style Q&A chapters and the 🟠 appendices. Every ro
 | DevOps/IaC | Appendix `devops-iac` | covered |
 | General development skills | README preface and Q&A | covered |
 
+## Roadmap source note
+
+The roadmap's text `map.json` lists WebApplicationFactory, TestServer and
+Respawn; the accompanying image adds Testcontainers and Docker. The Part 2 and
+Part 3 chapters cover WebApplicationFactory/TestServer, and the integration
+tools appendix covers Respawn, Testcontainers and Docker. The Part 4 index
+links the [roadmap source](https://github.com/Elfocrash/.NET-Backend-Developer-Roadmap)
+and records that split.
+
 ## Q&A chapters
 
 1. `testing-questions`: unit versus integration versus acceptance, mocks and fakes, async tests, isolation, coverage, time and randomness, when to change the test.
@@ -69,5 +81,6 @@ The appendices are grouped by concern, not by difficulty:
 - Every Q&A chapter and appendix is bilingual.
 - Every appendix that claims a runnable sample builds and its tests pass; deferral notes say what is missing.
 - The Part 4 index links every written chapter and appendix.
+- TaskTracker version references in delivery appendices match the latest Part 3 version.
 - CI is green.
 

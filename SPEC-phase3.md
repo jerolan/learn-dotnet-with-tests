@@ -7,7 +7,8 @@
 ## Rules
 
 - Every version lives in `build-an-app/vN-name` and is a standalone solution. Running `dotnet test` inside that folder tests it without any other version.
-- Every version ships `vN-name.md` and `vN-name.es.md` with the same sections.
+- Every version ships `vN-name.md` and `vN-name.es.md` with the same sections in
+  the canonical order from `fundamentals/TEMPLATE.md`.
 - A version starts from the previous behavior and adds one concern. The text explains the delta and why it belongs at that point.
 - The README Part 3 index lists the versions one to one.
 - Acceptance tests use `WebApplicationFactory<Program>` at the HTTP boundary. Unit tests are used where the chapter is about a unit, such as a validator, a cache decorator or a handler.

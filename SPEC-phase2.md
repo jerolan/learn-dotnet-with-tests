@@ -38,7 +38,7 @@ than a mock, and how to refactor while tests stay green.
   persistence reset and external container setup remain in the Part 4 appendix.
 - The root index links the four chapters and their Spanish versions.
 
-## Status: complete
+## Status: implementation present; template-order alignment pending
 
 The four pairs and four solutions are present. Their tests passed in the full
 57-solution run on 2026-10-22: 10 tests passed across Part 2. Local Markdown

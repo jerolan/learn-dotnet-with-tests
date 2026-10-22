@@ -1,7 +1,9 @@
-# Implementation Plan: Phase 0 Scaffold
+# Implementation Plan: Learn .NET with Tests
 
 > Phase 0 is complete. Its plan and verification notes remain below as history.
-> The active increment is Part 3 v15 SignalR.
+> The active increment aligns chapter sections with the canonical template.
+
+## Historical: Phase 0 Scaffold
 
 ## Overview
 Turn the flat root into the book skeleton with moves only. Foundations first, then moves, then README, then CI, then verification. Each task leaves the tree working. No chapter prose changes and no per-chapter solutions in this phase.
@@ -78,7 +80,7 @@ runnable and preserve the existing MSTest, Moq and net6.0 stack.
 The standalone snapshot necessarily adds the prior solution's source files.
 Keep the copy self-contained and limit behavioral changes to SignalR.
 
-## Current Increment: Part 1 chapter order
+## Completed Increment: Part 1 chapter order
 
 ### Overview
 Move Dependency Injection and mocking immediately after classes in the Part 1
@@ -99,3 +101,61 @@ continue into collections and the remaining language topics.
 - Dependency Injection and mocking are directly after classes in the index and
   navigation flow.
 - All Part 1 links resolve in both languages.
+
+## Completed Increment: Phase 2 specification
+
+### Overview
+Record the agreed Part 2 scope, chapter responsibilities and completion
+evidence in `SPEC-phase2.md`, matching the specifications already kept for the
+other phases.
+
+### Checkpoint
+- All four Part 2 chapters, standalone solutions and test counts are documented.
+
+## Completed Increment: Part 4 delivery references
+
+### Overview
+Make the Docker and CI/CD appendices build and publish the latest TaskTracker
+version, v15, so their commands match the Part 3 index and the CI workflow.
+
+### Decisions
+- Keep the tutorial focused on the same TaskTracker app and latest version.
+- Update the Dockerfile and both language versions of the appendix together.
+- Verify the published API path; build the container if Docker is available.
+
+### Tasks
+- Replace the v14 project paths in the container and CI/CD examples with v15.
+- Record the roadmap source split for integration-testing topics in both Part 4 indexes.
+- Check the documentation, Dockerfile and CI workflow use the same project path.
+- Run the documented publish or container build where the local tools allow it.
+
+### Checkpoint
+- No stale v14 publish path remains in active delivery examples.
+- The new paths resolve, both language versions agree, and verification evidence
+  is recorded.
+- The Part 4 coverage map distinguishes text-map topics from topics added by the
+  roadmap image and points to the source.
+
+## Current Increment: Chapter section order
+
+### Overview
+Align code chapters with the section sequence in `fundamentals/TEMPLATE.md`.
+Preserve each chapter's examples, red/green evidence and runnable solution while
+moving its explanation into the approved teaching flow.
+
+### Decisions
+- Include every required section from `fundamentals/TEMPLATE.md` in order in each English/Spanish pair; the source-control note remains optional.
+- Preserve existing examples and red/green evidence while moving or adding explanatory sections.
+- Apply the TDD template to Parts 1-3 and runnable appendices where the sample supports that flow.
+- Keep Phase 4's prose Q&A and explicit deferral structure as its documented exception.
+- Work in coherent slices by part and verify each slice before committing it.
+
+### Tasks
+- Align Part 1 chapter pairs with the canonical section order.
+- Align Part 2 and Part 3 chapter pairs with the same order.
+- Align runnable Part 4 appendix pairs where the sample supports the TDD flow.
+- Check bilingual heading order, local links and affected solutions after each slice.
+
+### Checkpoint
+- Every applicable chapter pair contains the required template sections in the prescribed order, with matching English/Spanish structure.
+- Part 4 exceptions remain explicit and consistent with `SPEC-phase4.md`.

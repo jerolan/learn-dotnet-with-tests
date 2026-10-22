@@ -2,7 +2,35 @@
 
 > The Phase 0 tasks below are historical and complete; see `SPEC-phase1.md`.
 
-## Active increment: Part 1 chapter order
+## Active increment: Chapter section order
+
+### Task 1: Align chapter pairs with the canonical template
+- [ ] Align Part 1 English/Spanish chapters with the section order in `fundamentals/TEMPLATE.md`.
+- [ ] Align Part 2 and Part 3 pairs with the same order.
+- [ ] Align runnable Part 4 appendices where their sample supports the TDD flow; preserve the Phase 4 Q&A and explicit deferral exceptions.
+- [ ] Verify each slice has every required section in matching bilingual order, resolving links and passing solution tests.
+- Verify: required-section audit, full local-link audit and `dotnet test` for affected solutions.
+- Files: `fundamentals/**`, `testing/**`, `build-an-app/**`, runnable `qa/**`, phase specs and task artifacts.
+- Dependency: phases 1-4 already implemented.
+
+## Completed increment: Part 4 delivery references
+
+### Task 1: Align delivery examples with v15
+- [x] Update the Dockerfile and English/Spanish containers chapter from v14 to v15.
+- [x] Update the CI/CD workflow examples and local publish commands in both languages.
+- [x] Mark the integration-testing topics that come from the roadmap image and link the roadmap source in both Part 4 indexes.
+- [x] Verify all active delivery examples use the same project path as `.github/workflows/ci.yml`.
+- Verify: `git diff --check` and all 142 Markdown files pass the local link check. The v15 Docker image built and served OpenAPI with HTTP 200; its image size is 365 MB.
+- Files: `qa/containers/**`, `qa/ci-cd/**`, `qa/README.md`, `qa/README.es.md`, `SPEC-phase4.md`, `tasks/plan.md`, `tasks/todo.md`.
+- Dependency: Part 3 v15.
+
+## Completed increment: Phase 2 specification
+
+### Task 1: Record Phase 2 scope and acceptance evidence
+- [x] Add `SPEC-phase2.md` from the approved goal and the four existing chapters.
+- [x] Record independent solutions, bilingual pairs and local test evidence.
+
+## Completed increment: Part 1 chapter order
 
 ### Task 1: Move DI and mocking earlier in the reading flow
 - [x] Place Dependency Injection and Mocking directly after Classes in the Part 1 README index.
