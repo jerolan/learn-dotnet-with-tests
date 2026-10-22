@@ -2,9 +2,23 @@
 
 [You can find all the code for this chapter here](https://github.com/jerolan/learn-dotnet-with-tests/tree/main/fundamentals/inheritance)
 
-Inheritance lets a class reuse state and behavior from a base class. An interface defines a contract without saying how it is implemented. Both let a caller work with a group of types through one shape, and they solve different parts of the problem.
+The area of a 3-by-4 rectangle is 12. A circle with radius 1 has area `Math.PI`. Both shapes can answer the same question, `Area()`, even though they use different formulas.
 
-We will build two shapes, find the contract they share, and then compute a total through that contract. The finished solution is in `fundamentals/inheritance`; if you are building it from scratch, use the same layout as the previous chapters: a class library in `src/Inheritance`, an MSTest project in `tests/Inheritance.Tests`, a solution and a project reference.
+The first test cannot compile because `Rectangle` does not exist:
+
+```csharp
+Assert.AreEqual(12.0, new Rectangle(3, 4).Area());
+```
+
+Running `dotnet test` reports `error CS0246: The type or namespace name 'Rectangle' could not be found`. We will start with one shape, add a circle, then use tests to discover their shared contract. The finished solution is in `fundamentals/inheritance`; if you are building it from scratch, use the same layout as the previous chapters: a class library in `src/Inheritance`, an MSTest project in `tests/Inheritance.Tests`, a solution and a project reference.
+
+## How it works
+
+Each shape owns the data needed for its `Area()` calculation. An interface can declare that shared method without providing a formula. An abstract base class can hold state shared by the shapes while leaving each formula to the concrete class.
+
+## How to test
+
+Area calculations have no side effects, so the tests can create shapes and compare their results directly. The total test will call the same method through the shared interface. Since circle areas use `double`, assertions allow a small tolerance instead of requiring exact floating-point equality.
 
 ## Write the test first
 
@@ -72,6 +86,10 @@ public sealed class Rectangle
 ```
 
 Green.
+
+## Refactor
+
+The rectangle's area is one multiplication, so there is nothing to extract yet. Run the test again; it remains green. The next requirement will add another formula and show what behavior the shapes share.
 
 ## Repeat for new requirements
 
@@ -210,7 +228,7 @@ Green. A few things are new here:
 
 The name lives in one place, and both shapes inherit it. The area stays in each shape because only the shape knows its formula.
 
-## Polymorphism
+### Polymorphism
 
 Write the test:
 
@@ -247,7 +265,7 @@ Green. `AreaCalculator` never mentions `Rectangle` or `Circle`. It knows only `I
 
 The same idea works with the base class: a `Shape[]` can hold both shapes and call the inherited `Name` property.
 
-## Refactor
+### Refactor the hierarchy
 
 The hierarchy is now small and each piece has one reason to exist: the interface names the contract, the abstract class holds shared state, and the concrete classes provide the formulas.
 

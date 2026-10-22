@@ -2,9 +2,23 @@
 
 [Encuentras todo el código de este capítulo aquí](https://github.com/jerolan/learn-dotnet-with-tests/tree/main/fundamentals/inheritance)
 
-La herencia deja que una clase reutilice estado y comportamiento de una clase base. Una interfaz define un contrato sin decir cómo se implementa. Las dos permiten que quien llama trabaje con un grupo de tipos a través de una sola forma, y resuelven partes distintas del problema.
+El área de un rectángulo de 3 por 4 es 12. Un círculo de radio 1 tiene área `Math.PI`. Ambas figuras pueden responder la misma pregunta, `Area()`, aunque usan fórmulas distintas.
 
-Vamos a construir dos figuras, encontrar el contrato que comparten y después calcular un total a través de ese contrato. La solución terminada está en `fundamentals/inheritance`; si la estás armando desde cero, usa la misma estructura que en los capítulos anteriores: una biblioteca de clases en `src/Inheritance`, un proyecto de MSTest en `tests/Inheritance.Tests`, una solución y una referencia entre proyectos.
+El primer test no compila porque `Rectangle` no existe:
+
+```csharp
+Assert.AreEqual(12.0, new Rectangle(3, 4).Area());
+```
+
+Al ejecutar `dotnet test`, aparece `error CS0246: The type or namespace name 'Rectangle' could not be found`. Empezaremos con una figura, agregaremos un círculo y después usaremos tests para descubrir su contrato compartido. La solución terminada está en `fundamentals/inheritance`; si la estás armando desde cero, usa la misma estructura que en los capítulos anteriores: una biblioteca de clases en `src/Inheritance`, un proyecto de MSTest en `tests/Inheritance.Tests`, una solución y una referencia entre proyectos.
+
+## Cómo funciona
+
+Cada figura guarda los datos que necesita para calcular su `Area()`. Una interfaz puede declarar ese método compartido sin incluir una fórmula. Una clase base abstracta puede guardar el estado que comparten las figuras y dejar cada fórmula en su clase concreta.
+
+## Cómo probarlo
+
+Los cálculos de área no tienen efectos secundarios, así que los tests pueden crear figuras y comparar directamente sus resultados. El test del total llamará al mismo método a través de la interfaz compartida. Como el área de un círculo usa `double`, las aserciones permiten una tolerancia pequeña en vez de exigir igualdad exacta entre valores de punto flotante.
 
 ## Escribe primero el test
 
@@ -72,6 +86,10 @@ public sealed class Rectangle
 ```
 
 Verde.
+
+## Refactor
+
+El área del rectángulo es una multiplicación, así que todavía no hay nada que extraer. Ejecuta el test otra vez: sigue en verde. El siguiente requisito agregará otra fórmula y mostrará qué comportamiento comparten las figuras.
 
 ## Repite con requisitos nuevos
 
@@ -210,7 +228,7 @@ Verde. Aquí hay varias cosas nuevas:
 
 El nombre vive en un solo lugar, y las dos figuras lo heredan. El área queda en cada figura porque solo la figura conoce su fórmula.
 
-## Polimorfismo
+### Polimorfismo
 
 Escribe el test:
 
@@ -247,7 +265,7 @@ Verde. `AreaCalculator` nunca menciona `Rectangle` ni `Circle`. Solo conoce `ISh
 
 La misma idea funciona con la clase base: un `Shape[]` puede guardar las dos figuras y llamar a la propiedad `Name` heredada.
 
-## Refactor
+### Refactorizar la jerarquía
 
 La jerarquía es pequeña y cada pieza tiene una sola razón para existir: la interfaz nombra el contrato, la clase abstracta guarda el estado compartido y las clases concretas proveen las fórmulas.
 
