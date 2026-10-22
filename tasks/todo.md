@@ -129,6 +129,10 @@
   sections in order, with FluentValidation introduced between the old error
   contract and the field-error response. `mise exec dotnet@10.0.402 -- dotnet
   test build-an-app/v6-validation/TaskTracker.sln -m:1` passed 14 tests.
+- Part 3 `v7-auth`: English and Spanish pairs now contain the required
+  sections in order, with the anonymous 401 test leading into token issuance
+  and protected routes. `mise exec dotnet@10.0.402 -- dotnet test
+  build-an-app/v7-auth/TaskTracker.sln -m:1` passed 17 tests.
 
 ## Completed increment: Part 4 delivery references
 

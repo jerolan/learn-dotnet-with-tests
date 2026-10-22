@@ -6,6 +6,31 @@ Every endpoint so far was anonymous. Version 7 adds a token endpoint, signs a JW
 
 The finished solution is in `build-an-app/v7-auth`.
 
+## How it works
+
+A JWT has a header, a claims payload and a signature. The bearer middleware validates the signature, issuer, audience and lifetime, then builds the request's `ClaimsPrincipal`. `RequireAuthorization()` rejects requests without an authenticated principal; the token endpoint remains anonymous.
+
+`ClockSkew = TimeSpan.Zero` makes the lifetime check exact, which is useful in tests and for short-lived tokens. In production, a small skew (the default is five minutes) absorbs clock differences between servers.
+
+Authentication answers "who are you"; authorization answers "may you do this". `RequireAuthorization()` rejects an unauthenticated request with 401. A policy or role check would reject an authenticated but unauthorized request with 403; this version only needs the first gate.
+
+## How to test
+
+The driver gets a token by default so existing API tests keep working. Set `authenticate: false` for the anonymous-route and token-endpoint tests:
+
+```csharp
+if (authenticate)
+{
+    var token = GetTokenAsync().GetAwaiter().GetResult();
+    Client.DefaultRequestHeaders.Authorization =
+        new AuthenticationHeaderValue("Bearer", token);
+}
+```
+
+The test uses `WebApplicationFactory` and asserts HTTP status codes, so it covers the middleware and route boundary together.
+
+The synchronous token request in the driver is acceptable in test setup; production code should be async all the way.
+
 ## Write the test first
 
 ```csharp
@@ -22,7 +47,13 @@ public async Task TasksWithoutToken_ReturnUnauthorized()
 
 The driver can skip authentication for this test. It fails with `Expected:<Unauthorized>. Actual:<OK>` against the anonymous v6 API.
 
-## Add the package and the options
+## Try to run the test
+
+The v6 route is anonymous, so the request succeeds with `200 OK` instead of the expected `401 Unauthorized`.
+
+## Write the minimal amount of code for the test to run and check the failing test output
+
+### Add the package and the options
 
 ```sh
 dotnet add src/TaskTracker.Api package Microsoft.AspNetCore.Authentication.JwtBearer --version 6.0.36
@@ -49,7 +80,7 @@ public sealed class JwtOptions
 
 The `Jwt` section in `appsettings.json` supplies the values. The demo credentials exist so the chapter runs without an identity provider; they are not a production design.
 
-## Configure authentication
+### Configure authentication
 
 ```csharp
 var jwt = builder.Configuration.GetSection(JwtOptions.SectionName).Get<JwtOptions>()
@@ -80,7 +111,11 @@ app.UseAuthentication();
 app.UseAuthorization();
 ```
 
-## Issue a token
+The bearer middleware is registered, but the task routes are still anonymous, so the first test still gets 200.
+
+## Write enough code to make it pass
+
+### Issue a token
 
 ```csharp
 app.MapPost("/auth/token", (LoginRequest request, IOptions<JwtOptions> options) =>
@@ -111,7 +146,7 @@ app.MapPost("/auth/token", (LoginRequest request, IOptions<JwtOptions> options) 
 });
 ```
 
-## Protect the routes
+### Protect the routes
 
 ```csharp
 app.MapGet("/tasks", (ITaskReader reader) => reader.All()).RequireAuthorization();
@@ -124,13 +159,19 @@ app.MapGet("/tasks/{id:int}", (int id, ITaskReader reader) =>
 
 Add `.RequireAuthorization()` to POST and PATCH as well. The token endpoint stays anonymous.
 
-## How it works
+The anonymous request now receives 401. The token endpoint can remain public while the task routes require a valid bearer token.
 
-A JWT has three parts: a header, a payload of claims and a signature. The server signs the first two with the symmetric key. On each request, the JWT bearer middleware reads the `Authorization: Bearer <token>` header, validates the signature, issuer, audience and lifetime, and builds a `ClaimsPrincipal` for the request.
+## Refactor
 
-`ClockSkew = TimeSpan.Zero` makes the lifetime check exact, which is useful in tests and for short-lived tokens. In production, a small skew (the default is five minutes) absorbs clock differences between servers.
+The demo credentials and the symmetric key are teaching scaffolding. In a real service:
 
-Authentication answers "who are you"; authorization answers "may you do this". `RequireAuthorization()` rejects an unauthenticated request with 401. A policy or role check would reject an authenticated but unauthorized request with 403; this version only needs the first gate.
+- Read the signing key from a secret store, not from a committed file.
+- Hash passwords and use an identity provider or a user store; never compare plaintext passwords.
+- Use HTTPS. A bearer token is a credential; sending it over plain HTTP exposes it.
+- Keep access tokens short-lived and support rotation of the signing key.
+- Do not log tokens or full `Authorization` headers.
+
+The claims are intentionally minimal. A `sub` and a name are enough for authentication; roles or scopes belong in a policy when an endpoint needs finer authorization.
 
 ## Repeat for new requirements
 
@@ -174,30 +215,6 @@ public async Task TokenEndpoint_ReturnsATokenThatAuthorizesTheApi()
 
 Green. The test gets a token from the endpoint, attaches it and reaches the protected route.
 
-The test driver authenticates by default so the rest of the suite did not change:
-
-```csharp
-if (authenticate)
-{
-    var token = GetTokenAsync().GetAwaiter().GetResult();
-    Client.DefaultRequestHeaders.Authorization =
-        new AuthenticationHeaderValue("Bearer", token);
-}
-```
-
-That synchronous call is acceptable in test setup; production code should be async all the way.
-
-## Refactor
-
-The demo credentials and the symmetric key are teaching scaffolding. In a real service:
-
-- Read the signing key from a secret store, not from a committed file.
-- Hash passwords and use an identity provider or a user store; never compare plaintext passwords.
-- Use HTTPS. A bearer token is a credential; sending it over plain HTTP exposes it.
-- Keep access tokens short-lived and support rotation of the signing key.
-- Do not log tokens or full `Authorization` headers.
-
-The claims are intentionally minimal. A `sub` and a name are enough for authentication; roles or scopes belong in a policy when an endpoint needs finer authorization.
 
 ## Wrapping up
 
