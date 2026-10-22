@@ -79,3 +79,4 @@ One API, grown version by version. Each version is a standalone solution with it
 6. 🟢 [v6: Validation](build-an-app/v6-validation/v6-validation.md) ([ES](build-an-app/v6-validation/v6-validation.es.md)) - Move title rules into FluentValidation and return per-field errors.
 7. 🟢 [v7: JWT authentication](build-an-app/v7-auth/v7-auth.md) ([ES](build-an-app/v7-auth/v7-auth.es.md)) - Issue a token and protect the task routes with a bearer policy.
 8. 🟢 [v8: Lifetimes and a decorator](build-an-app/v8-di/v8-di.md) ([ES](build-an-app/v8-di/v8-di.es.md)) - Expose scoped and singleton services and count reads with a decorator.
+9. 🟢 [v9: Structured logging](build-an-app/v9-logging/v9-logging.md) ([ES](build-an-app/v9-logging/v9-logging.es.md)) - Log named fields, add a correlation scope and capture logs in tests.

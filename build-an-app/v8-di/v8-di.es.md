@@ -166,5 +166,5 @@ Lo que cubrimos:
 - Registro por factory para evitar una resolución recursiva del decorador.
 - Dependencias cautivas y la raíz de composición.
 
-Siguiente: v9: logging estructurado.
+Siguiente: [v9: logging estructurado](../v9-logging/v9-logging.es.md).
 

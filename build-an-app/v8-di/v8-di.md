@@ -166,5 +166,5 @@ What we have covered:
 - Factory registration to avoid a recursive decorator resolution.
 - Captive dependencies and the composition root.
 
-Next: v9: structured logging.
+Next: [v9: structured logging](../v9-logging/v9-logging.md).
 
