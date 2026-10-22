@@ -6,6 +6,27 @@ A log line that says "task created" is hard to query. A log event with a `TaskId
 
 The finished solution is in `build-an-app/v9-logging`.
 
+## How it works
+
+The logging pipeline has three pieces: the call site, an `ILogger<T>` category and a provider. The category is usually the type that owns the log, so `ILogger<Program>` for the endpoint and `ILogger<CorrelationIdMiddleware>` for the middleware.
+
+A message template uses braces for named fields. The provider receives both the template and the values. Console and JSON providers render them; a test provider can inspect them; an OpenTelemetry exporter can attach them to a span.
+
+Log levels narrow the output. `Information` is for normal business events, `Warning` for something unexpected but handled, `Error` for a failure. Avoid logging every method entry; log the decisions and the boundaries.
+
+## How to test
+
+Install a recording provider through `WebApplicationFactory` and inspect its key/value fields instead of comparing the rendered message:
+
+```csharp
+builder.ConfigureLogging(logging =>
+{
+    logging.ClearProviders();
+    logging.AddProvider(_logs);
+    logging.SetMinimumLevel(LogLevel.Information);
+});
+```
+
 ## Write the test first
 
 ```csharp
@@ -26,39 +47,31 @@ public async Task CreateTask_LogsTaskIdAndTitle()
 }
 ```
 
-Against v8 there is no log event, so the test fails to find a record. The test driver installs a recording provider:
+The assertions read named fields from the record rather than comparing a formatted message.
+
+## Try to run the test
+
+Run it against v8. The create request succeeds, but no `created` record exists, so the test cannot find a log event.
+
+## Write the minimal amount of code for the test to run and check the failing test output
+
+Add a structured event with the task id:
 
 ```csharp
-builder.ConfigureLogging(logging =>
-{
-    logging.ClearProviders();
-    logging.AddProvider(_logs);
-    logging.SetMinimumLevel(LogLevel.Information);
-});
+logger.LogInformation("Task {TaskId} created", task.Id);
 ```
 
-The provider's `Log` method receives the message state as key/value pairs. That is the structured data the test reads.
+The event now has `TaskId`, but the test still fails because it also expects `Title`.
 
-## Add the event
+## Write enough code to make it pass
+
+Add the title as a named field:
 
 ```csharp
-app.MapPost("/tasks", async (
-    CreateTaskRequest request,
-    ITaskWriter writer,
-    IValidator<CreateTaskRequest> validator,
-    ILogger<Program> logger) =>
-{
-    // validation ...
-
-    var task = writer.Add(request.Title.Trim());
-
-    logger.LogInformation(
-        "Task {TaskId} created with title {Title}",
-        task.Id,
-        task.Title);
-
-    return Results.Created($"/tasks/{task.Id}", task);
-});
+logger.LogInformation(
+    "Task {TaskId} created with title {Title}",
+    task.Id,
+    task.Title);
 ```
 
 Green. The message template names the fields; the arguments fill them. A provider can store `TaskId=1` and `Title=Write tests` without parsing the rendered text.
@@ -71,13 +84,17 @@ logger.LogInformation($"Task {task.Id} created"); // loses the fields
 
 The interpolated string is a single opaque message. The template version keeps the names and values separate.
 
-## How it works
+## Refactor
 
-The logging pipeline has three pieces: the call site, an `ILogger<T>` category and a provider. The category is usually the type that owns the log, so `ILogger<Program>` for the endpoint and `ILogger<CorrelationIdMiddleware>` for the middleware.
+A few log habits keep the output useful:
 
-A message template uses braces for named fields. The provider receives both the template and the values. Console and JSON providers render them; a test provider can inspect them; an OpenTelemetry exporter can attach them to a span.
+- Log at the boundary: request received, task created, dependency failed. Skip the internal loop.
+- Use stable templates. Changing `Task {TaskId} created` breaks dashboards that query the event; add a new event instead of renaming an old one.
+- Never log secrets, tokens, passwords or full request bodies. Log identifiers and outcomes.
+- Put shared context in scopes instead of repeating it in every message.
+- Keep the provider configuration in the composition root; the domain code asks for `ILogger<T>` and does not know where the logs go.
 
-Log levels narrow the output. `Information` is for normal business events, `Warning` for something unexpected but handled, `Error` for a failure. Avoid logging every method entry; log the decisions and the boundaries.
+The recording provider in the test project is a small example of a provider. A production provider writes JSON, ships to a collector or both; the call site does not change.
 
 ## Repeat for new requirements
 
@@ -150,18 +167,6 @@ app.UseMiddleware<CorrelationIdMiddleware>();
 Green. The response carries the id, and the log event inside the scope carries `CorrelationId` as a field.
 
 The scope applies to every log written through that logger for the duration of the request. In a larger app, the correlation id also goes into outbound HTTP headers and message metadata, so one id follows a request across services.
-
-## Refactor
-
-A few log habits keep the output useful:
-
-- Log at the boundary: request received, task created, dependency failed. Skip the internal loop.
-- Use stable templates. Changing `Task {TaskId} created` breaks dashboards that query the event; add a new event instead of renaming an old one.
-- Never log secrets, tokens, passwords or full request bodies. Log identifiers and outcomes.
-- Put shared context in scopes instead of repeating it in every message.
-- Keep the provider configuration in the composition root; the domain code asks for `ILogger<T>` and does not know where the logs go.
-
-The recording provider in the test project is a small example of a provider. A production provider writes JSON, ships to a collector or both; the call site does not change.
 
 ## Wrapping up
 

@@ -137,6 +137,10 @@
   in order, with request and app lifetimes introduced before the diagnostics
   scenario. `mise exec dotnet@10.0.402 -- dotnet test
   build-an-app/v8-di/TaskTracker.sln -m:1` passed 19 tests.
+- Part 3 `v9-logging`: English and Spanish pairs now contain the required
+  sections in order, with structured fields and a passing green baseline for
+  correlation scopes. `mise exec dotnet@10.0.402 -- dotnet test
+  build-an-app/v9-logging/TaskTracker.sln -m:1` passed 21 tests.
 
 ## Completed increment: Part 4 delivery references
 

@@ -6,6 +6,27 @@ Una línea que dice "tarea creada" es difícil de consultar. Un evento con un ca
 
 La solución terminada está en `build-an-app/v9-logging`.
 
+## Cómo funciona
+
+El pipeline de logging tiene tres piezas: el lugar de la llamada, una categoría `ILogger<T>` y un proveedor. La categoría suele ser el tipo dueño del log, así `ILogger<Program>` para el endpoint y `ILogger<CorrelationIdMiddleware>` para el middleware.
+
+Una plantilla usa llaves para los campos con nombre. El proveedor recibe la plantilla y los valores. Los proveedores de consola y JSON los renderizan; un proveedor de test puede inspeccionarlos; un exportador de OpenTelemetry puede adjuntarlos a un span.
+
+Los niveles acotan la salida. `Information` es para eventos de negocio normales, `Warning` para algo inesperado pero manejado, `Error` para un fallo. Evita loguear la entrada de cada método; loguea las decisiones y los bordes.
+
+## Cómo probarlo
+
+Instala un proveedor que graba por medio de `WebApplicationFactory` e inspecciona sus campos clave/valor en vez de comparar el mensaje renderizado:
+
+```csharp
+builder.ConfigureLogging(logging =>
+{
+    logging.ClearProviders();
+    logging.AddProvider(_logs);
+    logging.SetMinimumLevel(LogLevel.Information);
+});
+```
+
 ## Escribe primero el test
 
 ```csharp
@@ -26,39 +47,31 @@ public async Task CreateTask_LogsTaskIdAndTitle()
 }
 ```
 
-Contra v8 no hay evento de log, así que el test no encuentra ningún registro. El driver instala un proveedor que graba:
+Las aserciones leen campos con nombre del registro en vez de comparar un mensaje formateado.
+
+## Intenta ejecutar el test
+
+Ejecútalo contra v8. La petición de creación funciona, pero no hay ningún registro `created` y el test no encuentra el evento de log.
+
+## Escribe el código mínimo para que el test compile y mira la salida
+
+Agrega un evento estructurado con el id de la tarea:
 
 ```csharp
-builder.ConfigureLogging(logging =>
-{
-    logging.ClearProviders();
-    logging.AddProvider(_logs);
-    logging.SetMinimumLevel(LogLevel.Information);
-});
+logger.LogInformation("Task {TaskId} created", task.Id);
 ```
 
-El método `Log` del proveedor recibe el estado del mensaje como pares clave/valor. Esos son los datos estructurados que lee el test.
+El evento ya tiene `TaskId`, pero el test sigue fallando porque también espera `Title`.
 
-## Agrega el evento
+## Escribe el código suficiente para que pase
+
+Agrega el título como campo con nombre:
 
 ```csharp
-app.MapPost("/tasks", async (
-    CreateTaskRequest request,
-    ITaskWriter writer,
-    IValidator<CreateTaskRequest> validator,
-    ILogger<Program> logger) =>
-{
-    // validación ...
-
-    var task = writer.Add(request.Title.Trim());
-
-    logger.LogInformation(
-        "Task {TaskId} created with title {Title}",
-        task.Id,
-        task.Title);
-
-    return Results.Created($"/tasks/{task.Id}", task);
-});
+logger.LogInformation(
+    "Task {TaskId} created with title {Title}",
+    task.Id,
+    task.Title);
 ```
 
 Verde. La plantilla nombra los campos; los argumentos los llenan. Un proveedor puede guardar `TaskId=1` y `Title=Write tests` sin parsear el texto renderizado.
@@ -71,13 +84,17 @@ logger.LogInformation($"Task {task.Id} created"); // pierde los campos
 
 La cadena interpolada es un mensaje opaco. La versión con plantilla mantiene nombres y valores separados.
 
-## Cómo funciona
+## Refactor
 
-El pipeline de logging tiene tres piezas: el lugar de la llamada, una categoría `ILogger<T>` y un proveedor. La categoría suele ser el tipo dueño del log, así `ILogger<Program>` para el endpoint y `ILogger<CorrelationIdMiddleware>` para el middleware.
+Algunos hábitos mantienen útil la salida:
 
-Una plantilla usa llaves para los campos con nombre. El proveedor recibe la plantilla y los valores. Los proveedores de consola y JSON los renderizan; un proveedor de test puede inspeccionarlos; un exportador de OpenTelemetry puede adjuntarlos a un span.
+- Loguea en el borde: petición recibida, tarea creada, dependencia fallida. Saltea el bucle interno.
+- Usa plantillas estables. Cambiar `Task {TaskId} created` rompe los tableros que consultan el evento; agrega uno nuevo en vez de renombrar el viejo.
+- Nunca loguees secretos, tokens, contraseñas ni cuerpos completos. Loguea identificadores y resultados.
+- Pon el contexto compartido en scopes en vez de repetirlo en cada mensaje.
+- Mantén la configuración de proveedores en la raíz de composición; el dominio pide `ILogger<T>` y no sabe adónde van los logs.
 
-Los niveles acotan la salida. `Information` es para eventos de negocio normales, `Warning` para algo inesperado pero manejado, `Error` para un fallo. Evita loguear la entrada de cada método; loguea las decisiones y los bordes.
+El proveedor que graba en el proyecto de tests es un ejemplo pequeño. Un proveedor de producción escribe JSON, lo envía a un colector o ambas cosas; el lugar de la llamada no cambia.
 
 ## Repite con requisitos nuevos
 
@@ -150,18 +167,6 @@ app.UseMiddleware<CorrelationIdMiddleware>();
 Verde. La respuesta lleva el id y el evento dentro del scope lleva `CorrelationId` como campo.
 
 El scope aplica a cada log escrito a través de ese logger durante la petición. En una app más grande, el id de correlación también viaja en cabeceras HTTP salientes y metadatos de mensajes, así un id sigue una petición entre servicios.
-
-## Refactor
-
-Algunos hábitos mantienen útil la salida:
-
-- Loguea en el borde: petición recibida, tarea creada, dependencia fallida. Saltea el bucle interno.
-- Usa plantillas estables. Cambiar `Task {TaskId} created` rompe los tableros que consultan el evento; agrega un evento nuevo en vez de renombrar el viejo.
-- Nunca loguees secretos, tokens, contraseñas ni cuerpos completos. Loguea identificadores y resultados.
-- Pon el contexto compartido en scopes en vez de repetirlo en cada mensaje.
-- Mantén la configuración de proveedores en la raíz de composición; el dominio pide `ILogger<T>` y no sabe adónde van los logs.
-
-El proveedor que graba en el proyecto de tests es un ejemplo pequeño. Un proveedor de producción escribe JSON, lo envía a un colector o ambas cosas; el lugar de la llamada no cambia.
 
 ## Para cerrar
 
