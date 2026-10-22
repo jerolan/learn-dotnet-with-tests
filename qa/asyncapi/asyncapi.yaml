@@ -1,0 +1,66 @@
+asyncapi: 2.6.0
+id: urn:com:learndotnet:tasktracker:events
+defaultContentType: application/json
+
+tags:
+  - name: tasks
+    description: Task lifecycle events.
+
+info:
+  title: TaskTracker Events
+  version: 1.0.0
+  description: Events published when a task changes.
+  contact:
+    name: Learn .NET with Tests
+    url: https://github.com/jerolan/learn-dotnet-with-tests
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  production:
+    url: broker.example.com:5672
+    protocol: amqp
+    description: Placeholder broker; the book sample uses an in-process channel.
+
+channels:
+  tasks/created:
+    publish:
+      operationId: publishTaskCreated
+      summary: Announce a task that was just created.
+      message:
+        $ref: '#/components/messages/TaskCreated'
+
+components:
+  messages:
+    TaskCreated:
+      messageId: taskCreated
+      name: TaskCreated
+      title: Task created
+      contentType: application/json
+      headers:
+        type: object
+        properties:
+          correlationId:
+            type: string
+            description: Ties the event to the request that produced it.
+      payload:
+        $ref: '#/components/schemas/TaskCreatedPayload'
+
+  schemas:
+    TaskCreatedPayload:
+      type: object
+      required:
+        - id
+        - title
+        - createdAt
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+          minLength: 1
+        createdAt:
+          type: string
+          format: date-time

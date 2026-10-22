@@ -24,7 +24,7 @@ Esta parte cierra el roadmap. Los capítulos de preguntas responden dudas que no
 - 🟠 [gRPC](grpc/grpc.es.md) ([EN](grpc/grpc.md)) - Define un contrato proto, genera el servicio y el cliente, y llámalo a través de TestServer.
 - 🟠 [GraphQL](graphql/graphql.es.md) ([EN](graphql/graphql.md)) - Publica una query y una mutation sobre un endpoint y prueba los documentos por HTTP.
 - 🟠 [Actualizaciones en tiempo real con SignalR](signalr/signalr.es.md) ([EN](signalr/signalr.md)) - Empuja una tarea creada a un cliente conectado y prueba el hub a través de TestServer.
-- 🟠 AsyncAPI. *Planeado.*
+- 🟠 [AsyncAPI](asyncapi/asyncapi.es.md) ([EN](asyncapi/asyncapi.md)) - Describe el evento TaskCreated como contrato y valídalo con la CLI oficial.
 - 🟠 [Bibliotecas SDK](sdk-libraries/sdk-libraries.es.md) ([EN](sdk-libraries/sdk-libraries.md)) - Construye un cliente HTTP tipado, pruébalo con un stub handler y empaquétalo como paquete NuGet.
 - 🟠 DevOps e infraestructura como código. *Planeado.*
 
@@ -42,7 +42,7 @@ Esta parte cierra el roadmap. Los capítulos de preguntas responden dudas que no
 | ASP.NET Core básico | [v1](../build-an-app/v1-intro/v1-intro.es.md) a [v14](../build-an-app/v14-cqrs/v14-cqrs.es.md) | cubierto |
 | RDBMS, SQL, EF Core, Dapper | [v4](../build-an-app/v4-ef-core/v4-ef-core.es.md), [v5](../build-an-app/v5-dapper/v5-dapper.es.md) | cubierto |
 | APIs REST, OpenAPI/Swagger | [v2](../build-an-app/v2-json-routing/v2-json-routing.es.md), [v12](../build-an-app/v12-openapi/v12-openapi.es.md) | cubierto |
-| AsyncAPI | Apéndice de AsyncAPI | planeado |
+| AsyncAPI | [AsyncAPI](asyncapi/asyncapi.es.md) | cubierto |
 | Logging | [v9](../build-an-app/v9-logging/v9-logging.es.md) | cubierto |
 | Caché | [v10](../build-an-app/v10-caching/v10-caching.es.md) | cubierto |
 | Mensajería | [v11](../build-an-app/v11-messaging-scheduling/v11-messaging-scheduling.es.md) | cubierto |

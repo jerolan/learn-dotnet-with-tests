@@ -27,7 +27,7 @@ Close the roadmap with LGWT-style Q&A chapters and the 🟠 appendices. Every ro
 | ASP.NET Core basics | Part 3, `v1` to `v14` | covered |
 | RDBMS, SQL, EF Core, Dapper | Part 3, `v4` and `v5` | covered |
 | REST APIs, OpenAPI/Swagger | Part 3, `v2` and `v12` | covered |
-| AsyncAPI | Appendix `asyncapi` | planned |
+| AsyncAPI | Appendix `asyncapi` | covered |
 | Logging | Part 3, `v9` | covered |
 | Caching | Part 3, `v10` | covered |
 | Messaging | Part 3, `v11` | covered |
