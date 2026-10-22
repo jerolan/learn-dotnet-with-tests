@@ -6,7 +6,11 @@ Una tabla relacional obliga a que cada fila tenga las mismas columnas. Un docume
 
 Este apéndice guarda tareas en MongoDB, levanta un servidor real en Docker y prueba el repositorio contra él. El fallo que guía el último cambio es un orden que pone `Beta` antes que `alpha`.
 
-## El documento
+## Cómo funciona
+
+MongoDB guarda cada tarea como un documento BSON. El repositorio traduce expresiones de C# a filtros y actualizaciones; MongoDB define el orden y la representación almacenada.
+
+### El documento
 
 `src/TaskTracker.Mongo/TaskDocument.cs`:
 
@@ -34,7 +38,7 @@ public sealed class TaskDocument
 
 Mongo guarda `DateTime` como milisegundos UTC. Una hora local se convierte al escribir y vuelve como UTC.
 
-## El repositorio
+### El repositorio
 
 `src/TaskTracker.Mongo/TaskRepository.cs`:
 
@@ -78,7 +82,7 @@ public sealed class TaskRepository
 
 `MatchedCount` responde "coincidió algún documento con el filtro". `ModifiedCount` responde "cambió algún valor". Marcar como hecha una tarea que ya lo estaba coincide pero no modifica; tratarlo como tarea ausente sería incorrecto.
 
-## Levanta Mongo una vez
+### Levanta Mongo una vez
 
 `tests/TaskTracker.Mongo.Tests/TaskRepositoryTests.cs`:
 
@@ -111,35 +115,55 @@ _repository = new TaskRepository(client.GetDatabase("tasktracker"));
 
 La imagen pesa 1.1 GB, así que la primera corrida paga el pull. Las siguientes la reutilizan.
 
+## Cómo probarlo
+
+Estos tests usan un contenedor MongoDB real mediante Testcontainers, así que Docker debe estar disponible. La base se borra antes de cada test; ejecuta `dotnet test Nosql.sln` desde esta carpeta.
+
 ## Escribe primero el test
+
+El documento y las operaciones básicas del repositorio dan contexto; el nuevo comportamiento de lista empieza con su propio test. Inserta valores a ambos lados del límite entre mayúsculas y minúsculas y afirma el orden visible para el usuario:
 
 ```csharp
 [TestMethod]
-public async Task InsertedTaskComesBackWithTheSameFields()
+public async Task ListByTitleIgnoresCase()
 {
-    var task = new TaskDocument
+    await _repository.InsertAsync(new TaskDocument
     {
         Id = Guid.NewGuid(),
-        Title = "Write the chapter",
-        CreatedAt = new DateTime(2026, 1, 2, 3, 4, 5, DateTimeKind.Utc)
-    };
+        Title = "Beta",
+        CreatedAt = DateTime.UtcNow
+    });
+    await _repository.InsertAsync(new TaskDocument
+    {
+        Id = Guid.NewGuid(),
+        Title = "alpha",
+        CreatedAt = DateTime.UtcNow
+    });
 
-    await _repository.InsertAsync(task);
+    var tasks = await _repository.ListByTitleAsync();
 
-    var found = await _repository.GetAsync(task.Id);
-
-    Assert.IsNotNull(found);
-    Assert.AreEqual(task.Title, found!.Title);
-    Assert.IsFalse(found.IsDone);
-    Assert.AreEqual(DateTimeKind.Utc, found.CreatedAt.Kind);
+    CollectionAssert.AreEqual(
+        new[] { "alpha", "Beta" },
+        tasks.Select(task => task.Title).ToArray());
 }
 ```
 
-El test dice lo que promete la API: los campos sobreviven el viaje de ida y vuelta y el timestamp sigue en UTC. Los otros tests cubren la actualización, la tarea ausente y la lista.
+## Intenta ejecutar el test
 
-## El orden que falla
+Antes de agregar la consulta de lista, el test no compila porque falta `ListByTitleAsync`.
 
-Inserta `Beta` y `alpha`, y pide la lista ordenada por título:
+## Escribe el código mínimo para que el test compile y mira la salida
+
+La consulta básica delega el orden a MongoDB, pero usa la collation por defecto:
+
+```csharp
+return await _tasks
+    .Find(FilterDefinition<TaskDocument>.Empty)
+    .SortBy(task => task.Title)
+    .ToListAsync(cancellationToken);
+```
+
+Ejecuta el test. Ahora llega a la aserción y falla:
 
 ```text
 CollectionAssert.AreEqual failed. (Element at index 0 do not match.)
@@ -148,6 +172,8 @@ CollectionAssert.AreEqual failed. (Element at index 0 do not match.)
 La collation binaria por defecto de Mongo ordena por code point. La `B` mayúscula (66) va antes que la `a` minúscula (97), así que el orden es `Beta`, `alpha`. Quien lee una lista de tareas espera un orden que ignore mayúsculas.
 
 No arregles esto trayendo todo y ordenando en memoria. El orden pertenece a la base; una colección con un millón de tareas no debería cruzar la red para ordenarse.
+
+## Escribe el código suficiente para que pase
 
 Dale una collation a la query:
 
@@ -170,7 +196,9 @@ return await cursor.ToListAsync(cancellationToken);
 Passed!  - Failed:     0, Passed:     5, Skipped:     0, Total:     5, Duration: 6 s
 ```
 
-## Qué cambia Mongo
+## Refactor
+
+### Qué cambia Mongo
 
 - No hay migración de esquema para un campo opcional nuevo. Sí hay migración de datos cuando un campo cambia de significado o de representación.
 - Un documento puede embeber una lista que SQL pondría en una segunda tabla. Embebe lo que se lee junto; referencia lo que crece sin límite.
@@ -178,7 +206,7 @@ Passed!  - Failed:     0, Passed:     5, Skipped:     0, Total:     5, Duration:
 - Las transacciones multi-documento necesitan un replica set. Un contenedor de un solo nodo sirve para este test de repositorio, no para código que depende de transacciones.
 - El driver serializa por nombre de propiedad. Renombrar una propiedad de C# es una migración de datos salvo que mapees el nombre viejo explícitamente.
 
-## Refactor para producción
+### Preocupaciones de producción
 
 - Crea índices para los filtros y órdenes que realmente usas, y revisa el plan con `explain`.
 - Mantén la cadena de conexión en configuración o en un gestor de secretos; nunca en el repositorio.
@@ -186,6 +214,22 @@ Passed!  - Failed:     0, Passed:     5, Skipped:     0, Total:     5, Duration:
 - Fija un timeout de selección de servidor y de socket. Los defaults pueden hacer que un nodo caído parezca un cuelgue.
 - Haz backup antes de cambiar la representación de un campo existente. Una colección mixta es más difícil de arreglar que una vacía.
 - Agrega health checks que hagan ping a la base, no solo al proceso.
+
+## Repite con requisitos nuevos
+
+El siguiente requisito es indicar que una tarea ausente no cambió:
+
+```csharp
+[TestMethod]
+public async Task MarkDoneReturnsFalseForMissingTask()
+{
+    var changed = await _repository.MarkDoneAsync(Guid.NewGuid());
+
+    Assert.IsFalse(changed);
+}
+```
+
+`MatchedCount` sigue en cero para un id desconocido, así que el repositorio devuelve `false`.
 
 ## Lo que queda diferido
 

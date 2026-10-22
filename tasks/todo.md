@@ -180,6 +180,9 @@
 - Part 4 `grpc` now follows the runnable appendix flow in both languages.
   `mise exec dotnet@10.0.402 -- dotnet test qa/grpc/Grpc.sln -m:1` passed 2
   tests.
+- Part 4 `nosql` now follows the runnable appendix flow in both languages.
+  `mise exec dotnet@10.0.402 -- dotnet test qa/nosql/Nosql.sln -m:1` passed 5
+  tests against the MongoDB container.
 
 ## Completed increment: Part 4 delivery references
 

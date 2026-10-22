@@ -6,7 +6,11 @@ A relational table forces every row into the same columns. A document store lets
 
 This appendix stores tasks in MongoDB, runs a real server in Docker, and tests the repository against it. The failure that drives the last change is a sort that puts `Beta` before `alpha`.
 
-## The document
+## How it works
+
+MongoDB stores a task as one BSON document. The repository translates C# expressions into filters and updates; MongoDB owns the sort order and the stored representation.
+
+### The document
 
 `src/TaskTracker.Mongo/TaskDocument.cs`:
 
@@ -34,7 +38,7 @@ public sealed class TaskDocument
 
 Mongo stores `DateTime` as UTC milliseconds. A local time is converted on write and comes back as UTC.
 
-## The repository
+### The repository
 
 `src/TaskTracker.Mongo/TaskRepository.cs`:
 
@@ -78,7 +82,7 @@ public sealed class TaskRepository
 
 `MatchedCount` answers "did a document match the filter". `ModifiedCount` answers "did the update change a value". Marking an already-done task as done matches but does not modify; treating that as a missing task would be wrong.
 
-## Start Mongo once
+### Start Mongo once
 
 `tests/TaskTracker.Mongo.Tests/TaskRepositoryTests.cs`:
 
@@ -111,35 +115,55 @@ _repository = new TaskRepository(client.GetDatabase("tasktracker"));
 
 The image is 1.1 GB, so the first run pays for the pull. Later runs reuse it.
 
+## How to test
+
+These tests use a real MongoDB container through Testcontainers, so Docker must be available. The database is dropped before each test; run `dotnet test Nosql.sln` from this appendix folder.
+
 ## Write the test first
+
+The document and basic repository operations provide context; the new list behavior starts with its own test. Insert values on both sides of the uppercase/lowercase boundary and assert the user-facing order:
 
 ```csharp
 [TestMethod]
-public async Task InsertedTaskComesBackWithTheSameFields()
+public async Task ListByTitleIgnoresCase()
 {
-    var task = new TaskDocument
+    await _repository.InsertAsync(new TaskDocument
     {
         Id = Guid.NewGuid(),
-        Title = "Write the chapter",
-        CreatedAt = new DateTime(2026, 1, 2, 3, 4, 5, DateTimeKind.Utc)
-    };
+        Title = "Beta",
+        CreatedAt = DateTime.UtcNow
+    });
+    await _repository.InsertAsync(new TaskDocument
+    {
+        Id = Guid.NewGuid(),
+        Title = "alpha",
+        CreatedAt = DateTime.UtcNow
+    });
 
-    await _repository.InsertAsync(task);
+    var tasks = await _repository.ListByTitleAsync();
 
-    var found = await _repository.GetAsync(task.Id);
-
-    Assert.IsNotNull(found);
-    Assert.AreEqual(task.Title, found!.Title);
-    Assert.IsFalse(found.IsDone);
-    Assert.AreEqual(DateTimeKind.Utc, found.CreatedAt.Kind);
+    CollectionAssert.AreEqual(
+        new[] { "alpha", "Beta" },
+        tasks.Select(task => task.Title).ToArray());
 }
 ```
 
-The test says what the API promises: the fields survive a round trip and the timestamp stays UTC. The other tests cover the update, the missing task and the list.
+## Try to run the test
 
-## The sort that fails
+Before adding the list query, the test does not compile because `ListByTitleAsync` is missing.
 
-Insert `Beta` and `alpha`, then ask for the list sorted by title:
+## Write the minimal amount of code for the test to run and check the failing test output
+
+The basic query delegates ordering to MongoDB but uses its default collation:
+
+```csharp
+return await _tasks
+    .Find(FilterDefinition<TaskDocument>.Empty)
+    .SortBy(task => task.Title)
+    .ToListAsync(cancellationToken);
+```
+
+Run the test. It now reaches the assertion and fails:
 
 ```text
 CollectionAssert.AreEqual failed. (Element at index 0 do not match.)
@@ -148,6 +172,8 @@ CollectionAssert.AreEqual failed. (Element at index 0 do not match.)
 Mongo's default binary collation sorts by code point. Uppercase `B` (66) comes before lowercase `a` (97), so the order is `Beta`, `alpha`. A user reading a task list expects case-insensitive order.
 
 Do not fix this by fetching everything and sorting in memory. The database is where the order should happen; a collection with a million tasks should not cross the network to be sorted.
+
+## Write enough code to make it pass
 
 Give the query a collation:
 
@@ -170,7 +196,9 @@ return await cursor.ToListAsync(cancellationToken);
 Passed!  - Failed:     0, Passed:     5, Skipped:     0, Total:     5, Duration: 6 s
 ```
 
-## What Mongo changes
+## Refactor
+
+### What Mongo changes
 
 - There is no schema migration for a new optional field. There is still a data migration when a field changes meaning or representation.
 - A document can embed a list that SQL would put in a second table. Embed what is read together; reference what grows without bound.
@@ -178,7 +206,7 @@ Passed!  - Failed:     0, Passed:     5, Skipped:     0, Total:     5, Duration:
 - Multi-document transactions need a replica set. A single-node container is fine for this repository test, not for code that depends on transactions.
 - The driver serializes by property name. Renaming a C# property is a data migration unless you map the old name explicitly.
 
-## Refactor for production
+### Production concerns
 
 - Create indexes for the filters and sorts you actually use, and test the query plan with `explain`.
 - Keep the connection string in configuration or a secret store; never in the repository.
@@ -186,6 +214,22 @@ Passed!  - Failed:     0, Passed:     5, Skipped:     0, Total:     5, Duration:
 - Set a server selection timeout and a socket timeout. The defaults can make a failed node look like a hang.
 - Back up before changing the representation of an existing field. A mixed collection is harder to fix than an empty one.
 - Add health checks that ping the database, not just the process.
+
+## Repeat for new requirements
+
+The next requirement is to report a missing task as unchanged:
+
+```csharp
+[TestMethod]
+public async Task MarkDoneReturnsFalseForMissingTask()
+{
+    var changed = await _repository.MarkDoneAsync(Guid.NewGuid());
+
+    Assert.IsFalse(changed);
+}
+```
+
+`MatchedCount` stays zero for an unknown id, so the repository returns `false`.
 
 ## What is deferred
 
