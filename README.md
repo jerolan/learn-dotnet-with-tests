@@ -110,3 +110,4 @@ The closing part answers the questions that do not need a new project and maps t
 - 🟠 [Streaming with IAsyncEnumerable](qa/streaming/streaming.md) ([ES](qa/streaming/streaming.es.md)) - Yield tasks as they arrive, cancel halfway and keep partial results.
 - 🟠 [End-to-End Testing with Playwright](qa/e2e-playwright/e2e-playwright.md) ([ES](qa/e2e-playwright/e2e-playwright.es.md)) - Start Kestrel on a free port and drive the task board in Chromium.
 - 🟠 [Cloud Deployment](qa/cloud/cloud.md) ([ES](qa/cloud/cloud.es.md)) - Map the published artifact to a host: config, secrets, migrations, probes and rollback.
+- 🟠 [DevOps and Infrastructure as Code](qa/devops-iac/devops-iac.md) ([ES](qa/devops-iac/devops-iac.es.md)) - Compile a Bicep template, give the app an identity and read secrets from a vault.

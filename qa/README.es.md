@@ -26,7 +26,7 @@ Esta parte cierra el roadmap. Los capítulos de preguntas responden dudas que no
 - 🟠 [Actualizaciones en tiempo real con SignalR](signalr/signalr.es.md) ([EN](signalr/signalr.md)) - Empuja una tarea creada a un cliente conectado y prueba el hub a través de TestServer.
 - 🟠 [AsyncAPI](asyncapi/asyncapi.es.md) ([EN](asyncapi/asyncapi.md)) - Describe el evento TaskCreated como contrato y valídalo con la CLI oficial.
 - 🟠 [Bibliotecas SDK](sdk-libraries/sdk-libraries.es.md) ([EN](sdk-libraries/sdk-libraries.md)) - Construye un cliente HTTP tipado, pruébalo con un stub handler y empaquétalo como paquete NuGet.
-- 🟠 DevOps e infraestructura como código. *Planeado.*
+- 🟠 [DevOps e infraestructura como código](devops-iac/devops-iac.es.md) ([EN](devops-iac/devops-iac.md)) - Compila una plantilla Bicep, dale una identidad a la app y lee secretos desde un vault.
 
 ## Cobertura del roadmap
 
@@ -50,7 +50,7 @@ Esta parte cierra el roadmap. Los capítulos de preguntas responden dudas que no
 | Bibliotecas .NET | [Bibliotecas SDK](sdk-libraries/sdk-libraries.es.md) | cubierto |
 | SignalR | [Actualizaciones en tiempo real con SignalR](signalr/signalr.es.md) | cubierto |
 | Snapshot, E2E, rendimiento | [Snapshot](snapshot-verify/snapshot-verify.es.md), [Playwright](e2e-playwright/e2e-playwright.es.md), [NBomber](performance-nbomber/performance-nbomber.es.md) | cubierto |
-| Contenedores, CI/CD, monitoreo, nube, DevOps | [Contenedores](containers/containers.es.md), [CI/CD](ci-cd/ci-cd.es.md), [Monitoreo](monitoring-telemetry/monitoring-telemetry.es.md), [Nube](cloud/cloud.es.md), apéndice de DevOps | contenedores, CI/CD, monitoreo y nube cubiertos; DevOps planeado |
+| Contenedores, CI/CD, monitoreo, nube, DevOps | [Contenedores](containers/containers.es.md), [CI/CD](ci-cd/ci-cd.es.md), [Monitoreo](monitoring-telemetry/monitoring-telemetry.es.md), [Nube](cloud/cloud.es.md), [DevOps](devops-iac/devops-iac.es.md) | cubierto |
 | Streaming, NoSQL, gRPC, GraphQL | [gRPC](grpc/grpc.es.md), [GraphQL](graphql/graphql.es.md), [NoSQL](nosql/nosql.es.md), [Streaming](streaming/streaming.es.md) | cubierto |
 | Habilidades generales de desarrollo | Prefacio del README y preguntas de testing | cubierto |
 

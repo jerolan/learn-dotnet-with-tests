@@ -26,7 +26,7 @@ This part closes the roadmap. The Q&A chapters answer the questions that do not 
 - 🟠 [Real-time updates with SignalR](signalr/signalr.md) ([ES](signalr/signalr.es.md)) - Push a created task to a connected client and test the hub through TestServer.
 - 🟠 [AsyncAPI](asyncapi/asyncapi.md) ([ES](asyncapi/asyncapi.es.md)) - Describe the TaskCreated event as a contract and validate it with the official CLI.
 - 🟠 [SDK libraries](sdk-libraries/sdk-libraries.md) ([ES](sdk-libraries/sdk-libraries.es.md)) - Build a typed HTTP client, test it with a stub handler and pack it as a NuGet package.
-- 🟠 DevOps and infrastructure as code. *Planned.*
+- 🟠 [DevOps and infrastructure as code](devops-iac/devops-iac.md) ([ES](devops-iac/devops-iac.es.md)) - Compile a Bicep template, give the app an identity and read secrets from a vault.
 
 ## Roadmap coverage
 
@@ -50,7 +50,7 @@ This part closes the roadmap. The Q&A chapters answer the questions that do not 
 | .NET libraries | [SDK libraries](sdk-libraries/sdk-libraries.md) | covered |
 | SignalR | [Real-time updates with SignalR](signalr/signalr.md) | covered |
 | Snapshot, E2E, performance | [Snapshot](snapshot-verify/snapshot-verify.md), [Playwright](e2e-playwright/e2e-playwright.md), [NBomber](performance-nbomber/performance-nbomber.md) | covered |
-| Containers, CI/CD, monitoring, cloud, DevOps | [Containers](containers/containers.md), [CI/CD](ci-cd/ci-cd.md), [Monitoring](monitoring-telemetry/monitoring-telemetry.md), [Cloud](cloud/cloud.md), DevOps appendix | containers, CI/CD, monitoring and cloud covered; DevOps planned |
+| Containers, CI/CD, monitoring, cloud, DevOps | [Containers](containers/containers.md), [CI/CD](ci-cd/ci-cd.md), [Monitoring](monitoring-telemetry/monitoring-telemetry.md), [Cloud](cloud/cloud.md), [DevOps](devops-iac/devops-iac.md) | covered |
 | Streaming, NoSQL, gRPC, GraphQL | [gRPC](grpc/grpc.md), [GraphQL](graphql/graphql.md), [NoSQL](nosql/nosql.md), [Streaming](streaming/streaming.md) | covered |
 | General development skills | README preface and testing Q&A | covered |
 
