@@ -2,9 +2,17 @@
 
 [You can find all the code for this chapter here](https://github.com/jerolan/learn-dotnet-with-tests/tree/main/fundamentals/control-flow)
 
-Control flow decides which code runs and how many times. We will build a text repeater, then a sum, then FizzBuzz. Every step starts with a test, the same way the previous chapters did.
+Repeating a string once should return it unchanged; repeating it more times requires a loop. The same control-flow tools let us add a sum and FizzBuzz through small, testable steps.
 
 The finished solution is in `fundamentals/control-flow`. If you are building it from scratch, set it up like the others: a class library in `src/ControlFlow`, an MSTest project in `tests/ControlFlow.Tests`, a solution and a project reference.
+
+## How it works
+
+Loops repeat work; conditions choose which branch runs. A `for` loop fits a known count, a `while` loop checks a condition, and `if` or `switch` selects a result. Each example here returns a value directly, so tests can focus on the rule being exercised.
+
+## How to test
+
+Call these methods directly from MSTest and assert their return values. Use a table of cases for FizzBuzz, and separate boundary tests for zero repetitions and a zero sum limit.
 
 ## Write the test first
 
@@ -34,7 +42,7 @@ error CS0103: The name 'ControlFlowExamples' does not exist in the current conte
 
 ## Write the minimal amount of code for the test to run and check the failing test output
 
-Create the class and return the argument:
+Create the class with a placeholder implementation:
 
 ```csharp
 namespace ControlFlow;
@@ -43,12 +51,29 @@ public static class ControlFlowExamples
 {
     public static string Repeat(string text)
     {
-        return text;
+        return string.Empty;
     }
 }
 ```
 
-Run the tests. Green. The first requirement was small enough that the minimum is also the real implementation.
+The test compiles and fails with `Expected:<a>. Actual:<>`.
+
+## Write enough code to make it pass
+
+Return the text unchanged:
+
+```csharp
+public static string Repeat(string text)
+{
+    return text;
+}
+```
+
+Run the tests. Green. This smallest implementation also meets the first requirement completely.
+
+## Refactor
+
+There is no repeated logic to extract from a method that returns its argument. Leave it as is; the next requirement will show when a loop is useful.
 
 ## Repeat for new requirements
 
@@ -232,7 +257,7 @@ public static string FizzBuzz(int number)
 
 Green. The order matters. `15` is divisible by both `3` and `5`, so the `FizzBuzz` check has to come first; otherwise the `Fizz` branch would return early. The `%` operator gives the remainder, and `number % 3 == 0` is true for multiples of three.
 
-## Refactor
+### Refactor the FizzBuzz decision
 
 The three `if` statements all test the same pair of remainders. C# can match on a tuple in a switch expression:
 

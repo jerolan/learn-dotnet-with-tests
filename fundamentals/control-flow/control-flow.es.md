@@ -2,9 +2,17 @@
 
 [Encuentras todo el código de este capítulo aquí](https://github.com/jerolan/learn-dotnet-with-tests/tree/main/fundamentals/control-flow)
 
-El control de flujo decide qué código se ejecuta y cuántas veces. Vamos a construir un repetidor de texto, después una suma y por último FizzBuzz. Cada paso empieza con un test, igual que en los capítulos anteriores.
+Repetir una cadena una vez debe devolverla sin cambios; repetirla más veces requiere un bucle. Las mismas herramientas de control de flujo nos permiten agregar una suma y FizzBuzz en pasos pequeños y comprobables.
 
 La solución terminada está en `fundamentals/control-flow`. Si la estás armando desde cero, prepárala como las demás: una biblioteca de clases en `src/ControlFlow`, un proyecto de MSTest en `tests/ControlFlow.Tests`, una solución y una referencia entre proyectos.
+
+## Cómo funciona
+
+Los bucles repiten trabajo; las condiciones eligen qué rama se ejecuta. Un bucle `for` sirve para una cantidad conocida, un `while` comprueba una condición e `if` o `switch` elige un resultado. Cada ejemplo devuelve un valor directamente, así que los tests pueden centrarse en la regla que se está probando.
+
+## Cómo probarlo
+
+Llama a estos métodos directamente desde MSTest y comprueba sus valores de retorno. Usa una tabla de casos para FizzBuzz y tests de borde separados para cero repeticiones y un límite de suma igual a cero.
 
 ## Escribe primero el test
 
@@ -34,7 +42,7 @@ error CS0103: The name 'ControlFlowExamples' does not exist in the current conte
 
 ## Escribe el código mínimo para que el test compile y mira la salida
 
-Crea la clase y devuelve el argumento:
+Crea la clase con una implementación provisional:
 
 ```csharp
 namespace ControlFlow;
@@ -43,12 +51,29 @@ public static class ControlFlowExamples
 {
     public static string Repeat(string text)
     {
-        return text;
+        return string.Empty;
     }
 }
 ```
 
-Ejecuta los tests. Verde. El primer requisito era tan pequeño que el mínimo también es la implementación real.
+El test compila y falla con `Expected:<a>. Actual:<>`.
+
+## Escribe el código suficiente para que pase
+
+Devuelve el texto sin cambios:
+
+```csharp
+public static string Repeat(string text)
+{
+    return text;
+}
+```
+
+Ejecuta los tests. Verde. Esta implementación mínima también satisface por completo el primer requisito.
+
+## Refactor
+
+No hay lógica repetida que extraer de un método que devuelve su argumento. Déjalo como está; el siguiente requisito mostrará cuándo sirve un bucle.
 
 ## Repite con requisitos nuevos
 
@@ -232,7 +257,7 @@ public static string FizzBuzz(int number)
 
 Verde. El orden importa. `15` es divisible por `3` y por `5`, así que la comprobación de `FizzBuzz` tiene que ir primero; si no, la rama de `Fizz` volvería antes. El operador `%` da el resto, y `number % 3 == 0` es verdadero para los múltiplos de tres.
 
-## Refactor
+### Refactorizar la decisión de FizzBuzz
 
 Las tres sentencias `if` prueban el mismo par de restos. C# puede hacer pattern matching sobre una tupla en una expresión switch:
 
