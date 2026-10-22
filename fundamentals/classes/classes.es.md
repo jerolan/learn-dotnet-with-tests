@@ -204,5 +204,5 @@ Lo que cubrimos:
 
 El capítulo sigue la progresión de tipos y métodos de [Structs, Methods and Interfaces en Learn Go with Tests](https://quii.gitbook.io/learn-go-with-tests/structs-methods-and-interfaces), con el comportamiento de referencias de [Pointers en Learn Go with Tests](https://quii.gitbook.io/learn-go-with-tests/pointers-and-errors). .NET hace explícita la semántica de referencias con las clases y la de valores con los structs y los records.
 
-Siguiente: [Structs y records](../records.md).
+Siguiente: [Structs y records](../records/records.es.md).
 
