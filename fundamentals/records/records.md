@@ -166,5 +166,5 @@ What we have covered:
 
 The chapter follows the struct section of [Structs, Methods and Interfaces in Learn Go with Tests](https://quii.gitbook.io/learn-go-with-tests/structs-methods-and-interfaces), where a type groups data and methods. .NET adds records for data that compares by value and stays immutable.
 
-Next: [The with keyword](../with.md).
+Next: [The with keyword](../with/with.md).
 

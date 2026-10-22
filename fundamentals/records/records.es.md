@@ -166,5 +166,5 @@ Lo que cubrimos:
 
 El capítulo sigue la sección de structs de [Structs, Methods and Interfaces en Learn Go with Tests](https://quii.gitbook.io/learn-go-with-tests/structs-methods-and-interfaces), donde un tipo agrupa datos y métodos. .NET agrega los records para datos que se comparan por valor y se mantienen inmutables.
 
-Siguiente: [La palabra with](../with.md).
+Siguiente: [La palabra with](../with/with.es.md).
 
