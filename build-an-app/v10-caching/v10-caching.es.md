@@ -233,5 +233,5 @@ Lo que cubrimos:
 - Orden de decoradores: la caché va por fuera del contador.
 - Riesgos de datos viejos, escrituras externas, alcance por proceso y disciplina de claves.
 
-Siguiente: v11: mensajería y scheduling.
+Siguiente: [v11: mensajería y scheduling](../v11-messaging-scheduling/v11-messaging-scheduling.es.md).
 

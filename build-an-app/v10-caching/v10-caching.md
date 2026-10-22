@@ -233,5 +233,5 @@ What we have covered:
 - Decorator order: the cache sits outside the read counter.
 - Stale data risks, external writers, per-process scope and key discipline.
 
-Next: v11: messaging and scheduling.
+Next: [v11: messaging and scheduling](../v11-messaging-scheduling/v11-messaging-scheduling.md).
 
