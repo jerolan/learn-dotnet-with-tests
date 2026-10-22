@@ -219,5 +219,5 @@ Lo que cubrimos:
 - Restricciones de ruta, 201 Created con cabecera Location, 400 y 404.
 - Tests de aceptación con `WebApplicationFactory` y una factory por test.
 
-Siguiente: v2: JSON, routing y una forma de error consistente.
+Siguiente: [v2: JSON, routing y una forma de error consistente](../v2-json-routing/v2-json-routing.es.md).
 

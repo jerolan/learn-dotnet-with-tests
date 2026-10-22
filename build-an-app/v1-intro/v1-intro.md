@@ -219,5 +219,5 @@ What we have covered:
 - Route constraints, 201 Created with a Location header, 400 and 404.
 - Acceptance tests with `WebApplicationFactory` and a per-test factory.
 
-Next: v2: JSON, routing and a consistent error shape.
+Next: [v2: JSON, routing and a consistent error shape](../v2-json-routing/v2-json-routing.md).
 
