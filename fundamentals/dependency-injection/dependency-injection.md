@@ -2,9 +2,17 @@
 
 [You can find all the code for this chapter here](https://github.com/jerolan/learn-dotnet-with-tests/tree/main/fundamentals/dependency-injection)
 
-A class that creates its own dependencies is hard to test and hard to change. Dependency injection means the class receives what it needs from the outside, usually through its constructor. The class keeps its behavior; the caller decides which implementation to supply.
+When the disk is full, a notifier should send `[Alert] Disk full` through whichever channel the caller configures. If the notifier creates its own email or SMS sender, tests become tied to those services.
 
-We will build a notifier that sends an alert through one or more channels. The finished solution is in `fundamentals/dependency-injection`; if you are building it from scratch, use the same layout as the previous chapters: a class library in `src/DependencyInjection`, an MSTest project in `tests/DependencyInjection.Tests`, a solution and a project reference.
+Dependency injection gives the notifier what it needs from the outside, usually through its constructor. The class keeps its behavior; the caller decides which implementation to supply. The finished solution is in `fundamentals/dependency-injection`; if you are building it from scratch, use the same layout as the previous chapters: a class library in `src/DependencyInjection`, an MSTest project in `tests/DependencyInjection.Tests`, a solution and a project reference.
+
+## How it works
+
+`Notifier` depends on the `IMessageSender` interface and calls `Send` to deliver an alert. Its constructor is the injection point: the caller can provide a real sender in the application or a substitute in a test.
+
+## How to test
+
+Give `Notifier` a fake sender that records messages. The test can inspect the formatted message without contacting email or SMS services.
 
 ## Write the test first
 
@@ -88,6 +96,10 @@ public void Notify(string message)
 
 Green. `Notifier` does not know whether the sender writes to email, SMS or a log. It knows the interface and calls it. The constructor is the injection point: the test passes a fake, and production passes a real sender.
 
+## Refactor
+
+The notifier has one dependency and one behavior. Run the test again; it stays green, and there is no duplication to remove yet. Keep the constructor dependency explicit as new requirements arrive.
+
 ## Repeat for new requirements
 
 ### More than one channel
@@ -141,9 +153,9 @@ var notifier = new Notifier(new IMessageSender[] { sender });
 
 Green. The notifier still has no idea how many channels exist or what they do. The caller decides; a test can pass two fakes, and the application can pass email and SMS.
 
-## Refactor
+### The composition root
 
-The design is already small, but the important decision is where the concrete types live. `Notifier` never says `new EmailSender()`. Somewhere at the start of the application, a composition root does:
+The important decision is where the concrete types live. `Notifier` never says `new EmailSender()`. Somewhere at the start of the application, a composition root does:
 
 ```csharp
 IMessageSender[] senders =

@@ -56,6 +56,9 @@
 - Part 1 `decimal`: English and Spanish pairs now contain the required
   sections in order. `mise exec dotnet@10.0.402 -- dotnet test
   fundamentals/decimal/Decimal.sln -m:1` passed 5 tests.
+- Part 1 `dependency-injection`: English and Spanish pairs now contain the
+  required sections in order. `mise exec dotnet@10.0.402 -- dotnet test
+  fundamentals/dependency-injection/DependencyInjection.sln -m:1` passed 2 tests.
 
 ## Completed increment: Part 4 delivery references
 
