@@ -213,5 +213,5 @@ What we have covered:
 
 The chapter follows the reference behavior of [Pointers in Learn Go with Tests](https://quii.gitbook.io/learn-go-with-tests/pointers-and-errors): a function can work on the caller's value instead of a copy. C# makes the choice explicit with `ref`, `out` and `in` instead of exposing pointer syntax.
 
-Next: [Tasks](../tasks.md).
+Next: [Tasks](../tasks/tasks.md).
 

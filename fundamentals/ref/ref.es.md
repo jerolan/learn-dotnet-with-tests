@@ -213,5 +213,5 @@ Lo que cubrimos:
 
 El capítulo sigue el comportamiento de referencias de [Pointers en Learn Go with Tests](https://quii.gitbook.io/learn-go-with-tests/pointers-and-errors): una función puede trabajar sobre el valor de quien llama en vez de una copia. C# hace explícita la elección con `ref`, `out` e `in` en lugar de exponer sintaxis de punteros.
 
-Siguiente: [Tasks](../tasks.md).
+Siguiente: [Tasks](../tasks/tasks.es.md).
 
