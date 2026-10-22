@@ -10,6 +10,14 @@ We will test a user service that reads from a repository. The finished solution 
 dotnet add tests/Mocking.Tests/Mocking.Tests.csproj package Moq --version 4.20.70
 ```
 
+## How it works
+
+`Mock<IUserRepository>` creates an interface proxy. `Setup` defines what a call returns, and `Verify` checks an interaction after the service runs. By default, Moq mocks are loose: an unconfigured call returns a default value. `MockBehavior.Strict` makes unconfigured calls throw.
+
+## How to test
+
+Give the service a mock repository that returns a known user. Assert the returned name, then verify the repository received the requested id once. Verify only interactions that are part of the contract.
+
 ## Write the test first
 
 ```csharp
@@ -40,7 +48,15 @@ There are two assertions in this test. `Assert.AreEqual` checks the result; `Ver
 
 ## Try to run the test
 
-The compiler does not know `IUserRepository`, `User` or `UserService` yet. Create the production code with a placeholder:
+The compiler cannot find the production types yet:
+
+```text
+error CS0246: The type or namespace name 'IUserRepository' could not be found
+```
+
+## Write the minimal amount of code for the test to run and check the failing test output
+
+Create the contract, user and service with a placeholder result:
 
 ```csharp
 namespace Mocking;
@@ -83,15 +99,9 @@ public string GetName(int id)
 
 Green, including the `Verify`. The service depends on the interface; the test supplies a mock that answers `Find(1)` with a user.
 
-## How Moq works
+## Refactor
 
-`new Mock<IUserRepository>()` creates a proxy that implements the interface. Nothing is hard-coded to a database.
-
-`repository.Setup(r => r.Find(1))` describes the call to expect. `Returns(new User("Ada"))` is the answer for that call. `repository.Object` is the proxy instance you pass to the service, typed as `IUserRepository`.
-
-`Verify(r => r.Find(1), Times.Once)` asserts that the call happened once. If the service passed `2` or called twice, the test fails. That is useful when the interaction is part of the contract, not when it is an implementation detail.
-
-By default, a Moq mock is loose: a call that was not set up returns a default value (null, zero, an empty sequence). `new Mock<IUserRepository>(MockBehavior.Strict)` makes an unconfigured call throw instead. Strict mocks are noisier but catch accidental calls.
+The service makes one repository call and formats its result directly. Run the test again; there is no production duplication to remove.
 
 ## Repeat for new requirements
 
@@ -117,7 +127,7 @@ It passes with the current implementation, because `user?.Name ?? "Unknown"` han
 
 The cast `(User?)null` tells Moq which overload of `Returns` you mean. Without it, the compiler cannot infer the nullable type of the return value.
 
-## Refactor
+### Choose what to mock
 
 There is no production code to change. The design decision is where the mock belongs.
 
