@@ -270,5 +270,5 @@ Lo que cubrimos:
 - Un test que espera una entrada observable de auditoría.
 - Las diferencias entre este diseño y un broker durable.
 
-Siguiente: v12: OpenAPI.
+Siguiente: [v12: OpenAPI](../v12-openapi/v12-openapi.es.md).
 

@@ -271,5 +271,5 @@ What we have covered:
 - A test that waits for an observable audit entry.
 - The gaps between this design and a durable broker.
 
-Next: v12: OpenAPI.
+Next: [v12: OpenAPI](../v12-openapi/v12-openapi.md).
 
