@@ -38,7 +38,8 @@ Esta parte cierra el roadmap. Los capítulos de preguntas responden dudas que no
 | Unit testing: MSTest, Moq | [Mocking](../fundamentals/mock/mock.es.md), [Parte 2](../testing/acceptance-tests/acceptance-tests.es.md) | cubierto |
 | Unit testing: Bogus | [Datos de test con Bogus](test-data-bogus/test-data-bogus.es.md) | cubierto |
 | Integration testing: WebApplicationFactory, TestServer | [Tests de aceptación](../testing/acceptance-tests/acceptance-tests.es.md), [v4](../build-an-app/v4-ef-core/v4-ef-core.es.md) | cubierto |
-| Integration testing: Respawn, Testcontainers, Docker | [Herramientas de integración](integration-testing-tools/integration-testing-tools.es.md) | cubierto |
+| Integration testing: Respawn | [Herramientas de integración](integration-testing-tools/integration-testing-tools.es.md) | cubierto |
+| Integration testing: Testcontainers, Docker (imagen del roadmap) | [Herramientas de integración](integration-testing-tools/integration-testing-tools.es.md) | cubierto |
 | ASP.NET Core básico | [v1](../build-an-app/v1-intro/v1-intro.es.md) a [v15](../build-an-app/v15-signalr/v15-signalr.es.md) | cubierto |
 | RDBMS, SQL, EF Core, Dapper | [v4](../build-an-app/v4-ef-core/v4-ef-core.es.md), [v5](../build-an-app/v5-dapper/v5-dapper.es.md) | cubierto |
 | APIs REST, OpenAPI/Swagger | [v2](../build-an-app/v2-json-routing/v2-json-routing.es.md), [v12](../build-an-app/v12-openapi/v12-openapi.es.md) | cubierto |
@@ -53,4 +54,6 @@ Esta parte cierra el roadmap. Los capítulos de preguntas responden dudas que no
 | Contenedores, CI/CD, monitoreo, nube, DevOps | [Contenedores](containers/containers.es.md), [CI/CD](ci-cd/ci-cd.es.md), [Monitoreo](monitoring-telemetry/monitoring-telemetry.es.md), [Nube](cloud/cloud.es.md), [DevOps](devops-iac/devops-iac.es.md) | cubierto |
 | Streaming, NoSQL, gRPC, GraphQL | [gRPC](grpc/grpc.es.md), [GraphQL](graphql/graphql.es.md), [NoSQL](nosql/nosql.es.md), [Streaming](streaming/streaming.es.md) | cubierto |
 | Habilidades generales de desarrollo | Prefacio del README y preguntas de testing | cubierto |
+
+**Fuente del roadmap:** El mapa de texto `map.json` del [proyecto del roadmap](https://github.com/Elfocrash/.NET-Backend-Developer-Roadmap) enumera WebApplicationFactory, TestServer y Respawn; la imagen del roadmap agrega Testcontainers y Docker. Parte 2 y Parte 3 cubren WebApplicationFactory/TestServer, y el [apéndice de herramientas de integración](integration-testing-tools/integration-testing-tools.es.md) cubre Respawn, Testcontainers y Docker.
 

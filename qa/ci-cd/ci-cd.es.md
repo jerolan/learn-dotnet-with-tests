@@ -83,7 +83,7 @@ publish:
         dotnet-version: 6.0.x
     - name: Publish the API
       run: |
-        dotnet publish build-an-app/v14-cqrs/src/TaskTracker.Api/TaskTracker.Api.csproj \
+        dotnet publish build-an-app/v15-signalr/src/TaskTracker.Api/TaskTracker.Api.csproj \
           -c Release \
           -o artifacts/api \
           /p:UseAppHost=false
@@ -103,7 +103,7 @@ Los tests corrieron contra el mismo commit, no contra el mismo binario. Si neces
 El mismo comando, sin Actions:
 
 ```sh
-dotnet publish build-an-app/v14-cqrs/src/TaskTracker.Api/TaskTracker.Api.csproj \
+dotnet publish build-an-app/v15-signalr/src/TaskTracker.Api/TaskTracker.Api.csproj \
   -c Release \
   -o /tmp/tt-publish \
   /p:UseAppHost=false

@@ -2,7 +2,7 @@
 
 [Encuentras todo el código de este apéndice aquí](https://github.com/jerolan/learn-dotnet-with-tests/tree/main/qa/containers)
 
-Un contenedor empaqueta la aplicación y su runtime en una sola imagen. Este apéndice construye la API TaskTracker de v14 con un Dockerfile multi-stage, la ejecuta con SQLite sobre un volumen y comprueba el documento OpenAPI desde fuera del contenedor.
+Un contenedor empaqueta la aplicación y su runtime en una sola imagen. Este apéndice construye la API TaskTracker de v15 con un Dockerfile multi-stage, la ejecuta con SQLite sobre un volumen y comprueba el documento OpenAPI desde fuera del contenedor.
 
 ## El Dockerfile
 
@@ -10,11 +10,11 @@ Un contenedor empaqueta la aplicación y su runtime en una sola imagen. Este ap�
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /src
 
-COPY build-an-app/v14-cqrs/src/TaskTracker.Api/TaskTracker.Api.csproj build-an-app/v14-cqrs/src/TaskTracker.Api/
-RUN dotnet restore build-an-app/v14-cqrs/src/TaskTracker.Api/TaskTracker.Api.csproj
+COPY build-an-app/v15-signalr/src/TaskTracker.Api/TaskTracker.Api.csproj build-an-app/v15-signalr/src/TaskTracker.Api/
+RUN dotnet restore build-an-app/v15-signalr/src/TaskTracker.Api/TaskTracker.Api.csproj
 
-COPY build-an-app/v14-cqrs/src/TaskTracker.Api/ build-an-app/v14-cqrs/src/TaskTracker.Api/
-RUN dotnet publish build-an-app/v14-cqrs/src/TaskTracker.Api/TaskTracker.Api.csproj \
+COPY build-an-app/v15-signalr/src/TaskTracker.Api/ build-an-app/v15-signalr/src/TaskTracker.Api/
+RUN dotnet publish build-an-app/v15-signalr/src/TaskTracker.Api/TaskTracker.Api.csproj \
     -c Release \
     -o /app/publish \
     /p:UseAppHost=false

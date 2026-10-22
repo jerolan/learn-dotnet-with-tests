@@ -38,7 +38,8 @@ This part closes the roadmap. The Q&A chapters answer the questions that do not 
 | Unit Testing: MSTest, Moq | [Mocking](../fundamentals/mock/mock.md), [Part 2](../testing/acceptance-tests/acceptance-tests.md) | covered |
 | Unit Testing: Bogus | [Test data with Bogus](test-data-bogus/test-data-bogus.md) | covered |
 | Integration Testing: WebApplicationFactory, TestServer | [Acceptance Tests](../testing/acceptance-tests/acceptance-tests.md), [v4](../build-an-app/v4-ef-core/v4-ef-core.md) | covered |
-| Integration Testing: Respawn, Testcontainers, Docker | [Integration tools](integration-testing-tools/integration-testing-tools.md) | covered |
+| Integration Testing: Respawn | [Integration tools](integration-testing-tools/integration-testing-tools.md) | covered |
+| Integration Testing: Testcontainers, Docker (roadmap image) | [Integration tools](integration-testing-tools/integration-testing-tools.md) | covered |
 | ASP.NET Core basics | [v1](../build-an-app/v1-intro/v1-intro.md) to [v15](../build-an-app/v15-signalr/v15-signalr.md) | covered |
 | RDBMS, SQL, EF Core, Dapper | [v4](../build-an-app/v4-ef-core/v4-ef-core.md), [v5](../build-an-app/v5-dapper/v5-dapper.md) | covered |
 | REST APIs, OpenAPI/Swagger | [v2](../build-an-app/v2-json-routing/v2-json-routing.md), [v12](../build-an-app/v12-openapi/v12-openapi.md) | covered |
@@ -53,4 +54,6 @@ This part closes the roadmap. The Q&A chapters answer the questions that do not 
 | Containers, CI/CD, monitoring, cloud, DevOps | [Containers](containers/containers.md), [CI/CD](ci-cd/ci-cd.md), [Monitoring](monitoring-telemetry/monitoring-telemetry.md), [Cloud](cloud/cloud.md), [DevOps](devops-iac/devops-iac.md) | covered |
 | Streaming, NoSQL, gRPC, GraphQL | [gRPC](grpc/grpc.md), [GraphQL](graphql/graphql.md), [NoSQL](nosql/nosql.md), [Streaming](streaming/streaming.md) | covered |
 | General development skills | README preface and testing Q&A | covered |
+
+**Roadmap source:** The [roadmap project](https://github.com/Elfocrash/.NET-Backend-Developer-Roadmap) text map `map.json` lists WebApplicationFactory, TestServer and Respawn; the roadmap image adds Testcontainers and Docker. Part 2 and Part 3 cover WebApplicationFactory/TestServer, and the [integration tools appendix](integration-testing-tools/integration-testing-tools.md) covers Respawn, Testcontainers and Docker.
 

@@ -83,7 +83,7 @@ publish:
         dotnet-version: 6.0.x
     - name: Publish the API
       run: |
-        dotnet publish build-an-app/v14-cqrs/src/TaskTracker.Api/TaskTracker.Api.csproj \
+        dotnet publish build-an-app/v15-signalr/src/TaskTracker.Api/TaskTracker.Api.csproj \
           -c Release \
           -o artifacts/api \
           /p:UseAppHost=false
@@ -103,7 +103,7 @@ The tests ran against the same commit, not the same binary. If you need binary-l
 The same command, without Actions:
 
 ```sh
-dotnet publish build-an-app/v14-cqrs/src/TaskTracker.Api/TaskTracker.Api.csproj \
+dotnet publish build-an-app/v15-signalr/src/TaskTracker.Api/TaskTracker.Api.csproj \
   -c Release \
   -o /tmp/tt-publish \
   /p:UseAppHost=false
