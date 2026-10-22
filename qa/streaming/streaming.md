@@ -6,7 +6,67 @@ A method that returns `Task<List<TaskItem>>` has to read every row before the ca
 
 `IAsyncEnumerable<T>` returns items as they become available. This appendix writes a source that yields tasks, tests the full read, cancels halfway through, and checks what the caller keeps when the source throws after yielding.
 
-## The source
+## How it works
+
+`IAsyncEnumerable<T>` gives control to the caller one item at a time. The tests pin what a consumer observes before the source is implemented.
+
+`yield return` suspends the method until the caller asks for the next item. `await Task.Yield()` stands in for real asynchronous work, such as a database read or an HTTP call. The cancellation check runs before each item, so a consumer that stops asking does not leave the source working through the rest.
+
+`[EnumeratorCancellation]` lets the token travel with the enumerator when the caller uses `WithCancellation`. Without it, the token passed to the method and the token attached to the enumeration are separate.
+
+## How to test
+
+The source is deterministic and in memory; there is no database, server or external service. Run `dotnet test Streaming.sln` from this appendix folder.
+
+## Write the test first
+
+The first test checks the consumer contract: every item arrives in order. It comes before the implementation because it defines what the caller should observe.
+
+```csharp
+[TestMethod]
+public async Task ReadsEveryItemInOrder()
+{
+    var tasks = new[]
+    {
+        new TaskItem(Guid.NewGuid(), "First"),
+        new TaskItem(Guid.NewGuid(), "Second"),
+        new TaskItem(Guid.NewGuid(), "Third")
+    };
+    var source = new TaskSource(tasks);
+
+    var seen = new List<TaskItem>();
+
+    await foreach (var task in source.ReadAsync())
+    {
+        seen.Add(task);
+    }
+
+    CollectionAssert.AreEqual(tasks, seen);
+}
+```
+
+The assertion fails because it collected zero items instead of three.
+
+`await foreach` is the consumer side of the same shape. The test drives the enumerator to the end and checks the order.
+
+## Try to run the test
+
+Before `TaskSource.ReadAsync` exists, the compiler reports that `TaskSource` is missing.
+
+## Write the minimal amount of code for the test to run and check the failing test output
+
+This empty iterator compiles but does not satisfy the test:
+
+```csharp
+public async IAsyncEnumerable<TaskItem> ReadAsync(
+    [EnumeratorCancellation] CancellationToken cancellationToken = default)
+{
+    await Task.Yield();
+    yield break;
+}
+```
+
+## Write enough code to make it pass
 
 `src/TaskStream/TaskSource.cs`:
 
@@ -38,38 +98,19 @@ public sealed class TaskSource
 }
 ```
 
-`yield return` suspends the method until the caller asks for the next item. `await Task.Yield()` stands in for real asynchronous work, such as a database read or an HTTP call. The cancellation check runs before each item, so a consumer that stops asking does not leave the source working through the rest.
+The iterator yields each task and checks cancellation before moving to the next one. The complete suite passes after the follow-up tests below.
 
-`[EnumeratorCancellation]` lets the token travel with the enumerator when the caller uses `WithCancellation`. Without it, the token passed to the method and the token attached to the enumeration are separate.
+## Refactor
 
-## Write the test first
+The consumer pulls one item at a time. Awaiting the body of `await foreach` slows the source down; calling `ToListAsync` or `ToArray` first throws that away and buffers everything.
 
-```csharp
-[TestMethod]
-public async Task ReadsEveryItemInOrder()
-{
-    var tasks = new[]
-    {
-        new TaskItem(Guid.NewGuid(), "First"),
-        new TaskItem(Guid.NewGuid(), "Second"),
-        new TaskItem(Guid.NewGuid(), "Third")
-    };
-    var source = new TaskSource(tasks);
+The enumerator lives for the length of the loop. Do not return an iterator that captures a scoped `DbContext` and expect it to work after the request scope ends. Materialize inside the scope or keep the stream inside it.
 
-    var seen = new List<TaskItem>();
+`IAsyncEnumerable` is also how EF Core exposes a query without loading it: `AsAsyncEnumerable`. Use it when the caller can process rows incrementally, not when the next step needs the whole set.
 
-    await foreach (var task in source.ReadAsync())
-    {
-        seen.Add(task);
-    }
+## Repeat for new requirements
 
-    CollectionAssert.AreEqual(tasks, seen);
-}
-```
-
-`await foreach` is the consumer side of the same shape. The test drives the enumerator to the end and checks the order.
-
-## Stop halfway
+The next requirement is to stop producing items when the caller cancels:
 
 The second test cancels after the first item:
 
@@ -97,7 +138,7 @@ Assert.ThrowsException failed. No exception thrown. OperationCanceledException e
 
 The stream ended normally because nothing checked the token. Put `ThrowIfCancellationRequested` back inside the loop and the enumeration stops after the item that triggered the cancellation.
 
-## What the caller keeps when the source fails
+### What the caller keeps when the source fails
 
 The third test uses a local iterator that yields one value and then throws:
 
@@ -130,7 +171,7 @@ Items already yielded were delivered; the exception arrives on the next move. Th
 Passed!  - Failed:     0, Passed:     3, Skipped:     0, Total:     3, Duration: 36 ms
 ```
 
-## Streaming over HTTP
+### Streaming over HTTP
 
 A minimal API can return `IAsyncEnumerable<T>` directly:
 
@@ -144,7 +185,7 @@ app.MapGet("/tasks/stream", (TaskSource source, CancellationToken cancellationTo
 For NDJSON, write one serialized object per line and flush the response after each:
 
 ```csharp
-foreach (var task in source.ReadAsync(cancellationToken))
+await foreach (var task in source.ReadAsync(cancellationToken))
 {
     await JsonSerializer.SerializeAsync(response.Body, task, cancellationToken);
     await response.WriteAsync("\n", cancellationToken);
@@ -153,14 +194,6 @@ foreach (var task in source.ReadAsync(cancellationToken))
 ```
 
 Server-sent events add the `text/event-stream` content type and a `data:` prefix per message. Both formats push bytes before the source finishes; neither is a replacement for a durable queue when a disconnected client must not lose messages.
-
-## Backpressure and lifetimes
-
-The consumer pulls one item at a time. Awaiting the body of `await foreach` slows the source down; calling `ToListAsync` or `ToArray` first throws that away and buffers everything.
-
-The enumerator lives for the length of the loop. Do not return an iterator that captures a scoped `DbContext` and expect it to work after the request scope ends. Materialize inside the scope or keep the stream inside it.
-
-`IAsyncEnumerable` is also how EF Core exposes a query without loading it: `AsAsyncEnumerable`. Use it when the caller can process rows incrementally, not when the next step needs the whole set.
 
 ## What is deferred
 

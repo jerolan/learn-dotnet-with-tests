@@ -186,6 +186,9 @@
 - Part 4 `sdk-libraries` now follows the runnable appendix flow in both
   languages. `mise exec dotnet@10.0.402 -- dotnet test
   qa/sdk-libraries/SdkLibraries.sln -m:1` passed 3 tests.
+- Part 4 `streaming` now follows the runnable appendix flow in both languages.
+  `mise exec dotnet@10.0.402 -- dotnet test qa/streaming/Streaming.sln -m:1`
+  passed 3 tests.
 
 ## Completed increment: Part 4 delivery references
 
