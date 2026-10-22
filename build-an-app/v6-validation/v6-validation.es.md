@@ -6,6 +6,25 @@ La versión 5 validaba el título con dos guards dentro del handler POST. La ver
 
 La solución terminada está en `build-an-app/v6-validation`.
 
+## Cómo funciona
+
+`AbstractValidator<T>` define reglas para un DTO de petición. `RuleFor`, `Must` y `WithMessage` describen las validaciones del título; `CascadeMode.Stop` omite la regla de longitud después de fallar el título vacío. El handler agrupa los fallos y devuelve `Results.ValidationProblem`, que usa el mapa estándar `errors`.
+
+`IValidator<T>` viene de DI. El validador recibe `IOptions<TaskOptions>`, así usa el mismo máximo configurado que el resto de la app. `Results.ValidationProblem(errors)` escribe un `HttpValidationProblemDetails` con estado 400, un `title` estándar y el mapa `errors`.
+
+## Cómo probarlo
+
+Envía entrada inválida por la API HTTP y comprueba el estado y el error por campo. Este ayudante lee el mapa `errors` de la respuesta Problem Details:
+
+```csharp
+private static async Task<JsonElement> ValidationErrorsAsync(HttpResponseMessage response)
+{
+    using var document = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
+
+    return document.RootElement.GetProperty("errors").Clone();
+}
+```
+
 ## Escribe primero el test
 
 ```csharp
@@ -24,20 +43,15 @@ public async Task BlankTitle_ReturnsAnErrorBody()
 }
 ```
 
-El ayudante lee el cuerpo estándar de Problem Details:
-
-```csharp
-private static async Task<JsonElement> ValidationErrorsAsync(HttpResponseMessage response)
-{
-    using var document = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
-
-    return document.RootElement.GetProperty("errors").Clone();
-}
-```
-
 El cuerpo tiene un objeto `errors` con claves por nombre de campo. Un cliente puede resaltar el input del título sin parsear un mensaje humano.
 
-## Agrega el paquete y el validador
+## Intenta ejecutar el test
+
+El handler de v5 devuelve un `ErrorResponse` plano con la propiedad `error`, no el mapa `errors` que espera el test. La petición se rechaza, pero el contrato de respuesta no coincide.
+
+## Escribe el código mínimo para que el test compile y mira la salida
+
+### Agrega el paquete y el validador
 
 ```sh
 dotnet add src/TaskTracker.Api package FluentValidation --version 11.9.2
@@ -66,7 +80,11 @@ Regístralo:
 builder.Services.AddScoped<IValidator<CreateTaskRequest>, CreateTaskRequestValidator>();
 ```
 
-## Úsalo en el handler
+El validador ya está registrado, pero el handler todavía devuelve el cuerpo de error anterior, así que el test sigue en rojo.
+
+## Escribe el código suficiente para que pase
+
+### Úsalo en el handler
 
 ```csharp
 app.MapPost("/tasks", async (CreateTaskRequest request, ITaskWriter writer, IValidator<CreateTaskRequest> validator) =>
@@ -92,13 +110,18 @@ app.MapPost("/tasks", async (CreateTaskRequest request, ITaskWriter writer, IVal
 
 Verde. El handler tiene una rama de validación y un camino feliz; las reglas viven en el validador.
 
-## Cómo funciona
+Si un test sobrescribe la configuración, el validador ve ese valor. El group-by mantiene juntos los mensajes de un mismo campo.
 
-`AbstractValidator<T>` es la clase base. `RuleFor` selecciona una propiedad, `Must` agrega un predicado y `WithMessage` fija el texto. `CascadeMode.Stop` detiene la cadena después del primer fallo, así la regla de longitud no corre sobre un título null o vacío.
+## Refactor
 
-`IValidator<T>` viene de DI. El validador recibe `IOptions<TaskOptions>`, así la longitud máxima es el mismo valor configurado que usa el resto de la app. Cuando el test sobrescribe la configuración, el validador ve el override.
+Algunos bordes evitan que la validación se disperse:
 
-`Results.ValidationProblem(errors)` escribe un `HttpValidationProblemDetails` con estado 400, un `title` estándar y el mapa `errors`. El group-by mantiene juntos los mensajes de un mismo campo.
+- Valida en el borde de la petición. El dominio y el repositorio pueden asumir un comando válido; no repiten las reglas del título.
+- Mantén un validador por tipo de request. Si dos endpoints aceptan la misma forma con reglas distintas, usa requests separados o rule sets explícitos.
+- Usa `MaximumLength` para longitudes simples; el `Must` a medida existe porque la regla cuenta el título recortado, que es lo que se guarda.
+- Devuelve la forma estándar de Problem Details. Los clientes y gateways entienden `errors`; una forma propia necesitaría documentación y código de cliente.
+
+FluentValidation también puede validar opciones u objetos de dominio, pero el DTO de la petición es el lugar donde entra la entrada del usuario. Ese es el borde que protege este capítulo.
 
 ## Repite con requisitos nuevos
 
@@ -123,17 +146,6 @@ StringAssert.Contains(titleErrors[0].GetString(), "120");
 ```
 
 Verde. El validador y el archivo de appsettings coinciden.
-
-## Refactor
-
-Algunos bordes evitan que la validación se disperse:
-
-- Valida en el borde de la petición. El dominio y el repositorio pueden asumir un comando válido; no repiten las reglas del título.
-- Mantén un validador por tipo de request. Si dos endpoints aceptan la misma forma con reglas distintas, usa requests separados o rule sets explícitos.
-- Usa `MaximumLength` para longitudes simples; el `Must` a medida existe porque la regla cuenta el título recortado, que es lo que se guarda.
-- Devuelve la forma estándar de Problem Details. Los clientes y gateways entienden `errors`; una forma propia necesitaría documentación y código de cliente.
-
-FluentValidation también puede validar opciones u objetos de dominio, pero el DTO de la petición es el lugar donde entra la entrada del usuario. Ese es el borde que protege este capítulo.
 
 ## Para cerrar
 

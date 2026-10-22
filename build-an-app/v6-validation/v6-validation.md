@@ -6,6 +6,23 @@ Version 5 validated the title with two guards inside the POST handler. Version 6
 
 The finished solution is in `build-an-app/v6-validation`.
 
+## How it works
+
+`AbstractValidator<T>` defines rules for a request DTO. `RuleFor`, `Must` and `WithMessage` describe the title checks; `CascadeMode.Stop` skips the length rule after a blank-title failure. The handler groups failures and returns `Results.ValidationProblem`, which uses the standard `errors` map.
+
+## How to test
+
+Send invalid input through the HTTP API and assert the status and field-specific error. This helper reads the `errors` map from the Problem Details response:
+
+```csharp
+private static async Task<JsonElement> ValidationErrorsAsync(HttpResponseMessage response)
+{
+    using var document = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
+
+    return document.RootElement.GetProperty("errors").Clone();
+}
+```
+
 ## Write the test first
 
 ```csharp
@@ -24,20 +41,15 @@ public async Task BlankTitle_ReturnsAnErrorBody()
 }
 ```
 
-The helper reads the standard Problem Details body:
-
-```csharp
-private static async Task<JsonElement> ValidationErrorsAsync(HttpResponseMessage response)
-{
-    using var document = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
-
-    return document.RootElement.GetProperty("errors").Clone();
-}
-```
-
 The response body has an `errors` object keyed by field name. A client can highlight the title input without parsing a human message.
 
-## Add the package and the validator
+## Try to run the test
+
+The v5 endpoint returns a flat `ErrorResponse` with an `error` property, not the `errors` map the test expects. The request is rejected, but the response contract does not match.
+
+## Write the minimal amount of code for the test to run and check the failing test output
+
+### Add the package and the validator
 
 ```sh
 dotnet add src/TaskTracker.Api package FluentValidation --version 11.9.2
@@ -66,7 +78,11 @@ Register it:
 builder.Services.AddScoped<IValidator<CreateTaskRequest>, CreateTaskRequestValidator>();
 ```
 
-## Use it in the handler
+The validator is registered, but the handler still returns the old error body, so the test remains red.
+
+## Write enough code to make it pass
+
+### Use it in the handler
 
 ```csharp
 app.MapPost("/tasks", async (CreateTaskRequest request, ITaskWriter writer, IValidator<CreateTaskRequest> validator) =>
@@ -92,13 +108,18 @@ app.MapPost("/tasks", async (CreateTaskRequest request, ITaskWriter writer, IVal
 
 Green. The handler has one validation branch and one happy path; the rules live in the validator.
 
-## How it works
+The validator receives `IOptions<TaskOptions>`, so it uses the same configured maximum as the rest of the app. If a test overrides the configuration, the validator sees that value.
 
-`AbstractValidator<T>` is the base class. `RuleFor` selects a property, `Must` adds a predicate and `WithMessage` sets the text. `CascadeMode.Stop` stops the chain after the first failure, so the length rule does not run on a null or whitespace title.
+## Refactor
 
-`IValidator<T>` comes from DI. The validator receives `IOptions<TaskOptions>`, so the maximum length is the same configured value the rest of the app uses. When the test overrides the configuration, the validator sees the override.
+A few boundaries keep validation from spreading:
 
-`Results.ValidationProblem(errors)` writes a `HttpValidationProblemDetails` with status 400, a standard `title` and the `errors` map. The group-by keeps multiple messages for the same field together.
+- Validate at the request boundary. The domain and the repository can assume a valid command; they do not repeat the title rules.
+- Keep one validator per request type. If two endpoints accept the same shape with different rules, use separate request records or explicit rule sets.
+- Use `MaximumLength` for simple length; the custom `Must` here exists because the rule counts the trimmed title, which matches the stored value.
+- Return the standard Problem Details shape. Clients and API gateways understand `errors`; a custom shape would need documentation and client code.
+
+FluentValidation can also validate options or domain objects, but the request DTO is the place where user input enters the system. That is the boundary this chapter protects.
 
 ## Repeat for new requirements
 
@@ -123,17 +144,6 @@ StringAssert.Contains(titleErrors[0].GetString(), "120");
 ```
 
 Green. The validator and the appsettings file agree.
-
-## Refactor
-
-A few boundaries keep validation from spreading:
-
-- Validate at the request boundary. The domain and the repository can assume a valid command; they do not repeat the title rules.
-- Keep one validator per request type. If two endpoints accept the same shape with different rules, use separate request records or explicit rule sets.
-- Use `MaximumLength` for simple length; the custom `Must` here exists because the rule counts the trimmed title, which matches the stored value.
-- Return the standard Problem Details shape. Clients and API gateways understand `errors`; a custom shape would need documentation and client code.
-
-FluentValidation can also validate options or domain objects, but the request DTO is the place where user input enters the system. That is the boundary this chapter protects.
 
 ## Wrapping up
 

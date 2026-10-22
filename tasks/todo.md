@@ -125,6 +125,10 @@
   sections in order, with the passing v4 behavior recorded as the baseline for
   the Dapper read-path change. `mise exec dotnet@10.0.402 -- dotnet test
   build-an-app/v5-dapper/TaskTracker.sln -m:1` passed 14 tests.
+- Part 3 `v6-validation`: English and Spanish pairs now contain the required
+  sections in order, with FluentValidation introduced between the old error
+  contract and the field-error response. `mise exec dotnet@10.0.402 -- dotnet
+  test build-an-app/v6-validation/TaskTracker.sln -m:1` passed 14 tests.
 
 ## Completed increment: Part 4 delivery references
 
