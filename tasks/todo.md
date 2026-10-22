@@ -44,6 +44,9 @@
 - Part 1 `enumerable`: English and Spanish pairs now contain the required
   sections in order. `mise exec dotnet@10.0.402 -- dotnet test
   fundamentals/enumerable/Enumerable.sln -m:1` passed 3 tests.
+- Part 1 `generics`: English and Spanish pairs now contain the required
+  sections in order. `mise exec dotnet@10.0.402 -- dotnet test
+  fundamentals/generics/Generics.sln -m:1` passed 4 tests.
 
 ## Completed increment: Part 4 delivery references
 
