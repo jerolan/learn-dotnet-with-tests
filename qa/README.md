@@ -12,7 +12,7 @@ This part closes the roadmap. The Q&A chapters answer the questions that do not 
 
 - 🟠 [Snapshot testing with Verify](snapshot-verify/snapshot-verify.md) ([ES](snapshot-verify/snapshot-verify.es.md)) - Approve a formatted output with a verified file and review its diffs.
 - 🟠 End-to-end testing with Playwright. *Planned.*
-- 🟠 Performance testing with NBomber or K6. *Planned.*
+- 🟠 [Performance testing with NBomber](performance-nbomber/performance-nbomber.md) ([ES](performance-nbomber/performance-nbomber.es.md)) - Run a fixed load against an API and read throughput and percentiles.
 - 🟠 Test data with Bogus. *Planned.*
 - 🟠 [Integration testing tools: Respawn, Testcontainers and Docker](integration-testing-tools/integration-testing-tools.md) ([ES](integration-testing-tools/integration-testing-tools.es.md)) - Start PostgreSQL in Docker and reset it between tests.
 - 🟠 Containers for the TaskTracker API. *Planned.*
@@ -49,7 +49,7 @@ This part closes the roadmap. The Q&A chapters answer the questions that do not 
 | Task scheduling | [v11](../build-an-app/v11-messaging-scheduling/v11-messaging-scheduling.md) | covered |
 | .NET libraries | SDK libraries appendix | planned |
 | SignalR | SignalR appendix | planned |
-| Snapshot, E2E, performance | [Snapshot](snapshot-verify/snapshot-verify.md), Playwright and NBomber appendices | snapshot covered; E2E and performance planned |
+| Snapshot, E2E, performance | [Snapshot](snapshot-verify/snapshot-verify.md), [NBomber](performance-nbomber/performance-nbomber.md), Playwright appendix | snapshot and performance covered; E2E planned |
 | Containers, CI/CD, monitoring, cloud, DevOps | [Monitoring](monitoring-telemetry/monitoring-telemetry.md), container, CI/CD, cloud and DevOps appendices | monitoring covered; the rest planned |
 | Streaming, NoSQL, gRPC, GraphQL | Protocol and storage appendices | planned |
 | General development skills | README preface and testing Q&A | covered |

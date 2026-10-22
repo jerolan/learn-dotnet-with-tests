@@ -97,3 +97,4 @@ The closing part answers the questions that do not need a new project and maps t
 - 🟠 [Snapshot Testing with Verify](qa/snapshot-verify/snapshot-verify.md) ([ES](qa/snapshot-verify/snapshot-verify.es.md)) - Approve a formatted output with a verified file and review its diffs.
 - 🟠 [Monitoring and Telemetry](qa/monitoring-telemetry/monitoring-telemetry.md) ([ES](qa/monitoring-telemetry/monitoring-telemetry.es.md)) - Record a tagged counter and capture it in a test.
 - 🟠 [Integration Testing Tools](qa/integration-testing-tools/integration-testing-tools.md) ([ES](qa/integration-testing-tools/integration-testing-tools.es.md)) - Start PostgreSQL with Testcontainers and reset it with Respawn.
+- 🟠 [Performance Testing with NBomber](qa/performance-nbomber/performance-nbomber.md) ([ES](qa/performance-nbomber/performance-nbomber.es.md)) - Run a fixed load and read throughput and latency percentiles.
