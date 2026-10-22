@@ -2,9 +2,24 @@
 
 [Encuentras todo el código de este capítulo aquí](https://github.com/jerolan/learn-dotnet-with-tests/tree/main/fundamentals/classes)
 
-Una clase es un plano. Un objeto es una instancia de ese plano con su propio estado. La clase dice qué datos guarda el objeto y qué operaciones soporta; el objeto guarda los valores.
+Una cuenta nueva empieza con 100m. Depositar 50m debe dejar un saldo de 150m. Un retiro mayor que el saldo debe fallar y dejar el saldo sin cambios.
 
-Vamos a construir una cuenta bancaria. Se abre con un saldo, acepta depósitos y retiros, y se niega a bajar de cero. La solución terminada está en `fundamentals/classes`; si la estás armando desde cero, usa la misma estructura que en los capítulos anteriores: una biblioteca de clases en `src/Classes`, un proyecto de MSTest en `tests/Classes.Tests`, una solución y una referencia entre proyectos.
+El primer uso no compila porque `BankAccount` no existe:
+
+```csharp
+var account = new BankAccount(100m);
+account.Deposit(50m);
+```
+
+Al ejecutar `dotnet test`, aparece `error CS0246: The type or namespace name 'BankAccount' could not be found`. Usaremos tests para construir el estado y las operaciones de la cuenta. La solución terminada está en `fundamentals/classes`; si la estás armando desde cero, usa la misma estructura que en los capítulos anteriores: una biblioteca de clases en `src/Classes`, un proyecto de MSTest en `tests/Classes.Tests`, una solución y una referencia entre proyectos.
+
+## Cómo funciona
+
+La palabra clave `class` declara un tipo por referencia. `new BankAccount(100m)` crea un objeto y llama a su constructor con `100m` como saldo inicial. Una propiedad expone el saldo, mientras un setter privado permite que la clase controle sus cambios. Un método de instancia como `Deposit` cambia el estado de ese objeto; `void` significa que el método no devuelve un valor.
+
+## Cómo probarlo
+
+La cuenta guarda su estado en memoria, así que un test unitario puede crear una instancia, llamar una operación y consultar `Balance`. Para un retiro rechazado, el test debe comprobar tanto que la operación falla como que el saldo permanece igual.
 
 ## Escribe primero el test
 
@@ -170,7 +185,7 @@ public void Withdraw(decimal amount)
 
 Verde. La segunda aserción importa tanto como la primera: la operación fallida tiene que dejar el objeto en su estado anterior. Comprueba la condición antes de mutar.
 
-## Los objetos son referencias
+### Los objetos son referencias
 
 Escribe un test más:
 

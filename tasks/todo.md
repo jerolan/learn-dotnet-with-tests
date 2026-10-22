@@ -17,6 +17,9 @@
 - Part 1 `methods`: English and Spanish pairs now contain the required sections
   in order. `mise exec dotnet@10.0.402 -- dotnet test
   fundamentals/methods/Methods.sln -m:1` passed 3 tests.
+- Part 1 `classes`: English and Spanish pairs now contain the required sections
+  in order. `mise exec dotnet@10.0.402 -- dotnet test
+  fundamentals/classes/Classes.sln -m:1` passed 5 tests.
 
 ## Completed increment: Part 4 delivery references
 

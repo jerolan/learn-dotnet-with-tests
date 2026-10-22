@@ -2,9 +2,24 @@
 
 [You can find all the code for this chapter here](https://github.com/jerolan/learn-dotnet-with-tests/tree/main/fundamentals/classes)
 
-A class is a blueprint. An object is an instance of that blueprint with its own state. The class says which data the object holds and which operations it supports; the object holds the values.
+A new account starts with 100m. Depositing 50m should give it a balance of 150m. A withdrawal larger than the balance must fail and leave the balance unchanged.
 
-We will build a bank account. It opens with a balance, accepts deposits and withdrawals, and refuses to go below zero. The finished solution is in `fundamentals/classes`; if you are building it from scratch, use the same layout as the previous chapters: a class library in `src/Classes`, an MSTest project in `tests/Classes.Tests`, a solution and a project reference.
+The first use cannot compile because `BankAccount` does not exist:
+
+```csharp
+var account = new BankAccount(100m);
+account.Deposit(50m);
+```
+
+Running `dotnet test` reports `error CS0246: The type or namespace name 'BankAccount' could not be found`. We will use tests to build the account's state and operations. The finished solution is in `fundamentals/classes`; if you are building it from scratch, use the same layout as the previous chapters: a class library in `src/Classes`, an MSTest project in `tests/Classes.Tests`, a solution and a project reference.
+
+## How it works
+
+A `class` declares a reference type. `new BankAccount(100m)` creates an object and calls its constructor with `100m` as the initial balance. A property exposes the balance, while a private setter lets the class control changes to it. An instance method such as `Deposit` changes that object's state; `void` means the method returns no value.
+
+## How to test
+
+The account keeps its state in memory, so a unit test can create one instance, call an operation and inspect `Balance`. For a rejected withdrawal, the test should check both that the operation fails and that the balance stays unchanged.
 
 ## Write the test first
 
@@ -170,7 +185,7 @@ public void Withdraw(decimal amount)
 
 Green. The second assertion matters as much as the first: the failed operation must leave the object in its previous state. Check the condition before you mutate.
 
-## Objects are references
+### Objects are references
 
 Write one more test:
 
