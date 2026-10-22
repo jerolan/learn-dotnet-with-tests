@@ -6,6 +6,14 @@ LINQ es un conjunto de operadores de consulta para secuencias: filtrar, proyecta
 
 Vamos a consultar una lista de pedidos por cliente y total. La solución terminada está en `fundamentals/linq`; si la estás armando desde cero, usa la misma estructura que en los capítulos anteriores: una biblioteca de clases en `src/Linq`, un proyecto de MSTest en `tests/Linq.Tests`, una solución y una referencia entre proyectos.
 
+## Cómo funciona
+
+Los operadores LINQ como `Where`, `Select` y `GroupBy` describen trabajo sobre un `IEnumerable<T>`. Muchos devuelven una secuencia diferida; operadores como `Sum`, `Any` y `ToList` la enumeran para producir una respuesta o una instantánea.
+
+## Cómo probarlo
+
+Pasa un arreglo de pedidos en memoria a cada consulta y comprueba el resultado. Los tests pueden revisar totales, orden y límites sin una base de datos ni un sistema de archivos.
+
 ## Escribe primero el test
 
 ```csharp
@@ -75,6 +83,10 @@ Verde. La cadena se lee de arriba a abajo:
 
 Las dos son métodos de extensión sobre `IEnumerable<Order>`. Cada uno devuelve una secuencia nueva o un valor único, y por eso las llamadas se encadenan.
 
+## Refactor
+
+`TotalFor` ya es una consulta corta sin lógica duplicada que extraer. Ejecuta el test otra vez; sigue en verde. Deja los operadores visibles para que la consulta se lea en el orden en que corre.
+
 ## Repite con requisitos nuevos
 
 ### Ordenar los clientes
@@ -142,7 +154,7 @@ public static bool HasOrdersOver(IEnumerable<Order> orders, decimal amount)
 
 Verde. `Any` se detiene en la primera coincidencia; no recorre el resto de la secuencia.
 
-## Refactor
+### Ejecución diferida y sintaxis de consulta
 
 El código es un conjunto de consultas pequeñas. El comportamiento importante es la ejecución diferida.
 

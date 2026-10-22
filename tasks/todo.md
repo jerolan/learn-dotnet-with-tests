@@ -68,6 +68,9 @@
 - Part 1 `io`: English and Spanish pairs now contain the required sections
   in order. `mise exec dotnet@10.0.402 -- dotnet test
   fundamentals/io/Io.sln -m:1` passed 4 tests.
+- Part 1 `linq`: English and Spanish pairs now contain the required sections
+  in order. `mise exec dotnet@10.0.402 -- dotnet test
+  fundamentals/linq/Linq.sln -m:1` passed 3 tests.
 
 ## Completed increment: Part 4 delivery references
 

@@ -6,6 +6,14 @@ LINQ is a set of query operators for sequences: filter, project, group, order, a
 
 We will query a list of orders by customer and total. The finished solution is in `fundamentals/linq`; if you are building it from scratch, use the same layout as the previous chapters: a class library in `src/Linq`, an MSTest project in `tests/Linq.Tests`, a solution and a project reference.
 
+## How it works
+
+LINQ operators such as `Where`, `Select` and `GroupBy` describe work over an `IEnumerable<T>`. Many return a deferred sequence; operators such as `Sum`, `Any` and `ToList` enumerate it to produce an answer or a snapshot.
+
+## How to test
+
+Pass an in-memory array of orders to each query and assert the result. The tests can check totals, ordering and thresholds without a database or file system.
+
 ## Write the test first
 
 ```csharp
@@ -75,6 +83,10 @@ Green. The chain reads top to bottom:
 
 Both are extension methods on `IEnumerable<Order>`. Each one returns a new sequence or a single value, which is why the calls chain.
 
+## Refactor
+
+`TotalFor` is already a short query pipeline with no duplicated logic to extract. Run the test again; it remains green. Keep the operators visible so the query reads in the order it runs.
+
 ## Repeat for new requirements
 
 ### Rank the customers
@@ -142,7 +154,7 @@ public static bool HasOrdersOver(IEnumerable<Order> orders, decimal amount)
 
 Green. `Any` stops at the first match; it does not walk the rest of the sequence.
 
-## Refactor
+### Deferred execution and query syntax
 
 The code is a set of small queries. The important behavior is deferred execution.
 
