@@ -5,8 +5,8 @@ This part closes the roadmap. The Q&A chapters answer the questions that do not 
 ## Q&A
 
 1. 🟠 [Testing Questions](testing-questions.md) ([ES](testing-questions.es.md)) - Unit, integration and acceptance tests, fakes versus mocks, async tests, isolation, coverage and error paths.
-2. 🟠 Design Questions - where a rule belongs, when to extract an abstraction, CQRS, caching, logging and DI lifetimes. *Planned.*
-3. 🟠 .NET Questions - records versus classes, IEnumerable versus IQueryable, Task versus ValueTask, exceptions versus results, Span and ref. *Planned.*
+2. 🟠 [Design Questions](design-questions.md) ([ES](design-questions.es.md)) - Where a rule belongs, when to extract an abstraction, CQRS, caching, logging and DI lifetimes.
+3. 🟠 [.NET Questions](dotnet-questions.md) ([ES](dotnet-questions.es.md)) - Records versus classes, IEnumerable versus IQueryable, Task versus ValueTask, exceptions versus results, Span and ref.
 
 ## Appendices
 

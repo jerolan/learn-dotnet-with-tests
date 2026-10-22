@@ -5,8 +5,8 @@ Esta parte cierra el roadmap. Los capítulos de preguntas responden dudas que no
 ## Preguntas
 
 1. 🟠 [Preguntas de testing](testing-questions.es.md) ([EN](testing-questions.md)) - Tests unitarios, de integración y de aceptación, fakes frente a mocks, tests asíncronos, aislamiento, cobertura y caminos de error.
-2. 🟠 Preguntas de diseño - dónde va una regla, cuándo extraer una abstracción, CQRS, caché, logging y tiempos de vida de DI. *Planeado.*
-3. 🟠 Preguntas de .NET - records frente a clases, IEnumerable frente a IQueryable, Task frente a ValueTask, excepciones frente a resultados, Span y ref. *Planeado.*
+2. 🟠 [Preguntas de diseño](design-questions.es.md) ([EN](design-questions.md)) - Dónde va una regla, cuándo extraer una abstracción, CQRS, caché, logging y tiempos de vida de DI.
+3. 🟠 [Preguntas de .NET](dotnet-questions.es.md) ([EN](dotnet-questions.md)) - Records frente a clases, IEnumerable frente a IQueryable, Task frente a ValueTask, excepciones frente a resultados, Span y ref.
 
 ## Apéndices
 
