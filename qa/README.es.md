@@ -13,7 +13,7 @@ Esta parte cierra el roadmap. Los capítulos de preguntas responden dudas que no
 - 🟠 [Snapshot testing con Verify](snapshot-verify/snapshot-verify.es.md) ([EN](snapshot-verify/snapshot-verify.md)) - Aprueba una salida formateada con un archivo verificado y revisa sus diffs.
 - 🟠 Tests end-to-end con Playwright. *Planeado.*
 - 🟠 [Tests de rendimiento con NBomber](performance-nbomber/performance-nbomber.es.md) ([EN](performance-nbomber/performance-nbomber.md)) - Corre una carga fija contra una API y lee throughput y percentiles.
-- 🟠 Datos de test con Bogus. *Planeado.*
+- 🟠 [Datos de test con Bogus](test-data-bogus/test-data-bogus.es.md) ([EN](test-data-bogus/test-data-bogus.md)) - Genera pedidos válidos con reglas y semilla, y deja valores literales para los bordes.
 - 🟠 [Herramientas de integración: Respawn, Testcontainers y Docker](integration-testing-tools/integration-testing-tools.es.md) ([EN](integration-testing-tools/integration-testing-tools.md)) - Levanta PostgreSQL en Docker y resetea entre tests.
 - 🟠 [Contenedores para la API TaskTracker](containers/containers.es.md) ([EN](containers/containers.md)) - Construye una imagen multi-stage, ejecútala con SQLite sobre un volumen y comprueba OpenAPI desde fuera.
 - 🟠 CI/CD más allá del job único de tests. *Planeado.*
@@ -36,7 +36,7 @@ Esta parte cierra el roadmap. Los capítulos de preguntas responden dudas que no
 | SOLID, DRY, YAGNI, KISS | [Composición](../fundamentals/composition/composition.es.md) y preguntas de testing | cubierto |
 | Inyección de dependencias | [Inyección de dependencias](../fundamentals/dependency-injection/dependency-injection.es.md), [v8](../build-an-app/v8-di/v8-di.es.md) | cubierto |
 | Unit testing: MSTest, Moq | [Mocking](../fundamentals/mock/mock.es.md), [Parte 2](../testing/acceptance-tests/acceptance-tests.es.md) | cubierto |
-| Unit testing: Bogus | Apéndice de Bogus | planeado |
+| Unit testing: Bogus | [Datos de test con Bogus](test-data-bogus/test-data-bogus.es.md) | cubierto |
 | Integration testing: WebApplicationFactory, TestServer | [Tests de aceptación](../testing/acceptance-tests/acceptance-tests.es.md), [v4](../build-an-app/v4-ef-core/v4-ef-core.es.md) | cubierto |
 | Integration testing: Respawn, Testcontainers, Docker | [Herramientas de integración](integration-testing-tools/integration-testing-tools.es.md) | cubierto |
 | ASP.NET Core básico | [v1](../build-an-app/v1-intro/v1-intro.es.md) a [v14](../build-an-app/v14-cqrs/v14-cqrs.es.md) | cubierto |

@@ -21,7 +21,7 @@ Close the roadmap with LGWT-style Q&A chapters and the 🟠 appendices. Every ro
 | SOLID, DRY, YAGNI, KISS | Part 1 (composition, inheritance) and Q&A design questions | covered |
 | Dependency Injection | Part 1 `dependency-injection` and `build-an-app/v8-di` | covered |
 | Unit Testing: MSTest, Moq | Part 1 and Part 2 | covered |
-| Unit Testing: Bogus | Appendix `test-data-bogus` | planned |
+| Unit Testing: Bogus | Appendix `test-data-bogus` | covered |
 | Integration Testing: WebApplicationFactory/TestServer | Part 2 and `v4-ef-core` | covered |
 | Integration Testing: Respawn, Testcontainers, Docker | Appendix `integration-testing-tools` | covered |
 | ASP.NET Core basics | Part 3, `v1` to `v14` | covered |

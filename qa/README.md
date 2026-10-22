@@ -13,7 +13,7 @@ This part closes the roadmap. The Q&A chapters answer the questions that do not 
 - 🟠 [Snapshot testing with Verify](snapshot-verify/snapshot-verify.md) ([ES](snapshot-verify/snapshot-verify.es.md)) - Approve a formatted output with a verified file and review its diffs.
 - 🟠 End-to-end testing with Playwright. *Planned.*
 - 🟠 [Performance testing with NBomber](performance-nbomber/performance-nbomber.md) ([ES](performance-nbomber/performance-nbomber.es.md)) - Run a fixed load against an API and read throughput and percentiles.
-- 🟠 Test data with Bogus. *Planned.*
+- 🟠 [Test data with Bogus](test-data-bogus/test-data-bogus.md) ([ES](test-data-bogus/test-data-bogus.es.md)) - Generate valid orders from seeded rules and keep literal values for the edges.
 - 🟠 [Integration testing tools: Respawn, Testcontainers and Docker](integration-testing-tools/integration-testing-tools.md) ([ES](integration-testing-tools/integration-testing-tools.es.md)) - Start PostgreSQL in Docker and reset it between tests.
 - 🟠 [Containers for the TaskTracker API](containers/containers.md) ([ES](containers/containers.es.md)) - Build a multi-stage image, run it with SQLite on a volume and check OpenAPI from outside.
 - 🟠 CI/CD beyond the single test job. *Planned.*
@@ -36,7 +36,7 @@ This part closes the roadmap. The Q&A chapters answer the questions that do not 
 | SOLID, DRY, YAGNI, KISS | [Composition](../fundamentals/composition/composition.md) and testing Q&A | covered |
 | Dependency Injection | [Dependency Injection](../fundamentals/dependency-injection/dependency-injection.md), [v8](../build-an-app/v8-di/v8-di.md) | covered |
 | Unit Testing: MSTest, Moq | [Mocking](../fundamentals/mock/mock.md), [Part 2](../testing/acceptance-tests/acceptance-tests.md) | covered |
-| Unit Testing: Bogus | Bogus appendix | planned |
+| Unit Testing: Bogus | [Test data with Bogus](test-data-bogus/test-data-bogus.md) | covered |
 | Integration Testing: WebApplicationFactory, TestServer | [Acceptance Tests](../testing/acceptance-tests/acceptance-tests.md), [v4](../build-an-app/v4-ef-core/v4-ef-core.md) | covered |
 | Integration Testing: Respawn, Testcontainers, Docker | [Integration tools](integration-testing-tools/integration-testing-tools.md) | covered |
 | ASP.NET Core basics | [v1](../build-an-app/v1-intro/v1-intro.md) to [v14](../build-an-app/v14-cqrs/v14-cqrs.md) | covered |
