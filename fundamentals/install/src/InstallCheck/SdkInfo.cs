@@ -2,7 +2,7 @@ namespace InstallCheck;
 
 public static class SdkInfo
 {
-    public static string GetDotnetVersion()
+    public static string GetRuntimeVersion()
     {
         return System.Environment.Version.ToString();
     }

@@ -6,9 +6,9 @@ namespace InstallCheck.Tests;
 public sealed class SdkInfoTests
 {
     [TestMethod]
-    public void GetDotnetVersion_ReturnsNonEmpty()
+    public void GetRuntimeVersion_ReturnsNonEmpty()
     {
-        var version = InstallCheck.SdkInfo.GetDotnetVersion();
+        var version = InstallCheck.SdkInfo.GetRuntimeVersion();
         Assert.IsFalse(string.IsNullOrWhiteSpace(version));
     }
 }
