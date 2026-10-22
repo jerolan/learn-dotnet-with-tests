@@ -6,6 +6,34 @@ Version 3 kept tasks in a singleton list. Restarting the app lost them. Version 
 
 The finished solution is in `build-an-app/v4-ef-core`.
 
+## How it works
+
+EF Core maps a persistence entity through `TaskDbContext`; `ITaskRepository` keeps that storage model behind the same API contract. `Database.Migrate()` applies the checked-in schema history before the app serves requests.
+
+## How to test
+
+The restart test uses a temporary SQLite file so a second app instance can read the first one's data. Other tests use an open in-memory SQLite connection. The test host replaces the app's context options:
+
+```csharp
+builder.ConfigureServices(services =>
+{
+    services.RemoveAll<DbContextOptions<TaskDbContext>>();
+    services.AddDbContext<TaskDbContext>(options =>
+    {
+        if (_connection is not null)
+        {
+            options.UseSqlite(_connection);
+        }
+        else
+        {
+            options.UseSqlite($"Data Source={databasePath}");
+        }
+    });
+});
+```
+
+SQLite keeps an in-memory database only while a connection remains open, so the test driver holds that connection for the factory's lifetime. Each test gets a fresh database; startup migrations create its schema.
+
 ## Write the test first
 
 ```csharp
@@ -47,7 +75,13 @@ public async Task TasksSurviveAnAppRestart()
 
 The test starts an app, creates a task, disposes the app, starts a second app against the same file and reads the task. The in-memory store cannot pass it.
 
-## Add the packages
+## Try to run the test
+
+Run it against v3's singleton store. The second app starts with an empty list, so the GET returns no task and `Assert.IsNotNull(fetched)` fails.
+
+## Write the minimal amount of code for the test to run and check the failing test output
+
+### Add the packages
 
 ```sh
 dotnet add src/TaskTracker.Api package Microsoft.EntityFrameworkCore.Sqlite --version 6.0.36
@@ -57,7 +91,7 @@ dotnet tool install --global dotnet-ef --version 6.0.36
 
 The design package is only needed to generate migrations; it is marked `PrivateAssets="all"` so it does not flow to consumers.
 
-## The model and the context
+### The model and the context
 
 ```csharp
 public sealed class TaskEntity
@@ -92,7 +126,11 @@ public sealed class TaskDbContext : DbContext
 
 `TaskEntity` is the persistence shape. `TaskItem` stays the API shape. The repository maps between them, so a change to the table does not force a change to the JSON contract.
 
-## The repository
+The app still uses the in-memory store, so the restart test remains red. Next, route reads and writes through the EF repository.
+
+## Write enough code to make it pass
+
+### The repository
 
 ```csharp
 public interface ITaskRepository
@@ -159,7 +197,9 @@ public sealed class EfTaskRepository : ITaskRepository
 
 Reads use `AsNoTracking()` because the API does not modify the entities it returns. `Add` saves and then uses the generated `Id`. `MarkDone` loads the tracked entity, changes it and saves.
 
-## Wire it up
+### Wire it up
+
+Change the endpoint parameters from `InMemoryTaskStore` to `ITaskRepository`, remove the singleton store registration, then register the EF context and repository:
 
 ```csharp
 builder.Services.AddDbContext<TaskDbContext>(options =>
@@ -196,31 +236,7 @@ dotnet ef database update --project src/TaskTracker.Api
 
 The migration files belong in source control. They are the schema history, and `Database.Migrate()` applies the pending ones before the app serves a request.
 
-## How it works
-
-The test host replaces the app's `DbContextOptions<TaskDbContext>` with a SQLite connection it controls:
-
-```csharp
-builder.ConfigureServices(services =>
-{
-    services.RemoveAll<DbContextOptions<TaskDbContext>>();
-    services.AddDbContext<TaskDbContext>(options =>
-    {
-        if (_connection is not null)
-        {
-            options.UseSqlite(_connection);
-        }
-        else
-        {
-            options.UseSqlite($"Data Source={databasePath}");
-        }
-    });
-});
-```
-
-For most tests, `_connection` is an open `DataSource=:memory:` connection. SQLite keeps an in-memory database only while a connection to it is open, so the test driver holds the connection for the life of the factory. For the restart test, the driver uses a temporary file and lets EF open and close connections normally.
-
-Each test gets a fresh database, so tests do not interfere. The app's startup migration runs against the test connection and creates the schema.
+The restart test now reads the task from the second app. Green: persistence changed, while the HTTP contract stayed the same.
 
 ## Refactor
 
@@ -231,6 +247,10 @@ A few details keep the persistence boundary clean:
 - The context is scoped. A singleton context would keep stale tracked entities and is not thread-safe.
 - `TaskDbContextFactory` implements `IDesignTimeDbContextFactory<TaskDbContext>` so the `dotnet ef` commands do not need to start the web host or touch a development database.
 - SQLite is a file, not a server. The next chapter adds Dapper queries against the same file; a production system would point the same code at PostgreSQL or SQL Server.
+
+## Repeat for new requirements
+
+This version's new requirement is persistence across app restarts. The existing create, list, get and update tests continue to pin the HTTP behavior while the repository changes underneath; no second persistence feature is added here.
 
 ## Wrapping up
 

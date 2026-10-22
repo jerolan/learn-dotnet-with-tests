@@ -117,6 +117,10 @@
   required sections in order, with the options override explained before the
   scenario. `mise exec dotnet@10.0.402 -- dotnet test
   build-an-app/v3-configuration/TaskTracker.sln -m:1` passed 12 tests.
+- Part 3 `v4-ef-core`: English and Spanish pairs now contain the required
+  sections in order, with the restart test leading into SQLite persistence.
+  `mise exec dotnet@10.0.402 -- dotnet test
+  build-an-app/v4-ef-core/TaskTracker.sln -m:1` passed 13 tests.
 
 ## Completed increment: Part 4 delivery references
 
