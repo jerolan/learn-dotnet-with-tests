@@ -6,6 +6,14 @@ Una `Task` es un identificador de trabajo que puede terminar más tarde. `Task<T
 
 Vamos a construir dos combinadores: sumar los resultados de varias tareas y devolver el primero. La solución terminada está en `fundamentals/tasks`; si la estás armando desde cero, usa la misma estructura que en los capítulos anteriores: una biblioteca de clases en `src/Tasks`, un proyecto de MSTest en `tests/Tasks.Tests`, una solución y una referencia entre proyectos.
 
+## Cómo funciona
+
+Una `Task` representa trabajo que puede terminar más tarde; `Task<T>` también lleva un resultado. `await` deja que el método continúe cuando termina una tarea sin bloquear el hilo. `Task.WhenAll` espera todas las entradas y `Task.WhenAny` completa cuando termina la primera.
+
+## Cómo probarlo
+
+Usa `Task.FromResult` para trabajo ya completado y `TaskCompletionSource<T>` cuando el test necesite controlar la finalización. Así los tests son deterministas y evitan demoras reales.
+
 ## Escribe primero el test
 
 ```csharp
@@ -75,11 +83,9 @@ Verde. `Task.WhenAll(tasks)` devuelve una tarea que completa cuando completan to
 
 La palabra `async` permite usar `await` en el método y devolver `int` aunque la firma diga `Task<int>`. Quien llama ve una tarea; el resultado aparece cuando la tarea completa.
 
-## Cómo funciona
+## Refactor
 
-Una `Task` tiene un estado: esperando, corriendo, completada, fallida o cancelada. `Task.FromResult(1)` crea una tarea ya completada. `Task.WhenAll` crea una tarea nueva que completa cuando completan todas sus entradas. `Task.WhenAny` crea una que completa cuando completa la primera.
-
-`await` no bloquea el hilo. Registra una continuación y devuelve el control a quien llama hasta que la tarea completa. En un método de MSTest, el runner espera la `Task` devuelta antes de decidir el resultado del test.
+La suma espera todas las tareas y combina sus resultados sin bloquear. Ejecuta el test otra vez; ya es la implementación clara más corta.
 
 ## Repite con requisitos nuevos
 
@@ -158,7 +164,7 @@ public async Task SumAsync_WithNoTasks_ReturnsZero()
 
 Pasa. `Task.WhenAll` sobre un arreglo vacío devuelve un arreglo vacío, y la suma empieza en cero.
 
-## Refactor
+### Mantener asíncrono el código no bloqueante
 
 Los combinadores son cortos; los hábitos alrededor importan.
 

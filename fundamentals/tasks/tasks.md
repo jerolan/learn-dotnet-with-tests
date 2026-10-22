@@ -6,6 +6,14 @@ A `Task` is a handle to work that may finish later. `Task<T>` adds a result. You
 
 We will build two combinators: sum the results of several tasks, and return the first result. The finished solution is in `fundamentals/tasks`; if you are building it from scratch, use the same layout as the previous chapters: a class library in `src/Tasks`, an MSTest project in `tests/Tasks.Tests`, a solution and a project reference.
 
+## How it works
+
+A `Task` represents work that may finish later; `Task<T>` also carries a result. `await` lets a method continue when a task completes without blocking the thread. `Task.WhenAll` waits for every input, while `Task.WhenAny` completes when the first input does.
+
+## How to test
+
+Use `Task.FromResult` for already-completed work and `TaskCompletionSource<T>` when the test needs to control completion. This keeps tests deterministic and avoids real delays.
+
 ## Write the test first
 
 ```csharp
@@ -75,11 +83,9 @@ Green. `Task.WhenAll(tasks)` returns a task that completes when every input comp
 
 The `async` keyword lets the method use `await` and return `int` while the signature says `Task<int>`. The caller sees a task; the result appears when the task completes.
 
-## How it works
+## Refactor
 
-A `Task` has a status: waiting, running, completed, faulted or canceled. `Task.FromResult(1)` creates an already-completed task. `Task.WhenAll` creates a new task that completes when all its inputs do. `Task.WhenAny` creates one that completes when the first input does.
-
-`await` does not block the thread. It registers a continuation and returns control to the caller until the task completes. In an MSTest method, the runner waits for the returned `Task` before deciding the test result.
+The sum awaits all tasks and combines their results without blocking. Run the test again; it is already the shortest clear implementation.
 
 ## Repeat for new requirements
 
@@ -158,7 +164,7 @@ public async Task SumAsync_WithNoTasks_ReturnsZero()
 
 It passes. `Task.WhenAll` over an empty array returns an empty array, and the sum starts at zero.
 
-## Refactor
+### Keep asynchronous code non-blocking
 
 The combinators are short; the habits around them matter.
 
