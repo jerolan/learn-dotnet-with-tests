@@ -174,6 +174,9 @@
 - Part 4 `monitoring-telemetry` now follows the runnable appendix flow in
   both languages. `mise exec dotnet@10.0.402 -- dotnet test
   qa/monitoring-telemetry/MonitoringTelemetry.sln -m:1` passed 2 tests.
+- Part 4 `graphql` now follows the runnable appendix flow in both languages.
+  `mise exec dotnet@10.0.402 -- dotnet test qa/graphql/GraphQL.sln -m:1`
+  passed 2 tests.
 
 ## Completed increment: Part 4 delivery references
 

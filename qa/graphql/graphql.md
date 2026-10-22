@@ -6,7 +6,9 @@ A REST endpoint returns one shape. A screen that needs the task id and title get
 
 GraphQL publishes one schema. The client sends a query that names the fields it needs, and the server returns that shape. This appendix puts a query and a mutation over the task store, then tests them through HTTP with `WebApplicationFactory`.
 
-## The schema classes
+## How it works
+
+Hot Chocolate builds the GraphQL schema from resolver classes. A method named `GetTask` becomes the `task` field, and `[Service]` asks dependency injection for the store. The client posts a document to one endpoint and chooses which fields appear in the response.
 
 `src/TaskApi/TaskItem.cs` and `TaskStore.cs` are the same in-memory store used elsewhere:
 
@@ -71,8 +73,6 @@ public sealed class Mutation
 }
 ```
 
-## The server
-
 `src/TaskApi/Program.cs`:
 
 ```csharp
@@ -87,8 +87,6 @@ builder.Services
 
 var app = builder.Build();
 
-app.MapGraphQL("/graphql");
-
 app.Run();
 
 public partial class Program
@@ -96,9 +94,15 @@ public partial class Program
 }
 ```
 
-One endpoint serves queries, mutations and introspection. The schema is built from the two classes at startup; a resolver that cannot be wired fails before the first request.
+The schema is built from the two classes at startup; a resolver that cannot be wired fails before the first request. The `/graphql` route is the missing piece exposed by the first test.
+
+## How to test
+
+`WebApplicationFactory` hosts the API in process and the store is in memory, so the tests need no database or external service. Run `dotnet test GraphQL.sln` from this appendix folder.
 
 ## Write the test first
+
+The store already exists, but this is the first test of the GraphQL contract: create a task through a mutation, then read it through a query.
 
 The test posts GraphQL documents as JSON, the same way a client would:
 
@@ -140,7 +144,7 @@ private async Task<JsonElement> PostAsync(string query)
 
 The second test asks for a random id and expects `task` to be JSON `null`. That is the schema's way of saying the field was resolved and there is no task; an error would mean the query itself was wrong.
 
-## Try to run it
+## Try to run the test
 
 With the server built but `MapGraphQL` missing:
 
@@ -149,7 +153,19 @@ System.Net.Http.HttpRequestException: Response status code does not indicate suc
    at System.Net.Http.HttpResponseMessage.EnsureSuccessStatusCode()
 ```
 
-The endpoint does not exist. Add `app.MapGraphQL("/graphql")` and the same documents reach the schema.
+The endpoint does not exist yet.
+
+## Write the minimal amount of code for the test to run and check the failing test output
+
+Map the existing schema at the endpoint the client posts to:
+
+```csharp
+app.MapGraphQL("/graphql");
+```
+
+The resolver and server code above completes the schema. With the route mapped, run the tests again:
+
+## Write enough code to make it pass
 
 Run the tests:
 
@@ -157,13 +173,15 @@ Run the tests:
 Passed!  - Failed:     0, Passed:     2, Skipped:     0, Total:     2, Duration: 893 ms
 ```
 
-## How the response differs from REST
+## Refactor
+
+### How the response differs from REST
 
 A GraphQL response carries `data` and, when something goes wrong during execution, an `errors` array. The HTTP status is often `200` even when `errors` is present, because the request was well formed and part of the data may have resolved. A client that only checks the status code will miss those errors.
 
 The client chooses fields, so `{ task(id: "...") { id } }` returns no title. That is the feature: less data over the wire and no new endpoint for each screen. It is also a risk: a client can ask for deeply nested fields and turn one request into thousands of database queries.
 
-## Production concerns
+### Production concerns
 
 - Batch the repeated lookups. A list of tasks whose resolver loads a customer per task is the N+1 problem; Hot Chocolate's DataLoader groups those keys.
 - Limit depth and complexity. Without a limit, a nested query can exhaust the server.
@@ -171,6 +189,22 @@ The client chooses fields, so `{ task(id: "...") { id } }` returns no title. Tha
 - Disable introspection if the schema should not be public. It is useful in development and unnecessary exposure in production.
 - Prefer persisted queries for known clients. The server accepts an identifier instead of an arbitrary document, which also makes caching possible.
 - Keep mutations explicit. A mutation that returns a full object invites clients to select fields the write path did not intend to expose.
+
+## Repeat for new requirements
+
+The second requirement is to report a missing task as `null`. Add this test:
+
+```csharp
+[TestMethod]
+public async Task MissingTaskReturnsNull()
+{
+    var data = await PostAsync($"{{ task(id: \"{Guid.NewGuid()}\") {{ id }} }}");
+
+    Assert.AreEqual(JsonValueKind.Null, data.GetProperty("task").ValueKind);
+}
+```
+
+It passes without another endpoint; the nullable resolver result is already part of the schema.
 
 ## What is deferred
 
