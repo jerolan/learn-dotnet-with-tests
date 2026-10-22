@@ -10,7 +10,7 @@ This part closes the roadmap. The Q&A chapters answer the questions that do not 
 
 ## Appendices
 
-- 🟠 Snapshot testing with Verify. *Planned.*
+- 🟠 [Snapshot testing with Verify](snapshot-verify/snapshot-verify.md) ([ES](snapshot-verify/snapshot-verify.es.md)) - Approve a formatted output with a verified file and review its diffs.
 - 🟠 End-to-end testing with Playwright. *Planned.*
 - 🟠 Performance testing with NBomber or K6. *Planned.*
 - 🟠 Test data with Bogus. *Planned.*
@@ -49,7 +49,7 @@ This part closes the roadmap. The Q&A chapters answer the questions that do not 
 | Task scheduling | [v11](../build-an-app/v11-messaging-scheduling/v11-messaging-scheduling.md) | covered |
 | .NET libraries | SDK libraries appendix | planned |
 | SignalR | SignalR appendix | planned |
-| Snapshot, E2E, performance | Snapshot, Playwright and NBomber appendices | planned |
+| Snapshot, E2E, performance | [Snapshot](snapshot-verify/snapshot-verify.md), Playwright and NBomber appendices | snapshot covered; E2E and performance planned |
 | Containers, CI/CD, monitoring, cloud, DevOps | Delivery appendices | planned |
 | Streaming, NoSQL, gRPC, GraphQL | Protocol and storage appendices | planned |
 | General development skills | README preface and testing Q&A | covered |

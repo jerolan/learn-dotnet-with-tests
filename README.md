@@ -94,3 +94,4 @@ The closing part answers the questions that do not need a new project and maps t
 - 🟠 [Testing Questions](qa/testing-questions.md) ([ES](qa/testing-questions.es.md)) - Unit, integration and acceptance tests, fakes, async tests, isolation and coverage.
 - 🟠 [Design Questions](qa/design-questions.md) ([ES](qa/design-questions.es.md)) - Rules, boundaries, CQRS, caching, logging and DI lifetimes.
 - 🟠 [.NET Questions](qa/dotnet-questions.md) ([ES](qa/dotnet-questions.es.md)) - Records, sequences, tasks, money, collections and ref.
+- 🟠 [Snapshot Testing with Verify](qa/snapshot-verify/snapshot-verify.md) ([ES](qa/snapshot-verify/snapshot-verify.es.md)) - Approve a formatted output with a verified file and review its diffs.

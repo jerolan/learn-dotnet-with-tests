@@ -10,7 +10,7 @@ Esta parte cierra el roadmap. Los capítulos de preguntas responden dudas que no
 
 ## Apéndices
 
-- 🟠 Snapshot testing con Verify. *Planeado.*
+- 🟠 [Snapshot testing con Verify](snapshot-verify/snapshot-verify.es.md) ([EN](snapshot-verify/snapshot-verify.md)) - Aprueba una salida formateada con un archivo verificado y revisa sus diffs.
 - 🟠 Tests end-to-end con Playwright. *Planeado.*
 - 🟠 Tests de rendimiento con NBomber o K6. *Planeado.*
 - 🟠 Datos de test con Bogus. *Planeado.*
@@ -49,7 +49,7 @@ Esta parte cierra el roadmap. Los capítulos de preguntas responden dudas que no
 | Scheduling de tareas | [v11](../build-an-app/v11-messaging-scheduling/v11-messaging-scheduling.es.md) | cubierto |
 | Bibliotecas .NET | Apéndice de bibliotecas SDK | planeado |
 | SignalR | Apéndice de SignalR | planeado |
-| Snapshot, E2E, rendimiento | Apéndices de snapshot, Playwright y NBomber | planeado |
+| Snapshot, E2E, rendimiento | [Snapshot](snapshot-verify/snapshot-verify.es.md), apéndices de Playwright y NBomber | snapshot cubierto; E2E y rendimiento planeados |
 | Contenedores, CI/CD, monitoreo, nube, DevOps | Apéndices de entrega | planeado |
 | Streaming, NoSQL, gRPC, GraphQL | Apéndices de protocolos y almacenamiento | planeado |
 | Habilidades generales de desarrollo | Prefacio del README y preguntas de testing | cubierto |
