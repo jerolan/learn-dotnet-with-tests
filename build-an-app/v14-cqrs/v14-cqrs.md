@@ -6,6 +6,16 @@ The endpoints call readers and writers directly. Version 14 moves each use case 
 
 The finished solution is in `build-an-app/v14-cqrs`.
 
+## How it works
+
+`IMediator.Send` finds the handler registered for a message, resolves it from DI, calls `Handle` and returns its result. The endpoint or test names a command or query; neither needs to reference the handler class directly.
+
+The separation is at the use-case level. A command handler changes state; a query handler returns data without changing it.
+
+## How to test
+
+Send a command through `IMediator`, then check the result and read through the HTTP API. That crosses the mediator boundary and confirms the handler shares the application's store. Existing HTTP acceptance tests continue to protect status codes, validation and routes as the other endpoints move to handlers.
+
 ## Write the test first
 
 ```csharp
@@ -27,30 +37,30 @@ public async Task CreateTaskCommand_IsHandledThroughMediatR()
 }
 ```
 
-Against v13 the command type does not exist. The test sends it through the mediator and then reads the task through the API, so it proves both the handler wiring and the shared storage.
+The command goes through MediatR, then the test reads the task through HTTP. It checks that dispatch reaches the handler and that the handler writes to the same store used by the API.
 
-## Add the packages
+## Try to run the test
+
+The test does not compile yet because MediatR and `CreateTaskCommand` have not been added.
+
+## Write the minimal amount of code for the test to run and check the failing test output
+
+Install MediatR and add the message used by the test:
 
 ```sh
 dotnet add src/TaskTracker.Api package MediatR --version 10.0.1
 dotnet add src/TaskTracker.Api package MediatR.Extensions.Microsoft.DependencyInjection --version 10.0.1
 ```
 
-## Commands and queries
-
 ```csharp
-public sealed record GetTasksQuery : IRequest<IReadOnlyList<TaskItem>>;
-
-public sealed record GetTaskQuery(int Id) : IRequest<TaskItem?>;
-
 public sealed record CreateTaskCommand(string Title) : IRequest<TaskItem>;
-
-public sealed record MarkTaskDoneCommand(int Id) : IRequest<bool>;
 ```
 
-The records are the messages. A query returns data and changes nothing; a command changes state.
+The test now compiles, but it cannot resolve `IMediator` because no handlers have been registered.
 
-## Handlers
+## Write enough code to make it pass
+
+Add the handler and scan the API assembly so MediatR registers it:
 
 ```csharp
 public sealed class CreateTaskHandler : IRequestHandler<CreateTaskCommand, TaskItem>
@@ -69,17 +79,43 @@ public sealed class CreateTaskHandler : IRequestHandler<CreateTaskCommand, TaskI
 }
 ```
 
-The other handlers follow the same shape: `GetTasksHandler` uses `ITaskReader.All`, `GetTaskHandler` uses `Find` and `MarkTaskDoneHandler` maps the writer result to a `bool`.
-
-Register the assembly:
-
 ```csharp
 builder.Services.AddMediatR(typeof(Program).Assembly);
 ```
 
-MediatR scans for `IRequestHandler<,>` implementations and registers them. The handlers are scoped, like the reader and writer they depend on.
+The test passes. The handler writes through `ITaskWriter`, and `/tasks` reads the same task from the shared store.
 
-## The endpoints
+## Refactor
+
+This is “CQRS-ish,” not full CQRS. Reads and writes still share one SQLite database, one entity and one writer chain. There is no separate read store, event sourcing or eventual consistency.
+
+A few boundaries keep the mediator from becoming a tax:
+
+- Use a message per use case, not per table. `CreateTaskCommand` describes intent; `UpdateTaskRow` describes implementation.
+- Keep validation at the HTTP boundary for request shape, and add a pipeline behavior when the same rules must run for every caller.
+- Do not hide simple reads behind the mediator just for symmetry. A query with no cross-cutting behavior can remain a reader call.
+- Test handlers directly with fakes when their behavior is complex. This suite verifies the create path through MediatR and uses HTTP acceptance tests for the API behavior.
+- A vertical slice groups the message, handler and endpoint by feature. `TaskMessages.cs` is a small version of that idea.
+
+The mediator dispatches and decorates work; it is not required for every method. Pipeline behaviors can add validation, logging or transactions around handlers without editing each one.
+
+## Repeat for new requirements
+
+The v13 acceptance tests already cover listing, fetching, creating and marking tasks done. Keep those behaviors green while moving the remaining operations behind messages.
+
+Add query and command records:
+
+```csharp
+public sealed record GetTasksQuery : IRequest<IReadOnlyList<TaskItem>>;
+
+public sealed record GetTaskQuery(int Id) : IRequest<TaskItem?>;
+
+public sealed record MarkTaskDoneCommand(int Id) : IRequest<bool>;
+```
+
+The handlers follow the same shape. `GetTasksHandler` calls `ITaskReader.All`, `GetTaskHandler` calls `Find`, and `MarkTaskDoneHandler` maps the writer result to a `bool`.
+
+Change the endpoints to send those messages:
 
 ```csharp
 app.MapGet("/tasks", async (IMediator mediator) =>
@@ -111,29 +147,18 @@ app.MapPost("/tasks", async (
 
     return Results.Created($"/tasks/{task.Id}", task);
 }).RequireAuthorization();
+
+app.MapMethods("/tasks/{id:int}/done", new[] { HttpMethods.Patch }, async (int id, IMediator mediator) =>
+{
+    var done = await mediator.Send(new MarkTaskDoneCommand(id));
+
+    return done
+        ? Results.NoContent()
+        : Results.NotFound(new ErrorResponse($"Task {id} was not found."));
+}).RequireAuthorization();
 ```
 
-The HTTP layer still owns status codes and validation. The handler owns the application operation.
-
-## How it works
-
-`IMediator.Send` finds the handler registered for the message type, resolves it from DI, calls `Handle` and returns its result. The endpoint never references `CreateTaskHandler` directly.
-
-This is "CQRS-ish", not full CQRS. The read and write sides still share one SQLite database, one entity and one writer chain. There is no separate read store, no event sourcing and no eventual consistency. The separation is at the use-case level: a command handler and a query handler are easier to name and test than a long endpoint lambda.
-
-The handler shape also gives you a place for cross-cutting behavior. A MediatR `IPipelineBehavior<TRequest, TResponse>` can run validation, logging or transactions around every command without editing each handler.
-
-## Refactor
-
-A few boundaries keep the mediator from becoming a tax:
-
-- Use a message per use case, not per table. `CreateTaskCommand` describes intent; `UpdateTaskRow` describes implementation.
-- Keep validation at the HTTP boundary for request shape, and add a pipeline behavior when the same rules must run for every caller.
-- Do not hide simple reads behind the mediator just for symmetry. A single query with no cross-cutting behavior is fine as a reader call.
-- Test handlers directly with fakes when the behavior is complex, and keep a few acceptance tests for the HTTP contract. This suite does both.
-- A vertical slice groups the message, handler and endpoint by feature. The `TaskMessages.cs` file is a small version of that idea.
-
-The mediator is a tool for dispatch and decoration, not a requirement for every method. The application works because the handlers and the endpoints agree on the messages, not because the mediator is present.
+The HTTP layer keeps status codes and validation at the edge; handlers own the application operations. The existing acceptance tests stay green after the move.
 
 ## Wrapping up
 
@@ -147,4 +172,3 @@ What we have covered:
 - Pipeline behaviors as the next extension point.
 
 That completes Part 3. Part 4 covers testing Q&A and the good-to-know appendices.
-

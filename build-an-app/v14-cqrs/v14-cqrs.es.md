@@ -6,6 +6,16 @@ Los endpoints llaman a los lectores y escritores directamente. La versión 14 mu
 
 La solución terminada está en `build-an-app/v14-cqrs`.
 
+## Cómo funciona
+
+`IMediator.Send` busca el handler registrado para un mensaje, lo resuelve de DI, llama a `Handle` y devuelve el resultado. El endpoint o el test nombra un comando o una query; ninguno necesita referenciar directamente la clase handler.
+
+La separación ocurre a nivel de caso de uso. Un handler de comando cambia el estado; uno de query devuelve datos sin cambiarlos.
+
+## Cómo probarlo
+
+Envía un comando por `IMediator`, comprueba el resultado y después lee por la API HTTP. Así cruzas el límite del mediador y confirmas que el handler comparte el almacén de la aplicación. Los tests de aceptación HTTP existentes siguen protegiendo códigos de estado, validación y rutas mientras se migran los demás endpoints.
+
 ## Escribe primero el test
 
 ```csharp
@@ -27,30 +37,30 @@ public async Task CreateTaskCommand_IsHandledThroughMediatR()
 }
 ```
 
-Contra v13 el tipo del comando no existe. El test lo manda por el mediador y después lee la tarea por la API, así prueba el cableado del handler y el almacenamiento compartido.
+The command goes through MediatR, then the test reads the task through HTTP. It checks that dispatch reaches the handler and that the handler writes to the same store used by the API.
 
-## Agrega los paquetes
+## Intenta ejecutar el test
+
+El test todavía no compila porque aún no se agregaron MediatR ni `CreateTaskCommand`.
+
+## Escribe el código mínimo para que el test compile y mira la salida
+
+Instala MediatR y agrega el mensaje que usa el test:
 
 ```sh
 dotnet add src/TaskTracker.Api package MediatR --version 10.0.1
 dotnet add src/TaskTracker.Api package MediatR.Extensions.Microsoft.DependencyInjection --version 10.0.1
 ```
 
-## Comandos y queries
-
 ```csharp
-public sealed record GetTasksQuery : IRequest<IReadOnlyList<TaskItem>>;
-
-public sealed record GetTaskQuery(int Id) : IRequest<TaskItem?>;
-
 public sealed record CreateTaskCommand(string Title) : IRequest<TaskItem>;
-
-public sealed record MarkTaskDoneCommand(int Id) : IRequest<bool>;
 ```
 
-Los records son los mensajes. Una query devuelve datos y no cambia nada; un comando cambia estado.
+El test ya compila, pero no puede resolver `IMediator` porque aún no se registraron handlers.
 
-## Handlers
+## Escribe el código suficiente para que pase
+
+Agrega el handler y escanea el ensamblado de la API para que MediatR lo registre:
 
 ```csharp
 public sealed class CreateTaskHandler : IRequestHandler<CreateTaskCommand, TaskItem>
@@ -69,17 +79,43 @@ public sealed class CreateTaskHandler : IRequestHandler<CreateTaskCommand, TaskI
 }
 ```
 
-Los otros handlers siguen la misma forma: `GetTasksHandler` usa `ITaskReader.All`, `GetTaskHandler` usa `Find` y `MarkTaskDoneHandler` mapea el resultado del writer a un `bool`.
-
-Registra el ensamblado:
-
 ```csharp
 builder.Services.AddMediatR(typeof(Program).Assembly);
 ```
 
-MediatR busca las implementaciones de `IRequestHandler<,>` y las registra. Los handlers son scoped, como el lector y el escritor de los que dependen.
+El test pasa. El handler escribe mediante `ITaskWriter` y `/tasks` lee la misma tarea desde el almacén compartido.
 
-## Los endpoints
+## Refactor
+
+Esto es “CQRS-ish”, no CQRS completo. Las lecturas y escrituras todavía comparten una base SQLite, una entidad y una cadena de escritura. No hay un almacén de lectura separado, event sourcing ni consistencia eventual.
+
+Algunos límites evitan que el mediador se vuelva un impuesto:
+
+- Un mensaje por caso de uso, no por tabla. `CreateTaskCommand` describe intención; `UpdateTaskRow` describe implementación.
+- Mantén la validación en el borde HTTP para la forma del request y agrega un pipeline behavior cuando las mismas reglas deban correr para todos los llamadores.
+- No escondas lecturas simples detrás del mediador solo por simetría. Una query sin comportamiento transversal puede seguir siendo una llamada al lector.
+- Prueba los handlers directamente con fakes cuando su comportamiento sea complejo. Esta suite verifica la creación mediante MediatR y usa tests de aceptación HTTP para el comportamiento de la API.
+- Una vertical slice agrupa mensaje, handler y endpoint por característica. `TaskMessages.cs` es una versión pequeña de esa idea.
+
+El mediador despacha y decora el trabajo; no se requiere para cada método. Los pipeline behaviors pueden agregar validación, logging o transacciones alrededor de los handlers sin editar cada uno.
+
+## Repite con requisitos nuevos
+
+Los tests de aceptación de v13 ya cubren listar, buscar, crear y marcar tareas como hechas. Mantén esos comportamientos en verde mientras mueves las operaciones restantes detrás de mensajes.
+
+Agrega records de query y comando:
+
+```csharp
+public sealed record GetTasksQuery : IRequest<IReadOnlyList<TaskItem>>;
+
+public sealed record GetTaskQuery(int Id) : IRequest<TaskItem?>;
+
+public sealed record MarkTaskDoneCommand(int Id) : IRequest<bool>;
+```
+
+Los handlers siguen la misma forma. `GetTasksHandler` llama a `ITaskReader.All`, `GetTaskHandler` llama a `Find` y `MarkTaskDoneHandler` convierte el resultado del writer en un `bool`.
+
+Cambia los endpoints para enviar esos mensajes:
 
 ```csharp
 app.MapGet("/tasks", async (IMediator mediator) =>
@@ -111,29 +147,18 @@ app.MapPost("/tasks", async (
 
     return Results.Created($"/tasks/{task.Id}", task);
 }).RequireAuthorization();
+
+app.MapMethods("/tasks/{id:int}/done", new[] { HttpMethods.Patch }, async (int id, IMediator mediator) =>
+{
+    var done = await mediator.Send(new MarkTaskDoneCommand(id));
+
+    return done
+        ? Results.NoContent()
+        : Results.NotFound(new ErrorResponse($"Task {id} was not found."));
+}).RequireAuthorization();
 ```
 
-La capa HTTP sigue siendo dueña de los códigos de estado y la validación. El handler es dueño de la operación de aplicación.
-
-## Cómo funciona
-
-`IMediator.Send` busca el handler registrado para el tipo de mensaje, lo resuelve de DI, llama a `Handle` y devuelve el resultado. El endpoint nunca referencia `CreateTaskHandler` directamente.
-
-Esto es "CQRS-ish", no CQRS completo. Los lados de lectura y escritura comparten una base SQLite, una entidad y una cadena de escritura. No hay un almacén de lectura separado, ni event sourcing, ni consistencia eventual. La separación es a nivel de caso de uso: un handler de comando y uno de query son más fáciles de nombrar y probar que una lambda de endpoint larga.
-
-La forma del handler también da un lugar para comportamiento transversal. Un `IPipelineBehavior<TRequest, TResponse>` de MediatR puede correr validación, logging o transacciones alrededor de cada comando sin editar cada handler.
-
-## Refactor
-
-Algunos bordes evitan que el mediador se vuelva un impuesto:
-
-- Un mensaje por caso de uso, no por tabla. `CreateTaskCommand` describe intención; `UpdateTaskRow` describe implementación.
-- Mantén la validación en el borde HTTP para la forma del request, y agrega un pipeline behavior cuando las mismas reglas deban correr para todos los llamadores.
-- No escondas lecturas simples detrás del mediador solo por simetría. Una query sin comportamiento transversal puede ser una llamada al lector.
-- Prueba los handlers directamente con fakes cuando la lógica sea compleja, y conserva unos pocos tests de aceptación para el contrato HTTP. Esta suite hace las dos cosas.
-- Una vertical slice agrupa mensaje, handler y endpoint por característica. `TaskMessages.cs` es una versión pequeña de esa idea.
-
-El mediador es una herramienta de despacho y decoración, no un requisito para cada método. La aplicación funciona porque los handlers y los endpoints coinciden en los mensajes, no porque el mediador esté presente.
+La capa HTTP conserva los códigos de estado y la validación en el borde; los handlers son dueños de las operaciones de aplicación. Los tests de aceptación existentes siguen en verde después del cambio.
 
 ## Para cerrar
 
@@ -147,4 +172,3 @@ Lo que cubrimos:
 - Pipeline behaviors como siguiente punto de extensión.
 
 Con esto termina la Parte 3. La Parte 4 cubre preguntas de testing y los apéndices good-to-know.
-

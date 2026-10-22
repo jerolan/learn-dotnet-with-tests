@@ -158,6 +158,10 @@
   sections in order, with retry recovery first and the bounded retry budget
   added as a follow-up. `mise exec dotnet@10.0.402 -- dotnet test
   build-an-app/v13-resilience/TaskTracker.sln -m:1` passed 31 tests.
+- Part 3 `v14-cqrs`: English and Spanish pairs now contain the required
+  sections in order; the create command establishes mediator dispatch before
+  the existing routes move behind handlers. `mise exec dotnet@10.0.402 --
+  dotnet test build-an-app/v14-cqrs/TaskTracker.sln -m:1` passed 32 tests.
 
 ## Completed increment: Part 4 delivery references
 
