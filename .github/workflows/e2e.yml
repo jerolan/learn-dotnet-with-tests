@@ -3,13 +3,7 @@ name: e2e
 on:
   workflow_dispatch:
   push:
-    paths:
-      - "qa/e2e-playwright/**"
-      - ".github/workflows/e2e.yml"
   pull_request:
-    paths:
-      - "qa/e2e-playwright/**"
-      - ".github/workflows/e2e.yml"
 
 env:
   DOTNET_NOLOGO: true
