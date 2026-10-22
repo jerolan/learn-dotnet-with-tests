@@ -6,6 +6,14 @@ Un parámetro normal es una copia. `ref` pasa una referencia a la variable de qu
 
 Vamos a cubrir las cuatro formas con ejemplos pequeños y testeables: intercambiar dos variables, intentar dividir, devolver una referencia a una posición de un arreglo y pasar un struct por referencia de solo lectura. La solución terminada está en `fundamentals/ref`; si la estás armando desde cero, usa la misma estructura que en los capítulos anteriores: una biblioteca de clases en `src/Ref`, un proyecto de MSTest en `tests/Ref.Tests`, una solución y una referencia entre proyectos.
 
+## Cómo funciona
+
+Los parámetros normales reciben valores. `ref` y `out` dejan que un método escriba sobre una variable de quien llama; `in` pasa una referencia de solo lectura. Un retorno `ref` deja que quien llama trabaje con una ubicación de almacenamiento, como un elemento de un arreglo, en vez de una copia.
+
+## Cómo probarlo
+
+Llama a cada método directamente y comprueba el resultado desde quien llama: las variables modificadas con `ref`, el indicador y el valor con `out`, la posición modificada del arreglo con un retorno `ref` y el cálculo con `in`.
+
 ## Escribe primero el test
 
 ```csharp
@@ -63,6 +71,10 @@ public static void Swap(ref int left, ref int right)
 ```
 
 Verde. `ref` en el parámetro significa que el método trabaja sobre las variables de quien llama, no sobre copias. Sin él, `left` y `right` dentro del método serían copias independientes y quien llama no vería ningún cambio.
+
+## Refactor
+
+`Swap` necesita una variable temporal para conservar el primer valor. Ejecuta el test otra vez; la implementación ya es la versión clara más pequeña.
 
 ## Repite con requisitos nuevos
 
@@ -190,7 +202,7 @@ public readonly struct Point
 
 Verde. `in` pasa una referencia de solo lectura. El método evita copiar el struct y el compilador le impide asignar a `other`. Para un struct grande en una ruta caliente, eso importa; para un punto de dos enteros, es sobre todo una lección de sintaxis. Quien llama puede pasar el argumento con o sin la palabra `in`.
 
-## Refactor
+### Elegir cuándo usar cada forma
 
 Los ejemplos son pequeños a propósito. La regla práctica es usar estas palabras solo cuando compran algo:
 

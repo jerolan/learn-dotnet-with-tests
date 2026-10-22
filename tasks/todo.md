@@ -77,6 +77,9 @@
 - Part 1 `queriable`: English and Spanish pairs now contain the required
   sections in order. `mise exec dotnet@10.0.402 -- dotnet test
   fundamentals/queriable/Queriable.sln -m:1` passed 3 tests.
+- Part 1 `ref`: English and Spanish pairs now contain the required sections
+  in order. `mise exec dotnet@10.0.402 -- dotnet test
+  fundamentals/ref/Ref.sln -m:1` passed 5 tests.
 
 ## Completed increment: Part 4 delivery references
 

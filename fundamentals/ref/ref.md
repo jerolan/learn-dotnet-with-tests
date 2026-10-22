@@ -6,6 +6,14 @@ A normal parameter is a copy. `ref` passes a reference to the caller's variable,
 
 We will cover the four forms with small, testable examples: swap two variables, try to divide, return a reference to an array slot, and pass a struct by readonly reference. The finished solution is in `fundamentals/ref`; if you are building it from scratch, use the same layout as the previous chapters: a class library in `src/Ref`, an MSTest project in `tests/Ref.Tests`, a solution and a project reference.
 
+## How it works
+
+Ordinary parameters receive values. `ref` and `out` let a method write through to a caller variable; `in` passes a readonly reference. A `ref` return lets the caller work with a storage location, such as an array element, instead of a copy.
+
+## How to test
+
+Call each method directly and assert the result at the caller: changed variables for `ref`, the success flag and value for `out`, a changed array slot for a ref return, and the calculation for `in`.
+
 ## Write the test first
 
 ```csharp
@@ -63,6 +71,10 @@ public static void Swap(ref int left, ref int right)
 ```
 
 Green. `ref` on the parameter means the method works on the caller's variables, not on copies. Without it, `left` and `right` inside the method would be independent copies and the caller would see no change.
+
+## Refactor
+
+`Swap` needs one temporary variable to preserve the first value. Run the test again; the implementation is already the smallest clear version.
 
 ## Repeat for new requirements
 
@@ -190,7 +202,7 @@ public readonly struct Point
 
 Green. `in` passes a readonly reference. The method avoids copying the struct, and the compiler prevents it from assigning to `other`. For a large struct in a hot path, that matters; for a two-int point, it is mostly a syntax lesson. The caller can pass the argument with or without the `in` keyword.
 
-## Refactor
+### Choose when to use each form
 
 The examples are deliberately small. The rule of thumb is to use these keywords only when they buy something:
 
