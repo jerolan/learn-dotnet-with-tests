@@ -58,7 +58,7 @@ public async Task AuthenticatedClientReceivesCreatedTaskEvent()
 
 La fuente de finalización no crea el evento; solo permite que el test espere el callback real del cliente. El límite de cinco segundos convierte un mensaje ausente en un fallo, en vez de dejar el test colgado.
 
-## Intenta correrlo
+## Intenta ejecutar el test
 
 Ejecuta solo este comportamiento:
 
@@ -76,7 +76,7 @@ System.Net.Http.HttpRequestException: Response status code does not indicate suc
 
 Ese es el comportamiento faltante. El test llega al límite HTTP real y falla antes de enviar o recibir un evento de tarea.
 
-## Escribe el código mínimo para hacer que el test corra y revisa el fallo
+## Escribe el código mínimo para que el test compile y mira la salida
 
 Registra SignalR, mapea la ruta y agrega un hub vacío:
 
@@ -104,7 +104,7 @@ System.TimeoutException: The operation has timed out.
 
 El timeout indica que la ruta funciona y que falta entregar el evento.
 
-## Escribe suficiente código para hacerlo pasar
+## Escribe el código suficiente para que pase
 
 El procesador de eventos se ejecuta fuera del hub, así que recibe un `IHubContext`. Registra la entrada de auditoría existente y luego envía el evento a todos los clientes conectados:
 
@@ -149,13 +149,13 @@ Passed!  - Failed:     0, Passed:     1, Skipped:     0, Total:     1
 
 La tarea se guardó mediante la API, se procesó desde la cola existente y llegó a un cliente SignalR conectado.
 
-## Refactoriza
+## Refactor
 
 La cola de eventos sigue siendo la única fuente de eventos de tareas. Enviar desde `TaskEventProcessor` evita publicar una segunda notificación directamente desde el endpoint HTTP. `IHubContext` es la forma admitida de enviar a clientes conectados desde un servicio que está fuera del hub.
 
 No hace falta agregar un mock para el hub. El test de integración demuestra que un cliente conectado recibe el evento. El test tampoco usa `Thread.Sleep`: espera el callback y falla después de cinco segundos si nunca llega.
 
-## Repite con nuevos requisitos
+## Repite con requisitos nuevos
 
 La API ya protege las rutas de tareas. El nuevo hub también transmite datos de tareas, así que debe requerir autenticación. Primero agrega un test para una negociación anónima:
 

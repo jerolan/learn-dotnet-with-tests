@@ -76,7 +76,7 @@ System.Net.Http.HttpRequestException: Response status code does not indicate suc
 
 That is the missing behavior. The test reaches the real HTTP boundary and fails before it can send or receive a task event.
 
-## Write the minimal amount of code to make the test run and check the failing test output
+## Write the minimal amount of code for the test to run and check the failing test output
 
 Register SignalR, map the route, and add an empty hub:
 

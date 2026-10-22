@@ -6,7 +6,7 @@
 
 ### Task 1: Align chapter pairs with the canonical template
 - [x] Align Part 1 English/Spanish chapters with the section order in `fundamentals/TEMPLATE.md`.
-- [ ] Align Part 2 and Part 3 pairs with the same order.
+- [x] Align Part 2 and Part 3 pairs with the same order.
 - [ ] Align runnable Part 4 appendices where their sample supports the TDD flow; preserve the Phase 4 Q&A and explicit deferral exceptions.
 - [ ] Verify each slice has every required section in matching bilingual order, resolving links and passing solution tests.
 - Verify: required-section audit, full local-link audit and `dotnet test` for affected solutions.
@@ -162,6 +162,8 @@
   sections in order; the create command establishes mediator dispatch before
   the existing routes move behind handlers. `mise exec dotnet@10.0.402 --
   dotnet test build-an-app/v14-cqrs/TaskTracker.sln -m:1` passed 32 tests.
+- Full Part 2/3 audit: all 19 bilingual pairs follow the required section
+  order, and every local link in those chapters resolves.
 
 ## Completed increment: Part 4 delivery references
 
