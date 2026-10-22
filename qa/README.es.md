@@ -20,7 +20,7 @@ Esta parte cierra el roadmap. Los capítulos de preguntas responden dudas que no
 - 🟠 [Monitoreo y telemetría](monitoring-telemetry/monitoring-telemetry.es.md) ([EN](monitoring-telemetry/monitoring-telemetry.md)) - Registra un contador con tags y captúralo con un MeterListener.
 - 🟠 Despliegue en la nube. *Planeado.*
 - 🟠 Streaming. *Planeado.*
-- 🟠 NoSQL. *Planeado.*
+- 🟠 [NoSQL con MongoDB](nosql/nosql.es.md) ([EN](nosql/nosql.md)) - Guarda documentos en MongoDB, levántalo con Testcontainers y corrige un orden sensible a mayúsculas con una collation.
 - 🟠 [gRPC](grpc/grpc.es.md) ([EN](grpc/grpc.md)) - Define un contrato proto, genera el servicio y el cliente, y llámalo a través de TestServer.
 - 🟠 [GraphQL](graphql/graphql.es.md) ([EN](graphql/graphql.md)) - Publica una query y una mutation sobre un endpoint y prueba los documentos por HTTP.
 - 🟠 [Actualizaciones en tiempo real con SignalR](signalr/signalr.es.md) ([EN](signalr/signalr.md)) - Empuja una tarea creada a un cliente conectado y prueba el hub a través de TestServer.
@@ -51,6 +51,6 @@ Esta parte cierra el roadmap. Los capítulos de preguntas responden dudas que no
 | SignalR | [Actualizaciones en tiempo real con SignalR](signalr/signalr.es.md) | cubierto |
 | Snapshot, E2E, rendimiento | [Snapshot](snapshot-verify/snapshot-verify.es.md), [NBomber](performance-nbomber/performance-nbomber.es.md), apéndice de Playwright | snapshot y rendimiento cubiertos; E2E planeado |
 | Contenedores, CI/CD, monitoreo, nube, DevOps | [Contenedores](containers/containers.es.md), [CI/CD](ci-cd/ci-cd.es.md), [Monitoreo](monitoring-telemetry/monitoring-telemetry.es.md), apéndices de nube y DevOps | contenedores, CI/CD y monitoreo cubiertos; nube y DevOps planeados |
-| Streaming, NoSQL, gRPC, GraphQL | [gRPC](grpc/grpc.es.md), [GraphQL](graphql/graphql.es.md), más apéndices de streaming y NoSQL | gRPC y GraphQL cubiertos; el resto planeado |
+| Streaming, NoSQL, gRPC, GraphQL | [gRPC](grpc/grpc.es.md), [GraphQL](graphql/graphql.es.md), [NoSQL](nosql/nosql.es.md), más un apéndice de streaming | gRPC, GraphQL y NoSQL cubiertos; streaming planeado |
 | Habilidades generales de desarrollo | Prefacio del README y preguntas de testing | cubierto |
 

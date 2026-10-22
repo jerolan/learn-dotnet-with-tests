@@ -42,7 +42,7 @@ Close the roadmap with LGWT-style Q&A chapters and the 🟠 appendices. Every ro
 | Monitoring/telemetry | Appendix `monitoring-telemetry` | covered |
 | Cloud | Appendix `cloud` | planned |
 | Streaming | Appendix `streaming` | planned |
-| NoSQL | Appendix `nosql` | planned |
+| NoSQL | Appendix `nosql` | covered |
 | gRPC | Appendix `grpc` | covered |
 | GraphQL | Appendix `graphql` | covered |
 | DevOps/IaC | Appendix `devops-iac` | planned |

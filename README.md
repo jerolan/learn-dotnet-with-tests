@@ -106,3 +106,4 @@ The closing part answers the questions that do not need a new project and maps t
 - 🟠 [GraphQL](qa/graphql/graphql.md) ([ES](qa/graphql/graphql.es.md)) - Publish a query and a mutation over one endpoint and test the documents over HTTP.
 - 🟠 [SDK Libraries](qa/sdk-libraries/sdk-libraries.md) ([ES](qa/sdk-libraries/sdk-libraries.es.md)) - Build a typed HTTP client, test it with a stub handler and pack it as a NuGet package.
 - 🟠 [AsyncAPI](qa/asyncapi/asyncapi.md) ([ES](qa/asyncapi/asyncapi.es.md)) - Describe the TaskCreated event as a contract and validate it with the official CLI.
+- 🟠 [NoSQL with MongoDB](qa/nosql/nosql.md) ([ES](qa/nosql/nosql.es.md)) - Store documents in MongoDB, start it with Testcontainers and fix a case-sensitive sort.

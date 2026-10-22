@@ -1,0 +1,36 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{CB0E28D7-CAEB-404B-A8C0-34E398F34AD1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TaskTracker.Mongo", "src\TaskTracker.Mongo\TaskTracker.Mongo.csproj", "{B8AA479A-3B89-48CF-AD24-AF192B1402BA}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{AC3C5F5D-E245-4470-B8F1-BA5F8AB34AAB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TaskTracker.Mongo.Tests", "tests\TaskTracker.Mongo.Tests\TaskTracker.Mongo.Tests.csproj", "{8B8CFE90-16D6-498D-AFE0-735F3E975028}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B8AA479A-3B89-48CF-AD24-AF192B1402BA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B8AA479A-3B89-48CF-AD24-AF192B1402BA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B8AA479A-3B89-48CF-AD24-AF192B1402BA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B8AA479A-3B89-48CF-AD24-AF192B1402BA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8B8CFE90-16D6-498D-AFE0-735F3E975028}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8B8CFE90-16D6-498D-AFE0-735F3E975028}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8B8CFE90-16D6-498D-AFE0-735F3E975028}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8B8CFE90-16D6-498D-AFE0-735F3E975028}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{B8AA479A-3B89-48CF-AD24-AF192B1402BA} = {CB0E28D7-CAEB-404B-A8C0-34E398F34AD1}
+		{8B8CFE90-16D6-498D-AFE0-735F3E975028} = {AC3C5F5D-E245-4470-B8F1-BA5F8AB34AAB}
+	EndGlobalSection
+EndGlobal
