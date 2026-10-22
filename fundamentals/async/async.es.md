@@ -2,9 +2,15 @@
 
 [Encuentras todo el código de este capítulo aquí](https://github.com/jerolan/learn-dotnet-with-tests/tree/main/fundamentals/async)
 
-Las palabras `async` y `await` te dejan escribir un método asíncrono que se lee como uno síncrono. El método devuelve una `Task` o `Task<T>`; `await` lo pausa hasta que la tarea completa, sin bloquear el hilo. Los tests se vuelven métodos `async Task` y esperan el código bajo prueba.
+Si una fuente del clima devuelve una temperatura de forma asíncrona, `WeatherReport.DescribeAsync("Madrid")` debe devolver `"Madrid: 20C"` sin bloquear mientras trabaja la fuente. La solución terminada está en `fundamentals/async`; si la estás armando desde cero, usa la misma estructura que en los capítulos anteriores: una biblioteca de clases en `src/Async`, un proyecto de MSTest en `tests/Async.Tests`, una solución y una referencia entre proyectos.
 
-Vamos a construir un reporte del clima que le pide una temperatura a una fuente asíncrona. La solución terminada está en `fundamentals/async`; si la estás armando desde cero, usa la misma estructura que en los capítulos anteriores: una biblioteca de clases en `src/Async`, un proyecto de MSTest en `tests/Async.Tests`, una solución y una referencia entre proyectos.
+## Cómo funciona
+
+Un método `async` devuelve una `Task` o `Task<T>`. En `await`, devuelve el control a quien lo llamó mientras la tarea esperada siga incompleta y continúa cuando esa tarea termina. Quien llama puede esperar la tarea sin bloquear un hilo.
+
+## Cómo probarlo
+
+Separa el reporte del clima del efecto secundario que obtiene la temperatura mediante `ITemperatureSource`. Una fuente falsa puede devolver una tarea completada, así que el test comprueba el resultado formateado sin demoras, acceso a la red ni suposiciones de tiempo. El test devuelve `async Task` y espera el reporte.
 
 ## Escribe primero el test
 
@@ -76,13 +82,17 @@ public async Task<string> DescribeAsync(string city, CancellationToken cancellat
 
 Verde. El método lleva `async` y devuelve `Task<string>`. Adentro, `await` desarrolla la `Task<int>` de la fuente en un `int`. Quien llama recibe una tarea que completa con la cadena formateada.
 
-## Cómo funciona
+## Refactor
 
-`async` le dice al compilador que construya una máquina de estados para el método. Cuando la ejecución llega a `await`, el método registra una continuación y devuelve la tarea sin terminar a quien llama. Cuando la tarea de la fuente completa, la continuación reanuda el método después del `await`.
+El método ya tiene la forma que quieres: async de punta a punta, un await, sin bloqueos.
 
-El hilo no queda bloqueado mientras espera. Eso es lo que mantiene responsive a un servidor web mientras una llamada a base de datos está en vuelo.
+Algunas reglas que evitan la mayoría de los errores asíncronos:
 
-El método de test también es `async Task`. MSTest espera la tarea que devuelve, así que un fallo de aserción o una excepción dentro del test llega al runner.
+- No llames a `.Result` ni `.Wait()` sobre una tarea. Usa `await`. Bloquear puede producir un deadlock y envuelve las excepciones en `AggregateException`.
+- Usa `async Task` para métodos asíncronos. `async void` es solo para manejadores de eventos; sus excepciones no las puede observar quien llama.
+- No envuelvas E/S naturalmente asíncrona en `Task.Run`. La API de E/S ya devuelve una tarea. `Task.Run` es para trabajo ligado a CPU que debe salir del hilo actual.
+- Pasa `CancellationToken` por toda la cadena. Un token que se detiene en el método público no le sirve a la base de datos ni a la llamada HTTP de abajo.
+- En código de biblioteca, `ConfigureAwait(false)` evita capturar el contexto de sincronización de quien llama. En código de aplicación con contexto de UI, el valor por defecto suele ser el correcto. El libro usa el valor por defecto para no distraer.
 
 ## Repite con requisitos nuevos
 
@@ -133,18 +143,6 @@ public async Task DescribeAsync_CanceledToken_Throws()
 Pasa. El método pasa el token de cancelación a la fuente; la fuente llama a `ThrowIfCancellationRequested` y lanza `OperationCanceledException`, que el método propaga.
 
 La cancelación es cooperativa. Un token no detiene un hilo; el código que lo recibe tiene que comprobarlo o pasarlo a una API que lo haga. Pasa el token hasta la llamada de E/S y deja que la cancelación llegue a la operación que puede honrarla.
-
-## Refactor
-
-El método ya tiene la forma que quieres: async de punta a punta, un await, sin bloqueos.
-
-Algunas reglas que evitan la mayoría de los errores asíncronos:
-
-- No llames a `.Result` ni `.Wait()` sobre una tarea. Usa `await`. Bloquear puede producir un deadlock y envuelve las excepciones en `AggregateException`.
-- Usa `async Task` para métodos asíncronos. `async void` es solo para manejadores de eventos; sus excepciones no las puede observar quien llama.
-- No envuelvas E/S naturalmente asíncrona en `Task.Run`. La API de E/S ya devuelve una tarea. `Task.Run` es para trabajo ligado a CPU que debe salir del hilo actual.
-- Pasa `CancellationToken` por toda la cadena. Un token que se detiene en el método público no le sirve a la base de datos ni a la llamada HTTP de abajo.
-- En código de biblioteca, `ConfigureAwait(false)` evita capturar el contexto de sincronización de quien llama. En código de aplicación con contexto de UI, el valor por defecto suele ser el correcto. El libro usa el valor por defecto para no distraer.
 
 ## Para cerrar
 

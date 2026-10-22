@@ -2,9 +2,15 @@
 
 [You can find all the code for this chapter here](https://github.com/jerolan/learn-dotnet-with-tests/tree/main/fundamentals/async)
 
-The `async` and `await` keywords let you write an asynchronous method that reads like a synchronous one. The method returns a `Task` or `Task<T>`; `await` pauses it until the task completes without blocking the thread. Tests become `async Task` methods and await the code under test.
+Given a weather source that returns a temperature asynchronously, `WeatherReport.DescribeAsync("Madrid")` should return `"Madrid: 20C"` without blocking while the source works. The finished solution is in `fundamentals/async`; if you are building it from scratch, use the same layout as the previous chapters: a class library in `src/Async`, an MSTest project in `tests/Async.Tests`, a solution and a project reference.
 
-We will build a weather report that asks an asynchronous source for a temperature. The finished solution is in `fundamentals/async`; if you are building it from scratch, use the same layout as the previous chapters: a class library in `src/Async`, an MSTest project in `tests/Async.Tests`, a solution and a project reference.
+## How it works
+
+An `async` method returns a `Task` or `Task<T>`. At `await`, it returns control to its caller while the awaited task is incomplete, then continues when that task completes. The caller can await the task without blocking a thread.
+
+## How to test
+
+Keep the weather report separate from the side effect that retrieves a temperature by giving it an `ITemperatureSource`. A fake source can return a completed task, so the test checks the formatted result without delay, network access or timing assumptions. The test itself returns `async Task` and awaits the report.
 
 ## Write the test first
 
@@ -76,13 +82,17 @@ public async Task<string> DescribeAsync(string city, CancellationToken cancellat
 
 Green. The method is marked `async` and returns `Task<string>`. Inside, `await` unwraps the `Task<int>` from the source into an `int`. The caller receives a task that completes with the formatted string.
 
-## How it works
+## Refactor
 
-`async` tells the compiler to build a state machine for the method. When execution reaches `await`, the method registers a continuation and returns the unfinished task to its caller. When the source task completes, the continuation resumes the method after the `await`.
+The method is already the shape you want: async all the way, one await, no blocking.
 
-The thread is not blocked while it waits. That is what keeps a web server responsive while a database call is in flight.
+Some rules that prevent most async bugs:
 
-The test method is also `async Task`. MSTest awaits the task it returns, so an assertion failure or an exception inside the test is reported to the runner.
+- Do not call `.Result` or `.Wait()` on a task. Use `await`. Blocking can deadlock and wraps exceptions in `AggregateException`.
+- Use `async Task` for asynchronous methods. `async void` is only for event handlers; its exceptions are not observable by the caller.
+- Do not wrap naturally asynchronous I/O in `Task.Run`. The I/O API already returns a task. `Task.Run` is for CPU-bound work that should move off the current thread.
+- Pass `CancellationToken` through the call chain. A token that stops at the public method is not useful to the database or HTTP call underneath.
+- In library code, `ConfigureAwait(false)` avoids capturing the caller's synchronization context. In application code with a UI context, the default is usually what you want. The book uses the default for clarity.
 
 ## Repeat for new requirements
 
@@ -133,18 +143,6 @@ public async Task DescribeAsync_CanceledToken_Throws()
 It passes. The method passes the cancellation token to the source; the source calls `ThrowIfCancellationRequested` and throws `OperationCanceledException`, which the method propagates.
 
 Cancellation is cooperative. A token does not stop a thread; the code that receives it has to check it or pass it to an API that does. Pass the token down to the I/O call and let the cancellation reach the operation that can honor it.
-
-## Refactor
-
-The method is already the shape you want: async all the way, one await, no blocking.
-
-Some rules that prevent most async bugs:
-
-- Do not call `.Result` or `.Wait()` on a task. Use `await`. Blocking can deadlock and wraps exceptions in `AggregateException`.
-- Use `async Task` for asynchronous methods. `async void` is only for event handlers; its exceptions are not observable by the caller.
-- Do not wrap naturally asynchronous I/O in `Task.Run`. The I/O API already returns a task. `Task.Run` is for CPU-bound work that should move off the current thread.
-- Pass `CancellationToken` through the call chain. A token that stops at the public method is not useful to the database or HTTP call underneath.
-- In library code, `ConfigureAwait(false)` avoids capturing the caller's synchronization context. In application code with a UI context, the default is usually what you want. The book uses the default for clarity.
 
 ## Wrapping up
 
