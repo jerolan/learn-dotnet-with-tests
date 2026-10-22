@@ -155,5 +155,5 @@ Lo que cubrimos:
 
 El capítulo se apoya en la semántica de valores de [Structs and Records en Learn Go with Tests](https://quii.gitbook.io/learn-go-with-tests/structs-methods-and-interfaces): los datos se mantienen inmutables y cada cambio produce un valor nuevo. La expresión `with` es la sintaxis de C# para esa idea.
 
-Siguiente: [Herencia e interfaces](../inheritance.md).
+Siguiente: [Herencia e interfaces](../inheritance/inheritance.es.md).
 

@@ -40,7 +40,7 @@ This cycle encourages developers to write only the code necessary to pass tests,
 9. [Structs and Records](fundamentals/records/records.md) ([ES](fundamentals/records/records.es.md)) - Understand the use of structs for lightweight object-like structures and records for immutable data models.
 10. [`with` Keyword](fundamentals/with/with.md) ([ES](fundamentals/with/with.es.md)) - Discover how to use the with keyword to create modified copies of records for immutable data handling.
 11. [Properties and Methods](fundamentals/methods/methods.md) ([ES](fundamentals/methods/methods.es.md)) - Dive into defining and using properties and methods to encapsulate data and behavior within classes.
-12. [Inheritance and Interfaces](fundamentals/inheritance.md) - Explore how to use inheritance for code reuse and interfaces for designing flexible systems.
+12. [Inheritance and Interfaces](fundamentals/inheritance/inheritance.md) ([ES](fundamentals/inheritance/inheritance.es.md)) - Explore how to use inheritance for code reuse and interfaces for designing flexible systems.
 13. [composition over Inheritance](fundamentals/composition.md) - Learn why and how to favor composition over inheritance for better design flexibility.
 
 ### Advanced Topics
