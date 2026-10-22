@@ -6,6 +6,14 @@ The list endpoint reads the same rows on every request. Version 10 caches the li
 
 The finished solution is in `build-an-app/v10-caching`.
 
+## How it works
+
+`IMemoryCache` stores the list under `tasks:all` and individual rows under `tasks:{id}` for a configured TTL. The caching reader wraps the read counter, so a cache hit returns before the counter runs. The write decorator removes the list and task keys affected by a change.
+
+## How to test
+
+Read `/diagnostics` before and after two list requests. The read counter shows whether the second request reached Dapper, while HTTP requests keep the test on the public API boundary.
+
 ## Write the test first
 
 ```csharp
@@ -26,9 +34,15 @@ public async Task RepeatedListReads_HitTheCache()
 }
 ```
 
-In v9 the counter increments twice, once per read. The test fails with `Expected:<1>. Actual:<2>` and describes the cache contract.
+In v9 the counter increments twice, once per read. This test describes the cache contract.
 
-## Add the cache
+## Try to run the test
+
+Run it against v9. The counter increments twice, so the test fails with `Expected:<1>. Actual:<2>`.
+
+## Write the minimal amount of code for the test to run and check the failing test output
+
+### Add the cache
 
 Register it and bind the TTL:
 
@@ -47,7 +61,11 @@ public sealed class CacheOptions
 }
 ```
 
-## The read decorator
+Registering the cache does not change the reader yet; both requests still reach the counter.
+
+## Write enough code to make it pass
+
+### The read decorator
 
 ```csharp
 public sealed class CachingTaskReader : ITaskReader
@@ -119,7 +137,43 @@ builder.Services.AddScoped<ITaskReader>(services =>
 
 A cache hit returns before the counter sees a call, which is why the test expects one increment for two reads.
 
-## The write decorator
+The row cache uses `Find` with the same configured TTL; the list and item keys can now be invalidated by the writer.
+
+## Refactor
+
+Caching is a correctness decision as much as a performance one:
+
+- Every write must invalidate every key it can affect. A missing key here means a stale response.
+- The TTL is the backstop for writes that bypass the API, such as the raw SQL in the v5 test. Those writes do not call `InvalidatingTaskWriter`; only the TTL or a manual eviction refreshes the cache.
+- `IMemoryCache` is per process. Two instances of the API do not share it, and a restart starts empty. A distributed cache (Redis, for example) needs a different adapter and its own invalidation story.
+- Do not cache scoped objects such as the `DbContext`. Cache plain values or DTOs with a known lifetime.
+- Keep keys in one place. `tasks:all` and `tasks:{id}` are strings today; a small key helper prevents typos as the number of keys grows.
+
+The next chapters reuse the decorator shape: a queue consumer, a scheduled job and a resilience policy can all wrap an interface without editing the core implementation.
+
+## Repeat for new requirements
+
+### A write clears the list
+
+```csharp
+[TestMethod]
+public async Task Write_InvalidatesTheListCache()
+{
+    using var api = new Api();
+    await api.Client.PostAsJsonAsync("/tasks", new CreateTaskRequest("First"));
+
+    var first = await api.Client.GetFromJsonAsync<List<TaskItem>>("/tasks");
+    await api.Client.PostAsJsonAsync("/tasks", new CreateTaskRequest("Second"));
+    var second = await api.Client.GetFromJsonAsync<List<TaskItem>>("/tasks");
+
+    Assert.AreEqual(1, first!.Count);
+    Assert.AreEqual(2, second!.Count);
+}
+```
+
+Without invalidation, the second read returns the cached one-item list, so the test fails with `Expected:<2>. Actual:<1>`.
+
+Add a writer decorator that clears the list after creation:
 
 ```csharp
 public sealed class InvalidatingTaskWriter : ITaskWriter
@@ -143,14 +197,7 @@ public sealed class InvalidatingTaskWriter : ITaskWriter
         return task;
     }
 
-    public TaskItem? MarkDone(int id)
-    {
-        var task = _inner.MarkDone(id);
-        _cache.Remove(AllKey);
-        _cache.Remove($"tasks:{id}");
-
-        return task;
-    }
+    public TaskItem? MarkDone(int id) => _inner.MarkDone(id);
 }
 ```
 
@@ -164,27 +211,7 @@ builder.Services.AddScoped<ITaskWriter>(services =>
         services.GetRequiredService<IMemoryCache>()));
 ```
 
-## Repeat for new requirements
-
-### A write clears the list
-
-```csharp
-[TestMethod]
-public async Task Write_InvalidatesTheListCache()
-{
-    using var api = new Api();
-    await api.Client.PostAsJsonAsync("/tasks", new CreateTaskRequest("First"));
-
-    var first = await api.Client.GetFromJsonAsync<List<TaskItem>>("/tasks");
-    await api.Client.PostAsJsonAsync("/tasks", new CreateTaskRequest("Second"));
-    var second = await api.Client.GetFromJsonAsync<List<TaskItem>>("/tasks");
-
-    Assert.AreEqual(1, first!.Count);
-    Assert.AreEqual(2, second!.Count);
-}
-```
-
-Green. Without the invalidation, the second read would return the cached one-item list.
+Green. The second list read now sees the new task.
 
 ### Marking done clears the list and the task
 
@@ -209,19 +236,22 @@ public async Task MarkDone_InvalidatesBothCachedEntries()
 }
 ```
 
+At this point `MarkDone` leaves the per-task cache intact, so the test returns the old `IsDone` value.
+
+Invalidate both affected keys after the write:
+
+```csharp
+public TaskItem? MarkDone(int id)
+{
+    var task = _inner.MarkDone(id);
+    _cache.Remove(AllKey);
+    _cache.Remove($"tasks:{id}");
+
+    return task;
+}
+```
+
 Green. The writer knows the id, so it can remove the per-task key and the list key in one place.
-
-## Refactor
-
-Caching is a correctness decision as much as a performance one:
-
-- Every write must invalidate every key it can affect. A missing key here means a stale response.
-- The TTL is the backstop for writes that bypass the API, such as the raw SQL in the v5 test. Those writes do not call `InvalidatingTaskWriter`; only the TTL or a manual eviction refreshes the cache.
-- `IMemoryCache` is per process. Two instances of the API do not share it, and a restart starts empty. A distributed cache (Redis, for example) needs a different adapter and its own invalidation story.
-- Do not cache scoped objects such as the `DbContext`. Cache plain values or DTOs with a known lifetime.
-- Keep keys in one place. `tasks:all` and `tasks:{id}` are strings today; a small key helper prevents typos as the number of keys grows.
-
-The next chapters reuse the decorator shape: a queue consumer, a scheduled job and a resilience policy can all wrap an interface without editing the core implementation.
 
 ## Wrapping up
 

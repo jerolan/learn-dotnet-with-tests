@@ -141,6 +141,10 @@
   sections in order, with structured fields and a passing green baseline for
   correlation scopes. `mise exec dotnet@10.0.402 -- dotnet test
   build-an-app/v9-logging/TaskTracker.sln -m:1` passed 21 tests.
+- Part 3 `v10-caching`: English and Spanish pairs now contain the required
+  sections in order, with cache hits followed by write-invalidation scenarios.
+  `mise exec dotnet@10.0.402 -- dotnet test
+  build-an-app/v10-caching/TaskTracker.sln -m:1` passed 24 tests.
 
 ## Completed increment: Part 4 delivery references
 
